@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { portfolio } from "@/data/portfolio";
 import { ArrowUpRight } from "lucide-react";
+import { TypewriterFigure } from "@/components/figures/typewriter-figure";
 
 export const metadata: Metadata = {
   title: "Blog & Writing — Natnael Kornima",
@@ -38,42 +39,9 @@ export default function ArticlesPage() {
         </div>
       </header>
 
-      {/* Isometric Typewriter Visualizer Widget */}
+      {/* Crafted Isometric Typewriter Figure from Anatomy Kit */}
       <div className="mt-10">
-        <figure className="k-iso">
-          <div className="k-iso__bar">
-            <span>Typewriter Terminal</span>
-            <span className="text-[#6e6e6e]">KORNIMA · 01</span>
-          </div>
-          <div className="k-iso__stage">
-            <div className="w-full max-w-lg rounded border border-[#333] bg-[#121212] p-5 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-[#222] pb-3 text-xs font-mono text-[#6e6e6e]">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>DISPATCH: READY</span>
-                </div>
-                <span>OCT 28, 2026 // LINE 04 · COL 1</span>
-              </div>
-              <div className="mt-4 font-mono text-[13px] leading-relaxed text-[#ededed]">
-                <span className="text-teal-400 font-bold">&gt; </span>
-                <span className="text-[#b7b7b7]">
-                  &quot;Deterministic Over Clever: Why strict schema fences and decoupled queues outperform monolithic black boxes under load.&quot;
-                </span>
-                <span className="inline-block w-2 h-4 ml-1 bg-teal-400 align-middle animate-pulse" />
-              </div>
-              <div className="mt-5 grid grid-cols-10 gap-1 pt-3 border-t border-[#222] font-mono text-[10px] text-[#6e6e6e] text-center select-none">
-                {["Q","W","E","R","T","Y","U","I","O","P","A","S","D","F","G","H","J","K","L",";","Z","X","C","V","B","N","M",",",".","↵"].map((key) => (
-                  <span
-                    key={key}
-                    className="rounded border border-[#2a2a2a] bg-[#1c1c1c] py-1 transition-colors hover:border-white/20 hover:text-[#ededed]"
-                  >
-                    {key}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </figure>
+        <TypewriterFigure />
       </div>
 
       {/* Article Feed in .k-rows matching kinfish.dev */}

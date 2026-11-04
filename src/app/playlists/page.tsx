@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { portfolio } from "@/data/portfolio";
-import { Play, Pause, SkipForward, SkipBack, Disc } from "lucide-react";
+import { Disc } from "lucide-react";
+import { CassetteFigure } from "@/components/figures/cassette-figure";
 
 export default function PlaylistsPage() {
   const { playlists } = portfolio;
@@ -11,12 +12,8 @@ export default function PlaylistsPage() {
 
   const currentTrack = playlists[currentIdx];
 
-  const handleNext = () => {
-    setCurrentIdx((prev) => (prev + 1) % playlists.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIdx((prev) => (prev - 1 + playlists.length) % playlists.length);
+  const handleTogglePlay = () => {
+    setIsPlaying(!isPlaying);
   };
 
   return (
@@ -37,101 +34,14 @@ export default function PlaylistsPage() {
         </div>
       </header>
 
-      {/* Cassette Deck Isometric Player Widget */}
+      {/* Crafted Isometric Cassette Deck Figure from Anatomy Kit */}
       <div className="mt-10">
-        <figure className="k-iso">
-          <div className="k-iso__bar">
-            <span>Cassette Deck // Stereo Hi-Fi</span>
-            <span className="text-[#6e6e6e]">
-              KORNIMA · 03 · {isPlaying ? "PLAYING" : "STOP"}
-            </span>
-          </div>
-          <div className="k-iso__stage flex flex-col items-center justify-center py-8">
-            <div className="w-full max-w-md rounded-lg border border-[#383838] bg-[#1a1a1a] p-5 shadow-2xl">
-              {/* Tape Housing */}
-              <div className="rounded border border-[#262626] bg-[#121212] p-4">
-                <div className="flex items-center justify-between border-b border-[#222] pb-2 text-[10px] font-mono text-[#6e6e6e]">
-                  <span>SIDE A // 60 MIN</span>
-                  <span className="text-teal-400 font-bold">{currentTrack.genre}</span>
-                </div>
-
-                {/* Cassette Reels Window */}
-                <div className="my-4 flex items-center justify-center gap-8 rounded bg-[#1c1c1c] py-4 border border-[#2b2b2b]">
-                  {/* Left Spool */}
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-[#555] bg-[#222] ${
-                      isPlaying ? "animate-spin" : ""
-                    }`}
-                    style={{ animationDuration: "3s" }}
-                  >
-                    <div className="h-4 w-4 rounded-full bg-[#151515] border border-[#444]" />
-                  </div>
-
-                  {/* Tape Label Window */}
-                  <div className="text-center font-mono select-none">
-                    <div className="text-[11px] font-medium text-[#ededed] truncate max-w-[140px]">
-                      {currentTrack.title}
-                    </div>
-                    <div className="text-[10px] text-[#6e6e6e]">
-                      {currentTrack.artist}
-                    </div>
-                  </div>
-
-                  {/* Right Spool */}
-                  <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-[#555] bg-[#222] ${
-                      isPlaying ? "animate-spin" : ""
-                    }`}
-                    style={{ animationDuration: "3s" }}
-                  >
-                    <div className="h-4 w-4 rounded-full bg-[#151515] border border-[#444]" />
-                  </div>
-                </div>
-
-                {/* Counter & Status */}
-                <div className="flex items-center justify-between font-mono text-[10.5px] text-[#777]">
-                  <span className="text-[#ededed]">TAPE COUNTER: 0{currentIdx + 1}:42</span>
-                  <span>{currentTrack.duration}</span>
-                </div>
-              </div>
-
-              {/* Tape Transport Buttons */}
-              <div className="mt-4 flex items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={handlePrev}
-                  className="rounded border border-[#333] bg-[#222] p-2 text-[#ededed] hover:bg-[#2c2c2c] transition-colors"
-                  aria-label="Previous track"
-                >
-                  <SkipBack className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="flex items-center gap-1.5 rounded border border-white/20 bg-[#ededed] px-4 py-1.5 font-mono text-[11px] font-medium text-black hover:bg-white transition-colors"
-                >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="size-3.5 fill-current" /> PAUSE
-                    </>
-                  ) : (
-                    <>
-                      <Play className="size-3.5 fill-current" /> PLAY
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="rounded border border-[#333] bg-[#222] p-2 text-[#ededed] hover:bg-[#2c2c2c] transition-colors"
-                  aria-label="Next track"
-                >
-                  <SkipForward className="size-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </figure>
+        <CassetteFigure
+          isPlaying={isPlaying}
+          onTogglePlay={handleTogglePlay}
+          trackTitle={currentTrack.title}
+          artist={currentTrack.artist}
+        />
       </div>
 
       {/* Track List in .k-rows matching kinfish.dev */}

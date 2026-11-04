@@ -1,12 +1,9 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import { portfolio } from "@/data/portfolio";
+import { DeskLampFigure } from "@/components/figures/desk-lamp-figure";
 
 export default function BooksPage() {
   const { books } = portfolio;
-  const [lampOn, setLampOn] = useState(true);
-  const [intensity, setIntensity] = useState(85);
 
   return (
     <div>
@@ -26,67 +23,9 @@ export default function BooksPage() {
         </div>
       </header>
 
-      {/* Desk Lamp Isometric Visualizer */}
+      {/* Crafted Isometric Desk Lamp Figure from Anatomy Kit */}
       <div className="mt-10">
-        <figure className="k-iso">
-          <div className="k-iso__bar">
-            <span>Desk Lamp // Reading Rig</span>
-            <span className="text-[#6e6e6e]">KF-02 · INTENSITY {lampOn ? `${intensity}%` : "OFF"}</span>
-          </div>
-          <div className="k-iso__stage flex flex-col items-center justify-center py-10">
-            <div className="relative flex flex-col items-center">
-              {/* Lamp Light Glow Cone */}
-              <div
-                className="transition-all duration-300 pointer-events-none absolute -top-10 w-64 h-48 rounded-full blur-3xl"
-                style={{
-                  background: lampOn
-                    ? `radial-gradient(circle, rgba(251, 191, 36, ${intensity / 250}) 0%, rgba(0,0,0,0) 70%)`
-                    : "transparent",
-                }}
-              />
-
-              {/* Minimal SVG Lamp */}
-              <svg width="120" height="110" viewBox="0 0 120 110" fill="none" className="relative z-10">
-                {/* Lamp Shade */}
-                <path
-                  d="M 40 45 L 80 45 L 90 70 L 30 70 Z"
-                  fill={lampOn ? "#fef08a" : "#2a2a2a"}
-                  stroke="#444"
-                  strokeWidth="1.5"
-                  className="transition-colors duration-300"
-                />
-                {/* Lamp Neck */}
-                <path d="M 60 45 L 60 25 Q 60 15 70 15 L 80 15" stroke="#666" strokeWidth="2.5" fill="none" />
-                <path d="M 80 15 L 80 85" stroke="#555" strokeWidth="2.5" fill="none" />
-                {/* Lamp Base */}
-                <ellipse cx="80" cy="88" rx="22" ry="7" fill="#1c1c1c" stroke="#444" strokeWidth="1.5" />
-              </svg>
-
-              {/* Lamp Controls */}
-              <div className="mt-4 flex items-center gap-4 bg-[#181818] border border-[#2e2e2e] rounded-md px-3 py-1.5 font-mono text-[11px] text-[#b7b7b7] z-10">
-                <button
-                  type="button"
-                  onClick={() => setLampOn(!lampOn)}
-                  className="rounded border border-[#363636] bg-[#242424] px-2 py-0.5 text-[10px] text-[#ededed] hover:bg-[#303030] transition-colors"
-                >
-                  {lampOn ? "SWITCH [OFF]" : "SWITCH [ON]"}
-                </button>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#6e6e6e]">DIM:</span>
-                  <input
-                    type="range"
-                    min="20"
-                    max="100"
-                    value={intensity}
-                    disabled={!lampOn}
-                    onChange={(e) => setIntensity(Number(e.target.value))}
-                    className="w-20 accent-amber-400 cursor-pointer disabled:opacity-30"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </figure>
+        <DeskLampFigure />
       </div>
 
       {/* Book List in .k-rows matching kinfish.dev */}

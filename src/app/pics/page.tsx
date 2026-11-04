@@ -2,23 +2,18 @@
 
 import React, { useState } from "react";
 import { portfolio } from "@/data/portfolio";
-import { Camera, MapPin, Eye } from "lucide-react";
+import { MapPin, Eye } from "lucide-react";
+import { InstantCameraFigure } from "@/components/figures/instant-camera-figure";
 
 export default function PicsPage() {
   const { pics } = portfolio;
   const [filter, setFilter] = useState("All");
   const [activePic, setActivePic] = useState<string | null>(null);
-  const [flash, setFlash] = useState(false);
 
   const tags = ["All", "Addis Ababa", "Highlands", "Architecture", "Craft"];
 
   const filteredPics =
     filter === "All" ? pics : pics.filter((p) => p.tag === filter);
-
-  const triggerShutter = () => {
-    setFlash(true);
-    setTimeout(() => setFlash(false), 200);
-  };
 
   return (
     <div>
@@ -38,39 +33,9 @@ export default function PicsPage() {
         </div>
       </header>
 
-      {/* Retro Instant Camera Visualizer */}
+      {/* Crafted Isometric Instant Camera Figure from Anatomy Kit */}
       <div className="mt-10">
-        <figure className="k-iso">
-          <div className="k-iso__bar">
-            <span>Instant Camera // Viewfinder</span>
-            <span className="text-[#6e6e6e]">
-              AUTO · 1/125s · {filteredPics.length} PRINTS
-            </span>
-          </div>
-          <div className="k-iso__stage relative flex flex-col items-center justify-center py-8 overflow-hidden">
-            {/* Shutter Flash Effect */}
-            {flash && (
-              <div className="absolute inset-0 bg-white z-20 pointer-events-none transition-opacity duration-150" />
-            )}
-
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[#333] bg-[#161616] shadow-xl">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-teal-500/40 bg-[#1e1e1e]">
-                  <div className="h-6 w-6 rounded-full bg-teal-400/20 border border-teal-400/60 animate-pulse" />
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={triggerShutter}
-                className="flex items-center gap-2 rounded border border-[#3e3e3e] bg-[#222] px-3.5 py-1.5 font-mono text-[11px] text-[#ededed] hover:bg-[#2a2a2a] active:scale-95 transition-all"
-              >
-                <Camera className="size-3.5" />
-                PRESS SHUTTER
-              </button>
-            </div>
-          </div>
-        </figure>
+        <InstantCameraFigure framesLeft={filteredPics.length} />
       </div>
 
       {/* Tag Filters */}
