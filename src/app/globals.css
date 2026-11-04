@@ -230,36 +230,124 @@ body {
   border-right-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Isometric Stage styling for Retro visuals */
-.k-iso {
-  margin: 0;
-  border: 1px solid #2a2a2a;
-  border-radius: 6px;
-  background: #181818;
-  overflow: hidden;
+/* Anatomy Isometric Engine & Workstation Visual Styles */
+:root {
+  --anatomy-paper: #151515;
+  --anatomy-face: #1b1b1b;
+  --anatomy-top: #1c1c1c;
+  --anatomy-shade-0: #0f0f0f;
+  --anatomy-shade-1: #121212;
+  --anatomy-shade-2: #151515;
+  --anatomy-shade-3: #181818;
+  --anatomy-lit-top: #262626;
+  --anatomy-lit-shade: #1d1d1d;
+  --anatomy-hi: #d4d4d4;
+  --anatomy-mid: #6a6a6a;
+  --anatomy-lo: #3e3e3e;
+  --anatomy-faint: #2a2a2a;
+  --anatomy-lit: #ffffff;
+  --anatomy-halo: #050505;
+  --anatomy-halo-opacity: 0.9;
+  --anatomy-dot: #e6e6e6;
+  --anatomy-red: #ff6b6b;
+  --anatomy-green: #6be0a0;
+  --anatomy-blue: #6b9bff;
+  --anatomy-weight: 0.6px;
+  --anatomy-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.k-iso__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
-  border-bottom: 1px solid #262626;
-  background: #1c1c1c;
-  font-family: var(--font-geist-mono);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--k-muted);
+.iso-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
-.k-iso__stage {
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #222222 0%, #151515 100%);
+.iso-svg path,
+.iso-svg circle {
+  vector-effect: non-scaling-stroke;
 }
+
+.iso-fill {
+  fill: var(--anatomy-paper);
+  stroke: none;
+}
+
+.iso-solid[data-lit] > .iso-fill {
+  fill: var(--anatomy-face);
+}
+
+.iso-shade,
+.iso-top {
+  stroke: none;
+}
+
+.iso-shade[data-shade="0"] { fill: var(--anatomy-shade-0); }
+.iso-shade[data-shade="1"] { fill: var(--anatomy-shade-1); }
+.iso-shade[data-shade="2"] { fill: var(--anatomy-shade-2); }
+.iso-shade[data-shade="3"] { fill: var(--anatomy-shade-3); }
+
+.iso-top { fill: var(--anatomy-top); }
+.iso-solid[data-lit] > .iso-top { fill: var(--anatomy-lit-top); }
+.iso-solid[data-lit] > .iso-shade { fill: var(--anatomy-lit-shade); }
+
+.iso-solid[data-seamless] > .iso-shade,
+.iso-solid[data-seamless] > .iso-top {
+  stroke-width: 0.4px;
+  stroke-linejoin: round;
+}
+
+.iso-solid[data-lit] > .iso-edge { stroke: var(--anatomy-lit); }
+.iso-halo {
+  fill: var(--anatomy-halo);
+  stroke: none;
+  filter: blur(9px);
+  opacity: var(--anatomy-halo-opacity);
+  transform: translateY(3px);
+}
+
+.iso-line {
+  fill: none;
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.iso-line[data-tone="hi"] { stroke: var(--anatomy-hi); }
+.iso-line[data-tone="mid"] { stroke: var(--anatomy-mid); }
+.iso-line[data-tone="lo"] { stroke: var(--anatomy-lo); }
+.iso-line[data-tone="faint"] { stroke: var(--anatomy-faint); }
+.iso-line[data-tone="lit"] { stroke: var(--anatomy-lit); }
+
+.iso-dots circle {
+  fill: var(--anatomy-dot);
+  stroke: none;
+  opacity: 0.32;
+}
+.iso-dots[data-tone="hi"] circle { opacity: 0.85; }
+.iso-dots[data-tone="mid"] circle { opacity: 0.45; }
+.iso-dots[data-tone="lo"] circle { opacity: 0.22; }
+.iso-dots[data-tone="faint"] circle { opacity: 0.12; }
+
+/* Computer specific classes */
+.pc-well { fill: var(--anatomy-shade-1); }
+.pc-bezel { fill: var(--anatomy-top); }
+.pc-dark { fill: var(--anatomy-shade-0); }
+.pc-glass { fill: var(--anatomy-shade-0); transition: fill 0.5s var(--anatomy-ease); }
+.pc-glass[data-on] { fill: var(--anatomy-lit-shade); }
+.pc-glow { fill: var(--anatomy-lit); opacity: 0.07; filter: blur(6px); }
+.pc-scan { fill: none; stroke: var(--anatomy-faint); stroke-width: 0.5px; vector-effect: non-scaling-stroke; opacity: 0.7; }
+.pc-logo { fill: var(--anatomy-lit); fill-rule: evenodd; }
+.pc-text { fill: var(--anatomy-lit); font-family: var(--font-geist-mono); letter-spacing: 0.02em; }
+.pc-cursor { fill: var(--anatomy-lit); animation: pc-blink 1.06s steps(1, end) infinite; }
+.pc-beam { fill: none; stroke: var(--anatomy-lit); stroke-width: 1.4px; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.pc-dot { fill: var(--anatomy-lit); }
+.pc-cord { stroke-width: 1.1px; }
+.pc-key, .pc-computer { cursor: pointer; }
+.pc-key[data-down] .iso-edge { stroke: var(--anatomy-hi); }
+
+@keyframes pc-blink { 50% { opacity: 0; } }
 .k-iso {
   --iso-panel:var(--k-bg);--iso-line:#3c3c3c;--iso-detail:#2a2a2a;--iso-body:#171717;--iso-deck:#1c1c1c;--iso-recess:#0d0d0d;--iso-ink:#858585;--iso-ink-hi:#e6e6e6;--iso-accent:#dfe9ef;--iso-accent-hi:#fff;--iso-accent-dim:#dfe9ef12;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0;margin:0;display:grid
 }
