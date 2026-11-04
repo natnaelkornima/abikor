@@ -39,11 +39,10 @@ export function ArchitectureStage() {
 
       <div className="p-4 sm:p-6">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
-          {current.layers.map((layer, index) => (
+          {current.layers.map((layer) => (
             <div
               key={layer.step}
-              className="k-interactive k-flow rounded-[4px] border border-[#282828] bg-[#1d1d1d] p-3.5 transition-[border-color,background-color] duration-150 ease-out hover:border-white/20 hover:bg-[#242424]"
-              data-label={`LAYER 0${index + 1} // ${layer.layer}`}
+              className="rounded-[4px] border border-[#282828] bg-[#1d1d1d] p-3.5 transition-[border-color,background-color] duration-150 ease-out hover:border-white/20 hover:bg-[#242424]"
             >
               <div className="font-mono text-[10px] uppercase text-[#6e6e6e]">
                 {layer.step}

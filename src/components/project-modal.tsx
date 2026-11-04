@@ -22,7 +22,7 @@ export function ProjectSection({ projects }: ProjectSectionProps) {
 
   return (
     <>
-      <ul className="flex flex-col">
+      <ul className="k-rows">
         {projects.map((project) => (
           <li
             key={project.id}
@@ -35,42 +35,25 @@ export function ProjectSection({ projects }: ProjectSectionProps) {
             }}
             tabIndex={0}
             role="button"
-            className="k-interactive k-project group border-b border-dashed border-[#262626] py-5 transition-[background-color,border-color] duration-150 ease-out hover:bg-white/[0.015] cursor-pointer focus:outline-none select-none [-webkit-tap-highlight-color:transparent]"
-            data-label={project.title}
+            className="group py-3.5 transition-colors duration-150 ease-out hover:bg-white/[0.015] cursor-pointer focus:outline-none select-none [-webkit-tap-highlight-color:transparent]"
           >
-            <div className="flex flex-wrap items-baseline justify-between gap-4">
-              <div className="flex flex-wrap items-baseline gap-2">
-                <span className="inline-flex items-center gap-1.5 text-[15px] font-medium text-[#ededed] group-hover:underline decoration-[#525252] underline-offset-4">
-                  {project.title}
-                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-[#6e6e6e] stroke-[1.5] transition-transform duration-150 ease-out motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5 group-hover:text-[#ededed]" />
-                </span>
-                <Badge variant="default" className="text-[10px]">
-                  {project.role}
-                </Badge>
-              </div>
-              <span className="font-mono text-[11px] text-teal-400">
-                {project.metrics.split("·")[0].trim()}
+            <div className="flex items-center justify-between gap-4">
+              <span className="group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline text-[#ededed] font-medium text-[15px]">
+                {project.title}
+                <ArrowUpRight className="size-3.5 shrink-0 text-[#6e6e6e] transition-colors group-hover:text-[#ededed]" />
               </span>
+              <span className="k-chip shrink-0">{project.role}</span>
             </div>
 
-            <p className="mt-1.5 max-w-[62ch] text-[13.5px] leading-relaxed text-[#929292]">
+            <p className="mt-1.5 max-w-[60ch] text-[14px] leading-relaxed text-[#929292]">
               {project.description}
             </p>
 
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-[#6e6e6e]">
-              <span className="inline-flex items-center gap-1.5">
-                ★ {project.metrics}
+            <div className="k-label mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 !font-light text-[#6e6e6e]">
+              <span>★ {project.metrics}</span>
+              <span className="text-[10px] text-[#929292] group-hover:text-[#ededed] transition-colors">
+                Click to inspect architecture →
               </span>
-              <div className="ml-auto flex flex-wrap gap-1">
-                {project.techStack.slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-[3px] border border-white/5 bg-[#202020] px-1.5 py-0.5 text-[10px] text-[#b7b7b7]"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
             </div>
           </li>
         ))}

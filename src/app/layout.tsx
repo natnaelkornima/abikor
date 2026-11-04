@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { LiveWire } from "@/components/live-wire";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "Natnael Kornima — Full-Stack Engineer & Systems Builder",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
     canonical: "/",
     types: {
       "text/markdown": "/index.md",
+      "application/rss+xml": "/feed.xml",
     },
   },
   openGraph: {
@@ -28,12 +30,24 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen bg-[#151515] text-[#ededed] antialiased">
-        <div className="mx-auto flex min-h-screen max-w-[712px] flex-col px-4 pt-6 sm:pt-12">
-          {children}
+        <a
+          href="#content"
+          className="fixed left-4 top-3 z-50 -translate-y-[200%] rounded-[5px] bg-[#ededed] px-3 py-2 text-black transition-transform duration-150 focus:translate-y-0"
+        >
+          Skip to content
+        </a>
+        <div className="mx-auto flex min-h-svh max-w-[712px] flex-col px-4 pt-6 sm:pt-12">
+          <SiteHeader />
+          <main
+            id="content"
+            tabIndex={-1}
+            className="flex-1 pb-24 pt-12 focus:outline-none sm:pt-16"
+          >
+            {children}
+          </main>
+          <SiteFooter />
         </div>
-        <LiveWire />
       </body>
     </html>
   );
 }
-
