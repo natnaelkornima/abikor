@@ -10,7 +10,7 @@ export function SiteFooter() {
         <span>© 2026 {profile.name}</span>
         <span aria-hidden="true" className="mx-1 text-[#4a4a4a]">·</span>
         <span>Built with</span>
-        <span className="font-serif-heart text-rose-400 text-sm inline-block select-none" title="Crafted with care">♥</span>
+        <span className="font-serif-heart text-[#ededed] text-sm inline-block select-none" title="Crafted with care">♥</span>
         <span>in Addis Ababa</span>
       </span>
       <span className="flex gap-5">

@@ -35,8 +35,13 @@ const config: Config = {
         border: "var(--k-line)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+        sans: ["var(--font-geist-sans)", "Geist Sans", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+        serif: ["var(--font-geist-serif)", "Geist Serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+        "serif-regular": ["var(--font-geist-serif-regular)", "Geist Serif Regular", "Geist Serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+        "serif-square": ["var(--font-geist-serif-square)", "Geist Serif Square", "Geist Serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+        "serif-triangle": ["var(--font-geist-serif-triangle)", "Geist Serif Triangle", "Geist Serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
+        "serif-heart": ["var(--font-geist-serif-heart)", "Geist Serif Heart", "Geist Serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif"],
       },
       borderRadius: {
         lg: "var(--k-radius)",

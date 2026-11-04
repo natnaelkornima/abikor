@@ -135,7 +135,7 @@ export function DialogTitle({
   return (
     <h2
       className={cn(
-        "text-lg font-medium leading-none tracking-tight text-[#ededed]",
+        "text-lg font-serif-regular font-medium leading-none tracking-tight text-[#ededed]",
         className
       )}
       {...props}

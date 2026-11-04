@@ -224,7 +224,7 @@ export default function Home() {
               key={principle.title}
               className="rounded-[6px] border border-[#2a2a2a] bg-[#1a1a1a] p-4 transition-colors duration-150 ease-out hover:border-white/15"
             >
-              <h3 className="font-serif text-[14px] font-medium text-[#ededed]">
+              <h3 className="font-serif-regular text-[14px] font-medium text-[#ededed]">
                 {principle.title}
               </h3>
               <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#929292]">
