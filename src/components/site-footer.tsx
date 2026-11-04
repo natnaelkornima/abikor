@@ -6,10 +6,12 @@ export function SiteFooter() {
   const { profile } = portfolio;
   return (
     <footer className="k-rule-t k-label flex flex-wrap items-center justify-between gap-3 py-5 mt-16">
-      <span>
-        © 2026 {profile.name}
-        <span aria-hidden="true" className="mx-2 text-[#4a4a4a]">·</span>
-        Addis Ababa, Ethiopia
+      <span className="flex items-center gap-1.5">
+        <span>© 2026 {profile.name}</span>
+        <span aria-hidden="true" className="mx-1 text-[#4a4a4a]">·</span>
+        <span>Built with</span>
+        <span className="font-serif-heart text-rose-400 text-sm inline-block select-none" title="Crafted with care">♥</span>
+        <span>in Addis Ababa</span>
       </span>
       <span className="flex gap-5">
         <Link

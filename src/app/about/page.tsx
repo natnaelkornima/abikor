@@ -22,20 +22,20 @@ export default function AboutPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>About</span>
           </p>
-          <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
             {profile.name}
           </h1>
 
           <ul className="k-badges mt-3" aria-label="At a glance">
-            <li className="k-chip">
+            <li className="k-chip font-mono">
               <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
               {profile.status}
             </li>
-            <li className="k-chip">Full-Stack &amp; Systems</li>
-            <li className="k-chip">{profile.location}</li>
+            <li className="k-chip font-mono">Full-Stack &amp; Systems</li>
+            <li className="k-chip font-mono">{profile.location}</li>
           </ul>
 
-          <div className="mt-6 space-y-4 leading-7 text-[#b7b7b7]">
+          <div className="mt-6 space-y-4 font-sans leading-7 text-[#b7b7b7]">
             <p>
               I&#39;m an Ethiopian full-stack engineer and distributed systems builder based in Addis Ababa. I design and construct reliable backend pipelines, modular TypeScript microservices, and high-performance client applications with obsessive attention to latency and fault-tolerance.
             </p>
@@ -64,7 +64,7 @@ export default function AboutPage() {
           {experience.map((item) => (
             <li key={item.entity} className="py-5">
               <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <span className="text-[15px] font-medium text-[#ededed]">
+                <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed]">
                   {item.role} · <span className="text-teal-400">{item.entity}</span>
                 </span>
                 <span className="font-mono text-[11px] text-[#6e6e6e]">
@@ -76,7 +76,7 @@ export default function AboutPage() {
                 {item.location}
               </div>
 
-              <p className="mt-2 text-[13.5px] leading-relaxed text-[#929292]">
+              <p className="mt-2 font-sans text-[13.5px] leading-relaxed text-[#929292]">
                 {item.summary}
               </p>
 

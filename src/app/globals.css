@@ -33,8 +33,13 @@
   --k-muted: #929292;
   --k-dim: #6e6e6e;
   --k-accent: #2dd4bf;
-  --font-geist-sans: "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-geist-sans: var(--font-geist-sans, "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  --font-geist-mono: var(--font-geist-mono, "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  --font-geist-serif: var(--font-geist-serif, "Geist Serif", "Times New Roman", Times, Georgia, serif);
+  --font-geist-serif-regular: var(--font-geist-serif-regular, "Geist Serif Regular", "Times New Roman", Times, Georgia, serif);
+  --font-geist-serif-square: var(--font-geist-serif-square, "Geist Serif Square", "Times New Roman", Times, Georgia, serif);
+  --font-geist-serif-triangle: var(--font-geist-serif-triangle, "Geist Serif Triangle", "Times New Roman", Times, Georgia, serif);
+  --font-geist-serif-heart: var(--font-geist-serif-heart, "Geist Serif Heart", "Times New Roman", Times, Georgia, serif);
   color-scheme: dark;
 
   /* Global Isometric 3D Figure Theme Variables with High-Contrast Depth */
@@ -54,10 +59,50 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-geist-serif);
+  --font-serif-regular: var(--font-geist-serif-regular);
+  --font-serif-square: var(--font-geist-serif-square);
+  --font-serif-triangle: var(--font-geist-serif-triangle);
+  --font-serif-heart: var(--font-geist-serif-heart);
   --color-background: var(--k-bg);
   --color-foreground: var(--k-text);
   --color-card: var(--k-card);
   --color-border: var(--k-line);
+}
+
+.font-serif {
+  font-family: var(--font-geist-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.font-serif-regular {
+  font-family: var(--font-geist-serif-regular), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.font-serif-square {
+  font-family: var(--font-geist-serif-square), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.font-serif-triangle {
+  font-family: var(--font-geist-serif-triangle), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+.font-serif-heart {
+  font-family: var(--font-geist-serif-heart), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+/* Typography Hierarchy matching Geist Sans, Mono, and Serif designations */
+h1, .k-h1 {
+  font-family: var(--font-geist-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+  letter-spacing: -0.025em;
+}
+
+h2:not(.k-label), .k-h2 {
+  font-family: var(--font-geist-serif), Georgia, Cambria, "Times New Roman", Times, serif;
+  letter-spacing: -0.02em;
+}
+
+h3, .k-h3 {
+  font-family: var(--font-geist-serif-regular), Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+p, .k-body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {

@@ -24,10 +24,10 @@ export default function PicsPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Pics</span>
           </p>
-          <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
             Pictures
           </h1>
-          <div className="mt-4 max-w-[60ch] space-y-4 leading-7 text-[#b7b7b7]">
+          <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">
             Things I stopped to look at, from the bustling avenues of Addis Ababa to the quiet ridges of the highlands. Open one to inspect details.
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function PicsPage() {
               className={`relative flex items-center justify-center rounded border border-[#333] bg-gradient-to-br ${pic.tone} h-40 overflow-hidden`}
             >
               <div className="text-center font-mono text-xs text-[#888] select-none">
-                <div className="text-white/80 font-medium mb-1">{pic.title}</div>
+                <div className="text-white/90 font-serif-regular text-sm font-medium mb-1">{pic.title}</div>
                 <div className="text-[10px] text-white/50">{pic.location}</div>
               </div>
               <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-white/70 backdrop-blur-sm">
@@ -79,7 +79,7 @@ export default function PicsPage() {
             </div>
 
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-[14px] font-medium text-[#ededed] group-hover:underline decoration-[#525252] underline-offset-4">
+              <span className="font-serif-regular text-[14.5px] font-medium text-[#ededed] group-hover:underline decoration-[#525252] underline-offset-4">
                 {pic.title}
               </span>
               <span className="k-chip">{pic.tag}</span>
@@ -92,7 +92,7 @@ export default function PicsPage() {
               <span>{pic.year}</span>
             </div>
 
-            <p className="mt-2 text-[12.5px] leading-relaxed text-[#929292]">
+            <p className="mt-2 font-sans text-[12.5px] leading-relaxed text-[#929292]">
               {pic.description}
             </p>
           </div>

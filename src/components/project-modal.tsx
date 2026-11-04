@@ -38,14 +38,14 @@ export function ProjectSection({ projects }: ProjectSectionProps) {
             className="group py-3.5 transition-colors duration-150 ease-out hover:bg-white/[0.015] cursor-pointer focus:outline-none select-none [-webkit-tap-highlight-color:transparent]"
           >
             <div className="flex items-center justify-between gap-4">
-              <span className="group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline text-[#ededed] font-medium text-[15px]">
+              <span className="group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline text-[#ededed] font-serif font-medium text-[15px]">
                 {project.title}
                 <ArrowUpRight className="size-3.5 shrink-0 text-[#6e6e6e] transition-colors group-hover:text-[#ededed]" />
               </span>
               <span className="k-chip shrink-0">{project.role}</span>
             </div>
 
-            <p className="mt-1.5 max-w-[60ch] text-[14px] leading-relaxed text-[#929292]">
+            <p className="mt-1.5 max-w-[60ch] font-sans text-[14px] leading-relaxed text-[#929292]">
               {project.description}
             </p>
 

@@ -25,20 +25,20 @@ export default function Home() {
           <span>{profile.roleTitle}</span>
         </p>
 
-        <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+        <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
           {profile.name}
         </h1>
 
         <ul className="k-badges mt-3" aria-label="At a glance">
-          <li className="k-chip">
+          <li className="k-chip font-mono">
             <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
             {profile.status}
           </li>
-          <li className="k-chip">Full-Stack &amp; Systems</li>
-          <li className="k-chip">{profile.location}</li>
+          <li className="k-chip font-mono">Full-Stack &amp; Systems</li>
+          <li className="k-chip font-mono">{profile.location}</li>
         </ul>
 
-        <div className="mt-6 space-y-4 leading-7 text-[#b7b7b7]">
+        <div className="mt-6 space-y-4 font-sans leading-7 text-[#b7b7b7]">
           {profile.bio.map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
@@ -111,7 +111,7 @@ export default function Home() {
                 href={`/articles#${article.slug}`}
                 className="group flex items-baseline justify-between gap-6 py-3.5"
               >
-                <span className="text-[#ededed] decoration-[#525252] underline-offset-4 group-hover:underline">
+                <span className="font-serif-regular text-[15px] text-[#ededed] decoration-[#525252] underline-offset-4 group-hover:underline">
                   {article.title}
                 </span>
                 <time className="shrink-0 font-mono text-[11px] text-[#6e6e6e]">
@@ -170,10 +170,10 @@ export default function Home() {
                 </span>
                 <span className="k-chip">{set.count}</span>
               </div>
-              <h3 className="mt-2 text-[14px] font-medium text-[#ededed]">
+              <h3 className="mt-2 font-serif-square text-[14px] font-medium text-[#ededed]">
                 {set.title}
               </h3>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-[#929292]">
+              <p className="mt-1 font-sans text-[12.5px] leading-relaxed text-[#929292]">
                 {set.description}
               </p>
               <div className="mt-3.5 flex flex-wrap gap-1.5">
@@ -224,10 +224,10 @@ export default function Home() {
               key={principle.title}
               className="rounded-[6px] border border-[#2a2a2a] bg-[#1a1a1a] p-4 transition-colors duration-150 ease-out hover:border-white/15"
             >
-              <h3 className="text-[14px] font-medium text-[#ededed]">
+              <h3 className="font-serif text-[14px] font-medium text-[#ededed]">
                 {principle.title}
               </h3>
-              <p className="mt-1 text-[13px] leading-relaxed text-[#929292]">
+              <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#929292]">
                 {principle.description}
               </p>
             </div>

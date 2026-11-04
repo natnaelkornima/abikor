@@ -25,10 +25,10 @@ export default function PlaylistsPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Playlists</span>
           </p>
-          <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
             On repeat
           </h1>
-          <div className="mt-4 max-w-[60ch] space-y-4 leading-7 text-[#b7b7b7]">
+          <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">
             The acoustic textures, Ethio-jazz improvisation, and meditative frequencies I keep in rotation during systems engineering sessions.
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function PlaylistsPage() {
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="inline-flex items-center gap-2 text-[15px] font-medium text-[#ededed]">
+                  <span className="inline-flex items-center gap-2 font-serif-regular text-[15.5px] font-medium text-[#ededed]">
                     {isCurrent && isPlaying ? (
                       <Disc className="size-3.5 text-teal-400 animate-spin" />
                     ) : (
@@ -89,7 +89,7 @@ export default function PlaylistsPage() {
                   </span>
                 </div>
 
-                <div className="mt-1 flex items-center justify-between text-[13px] text-[#929292]">
+                <div className="mt-1 flex items-center justify-between font-sans text-[13px] text-[#929292]">
                   <span>
                     {track.artist} · <em className="text-[#777] not-italic">{track.album}</em>
                   </span>

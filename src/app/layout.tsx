@@ -1,4 +1,13 @@
 import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import {
+  GeistSerif,
+  GeistSerifRegular,
+  GeistSerifSquare,
+  GeistSerifTriangle,
+  GeistSerifHeart,
+} from "geist/font/serif";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -28,8 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#151515] text-[#ededed] antialiased">
+    <html
+      lang="en"
+      className={`dark ${GeistSans.variable} ${GeistMono.variable} ${GeistSerif.variable} ${GeistSerifRegular.variable} ${GeistSerifSquare.variable} ${GeistSerifTriangle.variable} ${GeistSerifHeart.variable}`}
+    >
+      <body className="min-h-screen bg-[#151515] text-[#ededed] font-sans antialiased">
         <a
           href="#content"
           className="fixed left-4 top-3 z-50 -translate-y-[200%] rounded-[5px] bg-[#ededed] px-3 py-2 text-black transition-transform duration-150 focus:translate-y-0"

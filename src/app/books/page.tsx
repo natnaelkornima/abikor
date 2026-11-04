@@ -14,10 +14,10 @@ export default function BooksPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Books</span>
           </p>
-          <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
             Books I&#39;ve read
           </h1>
-          <div className="mt-4 max-w-[60ch] space-y-4 leading-7 text-[#b7b7b7]">
+          <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">
             My favorite hobby away from the keyboard, and an architectural insight or line from each book that stayed with me.
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function BooksPage() {
           {books.map((book) => (
             <li key={book.title} className="py-4">
               <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <span className="text-[15px] font-medium text-[#ededed]">
+                <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed]">
                   {book.title}
                 </span>
                 <span className="font-mono text-[11px] text-[#6e6e6e]">
@@ -51,11 +51,11 @@ export default function BooksPage() {
                 </span>
               </div>
 
-              <blockquote className="mt-2 text-[13px] italic leading-relaxed text-[#b7b7b7] border-l border-[#3a3a3a] pl-3">
+              <blockquote className="mt-2 font-serif text-[13.5px] italic leading-relaxed text-[#b7b7b7] border-l border-[#3a3a3a] pl-3">
                 &ldquo;{book.quote}&rdquo;
               </blockquote>
 
-              <p className="mt-2 max-w-[62ch] text-[13px] leading-relaxed text-[#929292]">
+              <p className="mt-2 max-w-[62ch] font-sans text-[13px] leading-relaxed text-[#929292]">
                 {book.takeaway}
               </p>
 

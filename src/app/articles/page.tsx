@@ -23,10 +23,10 @@ export default function ArticlesPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Writing</span>
           </p>
-          <h1 className="mt-3 text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
             Blog
           </h1>
-          <div className="mt-4 max-w-[60ch] space-y-4 leading-7 text-[#b7b7b7]">
+          <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">
             Notes on distributed systems, high-throughput queues, AI guardrails, and client-side ergonomics. Also available via{" "}
             <Link
               href="/feed.xml"
@@ -59,7 +59,7 @@ export default function ArticlesPage() {
           {articles.map((article) => (
             <li key={article.slug} id={article.slug} className="py-4">
               <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <span className="text-[15px] font-medium text-[#ededed] group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 hover:underline">
+                <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed] group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 hover:underline">
                   {article.title}
                   <ArrowUpRight className="size-3.5 text-[#6e6e6e]" />
                 </span>
@@ -67,7 +67,7 @@ export default function ArticlesPage() {
                   {article.date}
                 </time>
               </div>
-              <p className="mt-2 max-w-[62ch] text-[13.5px] leading-relaxed text-[#929292]">
+              <p className="mt-2 max-w-[62ch] font-sans text-[13.5px] leading-relaxed text-[#929292]">
                 {article.summary}
               </p>
               <div className="mt-2.5 flex items-center gap-2">
