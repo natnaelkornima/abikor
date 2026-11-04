@@ -14,7 +14,7 @@ const badgeVariants = cva(
         outline:
           "border-[#2a2a2a] text-[#b7b7b7] hover:border-white/15",
         accent:
-          "border-teal-500/20 bg-teal-500/10 text-teal-300",
+          "border-white/20 bg-white/10 text-[#ededed]",
       },
     },
     defaultVariants: {

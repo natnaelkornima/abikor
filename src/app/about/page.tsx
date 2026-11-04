@@ -28,7 +28,7 @@ export default function AboutPage() {
 
           <ul className="k-badges mt-3" aria-label="At a glance">
             <li className="k-chip font-mono">
-              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-[#ededed] shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
               {profile.status}
             </li>
             <li className="k-chip font-mono">Full-Stack &amp; Systems</li>
@@ -65,7 +65,7 @@ export default function AboutPage() {
             <li key={item.entity} className="py-5">
               <div className="flex flex-wrap items-baseline justify-between gap-4">
                 <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed]">
-                  {item.role} · <span className="text-teal-400">{item.entity}</span>
+                  {item.role} · <span className="text-[#ededed]">{item.entity}</span>
                 </span>
                 <span className="font-mono text-[11px] text-[#6e6e6e]">
                   {item.period}
@@ -130,7 +130,7 @@ export default function AboutPage() {
         </div>
 
         <div className="mt-4 rounded-[6px] border border-[#2a2a2a] bg-[#1a1a1a] p-4 font-mono text-xs">
-          <div className="flex items-center gap-2 text-teal-400 mb-2">
+          <div className="flex items-center gap-2 text-[#ededed] mb-2">
             <ShieldCheck className="size-4" />
             <span>GitHub Signed Commits</span>
           </div>

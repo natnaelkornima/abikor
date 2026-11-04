@@ -149,7 +149,7 @@ export function DialogDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-xs font-mono text-teal-400 mt-1", className)}
+      className={cn("text-xs font-mono text-[#ededed] mt-1", className)}
       {...props}
     />
   );

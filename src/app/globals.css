@@ -32,7 +32,7 @@
   --k-text-2: #b7b7b7;
   --k-muted: #929292;
   --k-dim: #6e6e6e;
-  --k-accent: #2dd4bf;
+  --k-accent: #ededed;
   --font-geist-sans: var(--font-geist-sans, "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   --font-geist-mono: var(--font-geist-mono, "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
   --font-geist-serif: var(--font-geist-serif, "Geist Serif", "Times New Roman", Times, Georgia, serif);
@@ -51,9 +51,9 @@
   --iso-recess: #0a0a0a;
   --iso-ink: #9a9a9a;
   --iso-ink-hi: #ededed;
-  --iso-accent: #2dd4bf;
+  --iso-accent: #ededed;
   --iso-accent-hi: #ffffff;
-  --iso-accent-dim: rgba(45, 212, 191, 0.15);
+  --iso-accent-dim: rgba(255, 255, 255, 0.12);
 }
 
 @theme {
@@ -303,13 +303,13 @@ body {
   --anatomy-mid: #7e7e7e;
   --anatomy-lo: #444444;
   --anatomy-faint: #303030;
-  --anatomy-lit: #2dd4bf;
+  --anatomy-lit: #ededed;
   --anatomy-halo: #000000;
   --anatomy-halo-opacity: 0.8;
   --anatomy-dot: #e6e6e6;
-  --anatomy-red: #f87171;
-  --anatomy-green: #34d399;
-  --anatomy-blue: #60a5fa;
+  --anatomy-red: #b7b7b7;
+  --anatomy-green: #ededed;
+  --anatomy-blue: #ededed;
   --anatomy-weight: 0.75px;
   --anatomy-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -394,7 +394,7 @@ body {
 .pc-dark { fill: var(--anatomy-shade-0); }
 .pc-glass { fill: var(--anatomy-shade-0); transition: fill 0.5s var(--anatomy-ease); }
 .pc-glass[data-on] { fill: var(--anatomy-lit-shade); }
-.pc-glow { fill: var(--anatomy-lit); opacity: 0.07; filter: blur(6px); }
+.pc-glow { fill: var(--anatomy-lit); opacity: 0.04; filter: blur(6px); }
 .pc-scan { fill: none; stroke: var(--anatomy-faint); stroke-width: 0.5px; vector-effect: non-scaling-stroke; opacity: 0.7; }
 .pc-logo { fill: var(--anatomy-lit); fill-rule: evenodd; }
 .pc-text { fill: var(--anatomy-lit); font-family: var(--font-geist-mono); letter-spacing: 0.02em; }
@@ -415,9 +415,9 @@ body {
   --iso-recess: #0a0a0a;
   --iso-ink: #9a9a9a;
   --iso-ink-hi: #ededed;
-  --iso-accent: #2dd4bf;
+  --iso-accent: #ededed;
   --iso-accent-hi: #ffffff;
-  --iso-accent-dim: rgba(45, 212, 191, 0.15);
+  --iso-accent-dim: rgba(255, 255, 255, 0.12);
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;

@@ -74,7 +74,7 @@ export default function PlaylistsPage() {
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="inline-flex items-center gap-2 font-serif-regular text-[15.5px] font-medium text-[#ededed]">
                     {isCurrent && isPlaying ? (
-                      <Disc className="size-3.5 text-teal-400 animate-spin" />
+                      <Disc className="size-3.5 text-[#ededed] animate-spin" />
                     ) : (
                       <span className="font-mono text-[11px] text-[#6e6e6e]">
                         0{idx + 1}

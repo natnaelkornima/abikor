@@ -549,7 +549,7 @@ export const portfolio: PortfolioData = {
       tag: "Addis Ababa",
       description: "Concentric stone amphitheater tiers where community gatherings and daily evening runners converge.",
       aspect: "16/9",
-      tone: "from-blue-950/30 to-zinc-900/80"
+      tone: "from-zinc-900/80 to-black"
     },
     {
       id: "p-03",
@@ -559,7 +559,7 @@ export const portfolio: PortfolioData = {
       tag: "Highlands",
       description: "Tall eucalyptus forest canopies high above the smog line, overlooking the entire plateau basin.",
       aspect: "4/3",
-      tone: "from-emerald-950/30 to-zinc-900/80"
+      tone: "from-zinc-900/80 to-black"
     },
     {
       id: "p-04",
@@ -569,7 +569,7 @@ export const portfolio: PortfolioData = {
       tag: "Craft",
       description: "Freshly roasted green coffee beans resting over frankincense smoke and heated coals.",
       aspect: "1/1",
-      tone: "from-orange-950/30 to-zinc-900/80"
+      tone: "from-zinc-900/80 to-black"
     },
     {
       id: "p-05",
@@ -579,7 +579,7 @@ export const portfolio: PortfolioData = {
       tag: "Architecture",
       description: "Monolithic volcanic rock sculpted downwards into the bedrock with millimeter structural tolerance.",
       aspect: "4/5",
-      tone: "from-red-950/30 to-zinc-900/80"
+      tone: "from-zinc-900/80 to-black"
     },
     {
       id: "p-06",
@@ -589,7 +589,7 @@ export const portfolio: PortfolioData = {
       tag: "Craft",
       description: "Mechanical key switches, vertical terminal monitors, and local server hardware running Docker workloads.",
       aspect: "16/9",
-      tone: "from-teal-950/30 to-zinc-900/80"
+      tone: "from-zinc-900/80 to-black"
     }
   ],
 

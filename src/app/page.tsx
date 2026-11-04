@@ -31,7 +31,7 @@ export default function Home() {
 
         <ul className="k-badges mt-3" aria-label="At a glance">
           <li className="k-chip font-mono">
-            <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-[#ededed] shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
             {profile.status}
           </li>
           <li className="k-chip font-mono">Full-Stack &amp; Systems</li>

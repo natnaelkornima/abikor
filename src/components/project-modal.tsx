@@ -113,7 +113,7 @@ export function ProjectSection({ projects }: ProjectSectionProps) {
                 <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-1.5">
                   Verified Performance
                 </div>
-                <div className="font-mono text-xs text-teal-400">
+                <div className="font-mono text-xs text-[#ededed]">
                   {selectedProject.metrics}
                 </div>
               </div>
