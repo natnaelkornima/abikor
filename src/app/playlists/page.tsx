@@ -39,6 +39,8 @@ export default function PlaylistsPage() {
         <CassetteFigure
           isPlaying={isPlaying}
           onTogglePlay={handleTogglePlay}
+          onPrev={() => setCurrentIdx((i) => (i - 1 + playlists.length) % playlists.length)}
+          onNext={() => setCurrentIdx((i) => (i + 1) % playlists.length)}
           trackTitle={currentTrack.title}
           artist={currentTrack.artist}
         />
