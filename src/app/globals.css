@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Geist Sans";
+  src: url("/assets/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --k-bg: #151515;
+  --k-raised: #1f1f1f;
+  --k-card: #1a1a1a;
+  --k-card-hover: #222222;
+  --k-chip: #262626;
+  --k-chip-hover: #303030;
+  --k-line: #2a2a2a;
+  --k-rule: 1px dashed #353535;
+  --k-rule-soft: 1px dashed #262626;
+  --k-radius: 5px;
+  --k-control-shadow: inset 0 1px #ffffff0f, 0 1px 2px #00000029;
+  --k-text: #ededed;
+  --k-text-2: #b7b7b7;
+  --k-muted: #929292;
+  --k-dim: #6e6e6e;
+  --k-accent: #2dd4bf;
+  --font-geist-sans: "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--k-bg);
+  --color-foreground: var(--k-text);
+  --color-card: var(--k-card);
+  --color-border: var(--k-line);
+}
+
+body {
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--font-geist-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--k-text);
+  color: #000000;
+}
+
+:focus-visible {
+  outline: 1px solid var(--k-text);
+  outline-offset: 3px;
+}
+
+.k-rule-b {
+  border-bottom: var(--k-rule);
+}
+
+.k-rule-t {
+  border-top: var(--k-rule);
+}
+
+.k-rule-soft-b {
+  border-bottom: var(--k-rule-soft);
+}
+
+.k-label {
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--k-muted);
+  display: flex;
+  align-items: center;
+}
+
+.k-inline {
+  color: var(--k-text);
+  text-decoration: underline;
+  text-decoration-color: #525252;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 150ms ease-out;
+}
+
+.k-inline:hover {
+  text-decoration-color: var(--k-text);
+}
+
+/* Live Wire HUD styles */
+.k-lw {
+  z-index: 999;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.k-lw.is-active {
+  opacity: 1;
+}
+
+.k-lw__select {
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), width 120ms ease-out, height 120ms ease-out;
+}
+
+.k-lw__corner {
+  background: var(--k-bg);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  width: 5px;
+  height: 5px;
+  position: absolute;
+}
+
+.k-lw__corner--tl { top: -3px; left: -3px; }
+.k-lw__corner--tr { top: -3px; right: -3px; }
+.k-lw__corner--bl { bottom: -3px; left: -3px; }
+.k-lw__corner--br { bottom: -3px; right: -3px; }
+
+.k-lw__wires {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.k-lw__wire {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 1px;
+  stroke-dasharray: 3 3;
+}
+
+.k-lw__label {
+  pointer-events: none;
+  color: var(--k-text);
+  font: 400 10.5px/14px var(--font-geist-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  background: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 3px 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.k-lw__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--k-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-lw__select,
+  .k-lw__label,
+  .k-lw__wires {
+    transition: none !important;
+  }
+}
