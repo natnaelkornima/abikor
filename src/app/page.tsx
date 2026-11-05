@@ -4,6 +4,7 @@ import { portfolio } from "@/data/portfolio";
 import { ProjectSection } from "@/components/project-modal";
 import { ArchitectureStage } from "@/components/architecture-stage";
 import { CopyEmailButton } from "@/components/copy-email-button";
+import { DOMAIN_STACK_LOGOS } from "@/components/tech-logos";
 import {
   BookOpen,
   ArrowRight,
@@ -40,7 +41,6 @@ export default function Home() {
             {profile.status}
           </li>
           <li className="k-chip font-mono">Full-Stack &amp; Systems</li>
-          <li className="k-chip font-mono">{profile.location}</li>
         </ul>
 
         <div className="mt-6 space-y-4 font-sans leading-7 text-[#b7b7b7]">
@@ -188,12 +188,13 @@ export default function Home() {
         </div>
 
         <ul className="k-rows">
-          {sets.map((set) => (
-            <li
-              key={set.title}
-              className="py-4 transition-colors duration-150 ease-out hover:bg-white/[0.015]"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1.5">
+          {sets.map((set) => {
+            const domainLogos = DOMAIN_STACK_LOGOS[set.index] || [];
+            return (
+              <li
+                key={set.title}
+                className="py-4.5 transition-colors duration-150 ease-out hover:bg-white/[0.015]"
+              >
                 <div className="flex items-baseline gap-2">
                   <span className="font-mono text-[11px] text-[#6e6e6e]">{set.index}</span>
                   <span aria-hidden="true" className="text-[#4a4a4a] text-[11px]">/</span>
@@ -201,15 +202,30 @@ export default function Home() {
                     {set.title}
                   </h3>
                 </div>
-                <div className="font-mono text-[11.5px] text-[#8e8e96] sm:text-right">
-                  {set.skills.join(" · ")}
-                </div>
-              </div>
-              <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-[#7c7c85] max-w-[65ch] pl-0 sm:pl-[26px]">
-                {set.description}
-              </p>
-            </li>
-          ))}
+
+                <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-[#8a8a92] max-w-[65ch] pl-0 sm:pl-[26px]">
+                  {set.description}
+                </p>
+
+                {/* Original Tech Logos at the bottom of the domain */}
+                {domainLogos.length > 0 && (
+                  <div
+                    className="mt-3 flex flex-wrap items-center gap-4 text-[#8a8a92] pl-0 sm:pl-[26px]"
+                    aria-label={`${set.title} technologies`}
+                  >
+                    {domainLogos.map(({ name, component: Logo }) => (
+                      <div
+                        key={name}
+                        className="group/logo relative flex items-center justify-center transition-transform hover:scale-110"
+                      >
+                        <Logo className="size-[17px] text-[#8a8a92] transition-colors duration-150 group-hover/logo:text-[#ededed]" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </section>
 

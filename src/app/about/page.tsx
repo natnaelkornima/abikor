@@ -52,7 +52,6 @@ export default function AboutPage() {
               {profile.status}
             </li>
             <li className="k-chip font-mono">Full-Stack &amp; Systems</li>
-            <li className="k-chip font-mono">{profile.location}</li>
           </ul>
 
           <div className="mt-4 max-w-[60ch] space-y-4 leading-7 text-[#b7b7b7] font-sans">
