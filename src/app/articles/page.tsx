@@ -58,24 +58,29 @@ export default function ArticlesPage() {
         <ul className="k-rows">
           {articles.map((article) => (
             <li key={article.slug} id={article.slug} className="py-4">
-              <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed] group inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 hover:underline">
-                  {article.title}
-                  <ArrowUpRight className="size-3.5 text-[#6e6e6e]" />
-                </span>
-                <time className="shrink-0 font-mono text-[11px] text-[#6e6e6e] tabular-nums">
-                  {article.date}
-                </time>
-              </div>
-              <p className="mt-2 max-w-[62ch] font-sans text-[13.5px] leading-relaxed text-[#929292]">
-                {article.summary}
-              </p>
-              <div className="mt-2.5 flex items-center gap-2">
-                <span className="k-chip">{article.category}</span>
-                <span className="font-mono text-[10.5px] text-[#6e6e6e]">
-                  {article.readTime}
-                </span>
-              </div>
+              <Link
+                href={`/articles/${article.slug}`}
+                className="group block"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-4">
+                  <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed] inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline">
+                    {article.title}
+                    <ArrowUpRight className="size-3.5 text-[#6e6e6e] group-hover:text-[#ededed] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </span>
+                  <time className="shrink-0 font-mono text-[11px] text-[#6e6e6e] tabular-nums">
+                    {article.date}
+                  </time>
+                </div>
+                <p className="mt-2 max-w-[62ch] font-sans text-[13.5px] leading-relaxed text-[#929292]">
+                  {article.summary}
+                </p>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span className="k-chip">{article.category}</span>
+                  <span className="font-mono text-[10.5px] text-[#6e6e6e]">
+                    {article.readTime}
+                  </span>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>

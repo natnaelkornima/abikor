@@ -220,3 +220,4 @@ export const ARTICLES_MAP: Record<string, ArticleDetail> = {
     }
   }
 };
+

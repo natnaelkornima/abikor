@@ -139,7 +139,7 @@ export default function Home() {
           {articles.map((article) => (
             <li key={article.slug}>
               <Link
-                href={`/articles#${article.slug}`}
+                href={`/articles/${article.slug}`}
                 className="group flex items-baseline justify-between gap-6 py-3.5"
               >
                 <span className="font-serif-regular text-[15px] text-[#ededed] decoration-[#525252] underline-offset-4 group-hover:underline">
