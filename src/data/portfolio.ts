@@ -66,16 +66,21 @@ export interface Track {
   spotifyUrl?: string;
 }
 
-export interface Pic {
+export interface Painting {
   id: string;
   title: string;
-  location: string;
+  artist?: string;
+  url: string;
   year: string;
   tag: string;
+  medium: string;
   description: string;
-  aspect: string;
-  tone: string;
+  aspect?: string;
+  tone?: string;
+  location?: string;
 }
+
+export type Pic = Painting;
 
 export interface Experience {
   period: string;
@@ -112,7 +117,8 @@ export interface PortfolioData {
   exploring: string[];
   books: Book[];
   playlists: Track[];
-  pics: Pic[];
+  paintings: Painting[];
+  pics: Painting[];
   experience: Experience[];
 }
 
@@ -530,66 +536,294 @@ export const portfolio: PortfolioData = {
     }
   ],
 
+  paintings: [
+    {
+      id: "pt-01",
+      title: "Green Hag: Monstrous Humanoid",
+      artist: "Fantasy RPG Dark Art",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/Green_Hag_Monstrous_Humanoid_For_Fantasy_RPGs.jpg",
+      year: "2024",
+      tag: "Fantasy",
+      medium: "Digital Oil on Canvas",
+      location: "Studio Collection",
+      description: "Submerged in murky swampland shadows, a twisted crone draped in moss and ancient malice, illuminated by sickly luminescence.",
+      aspect: "3/4",
+      tone: "rgb(28, 36, 26)"
+    },
+    {
+      id: "pt-02",
+      title: "Solitude in Crimson & Shadow",
+      artist: "Expressive Figurative",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890965/__2.jpg",
+      year: "2023",
+      tag: "Expressionism",
+      medium: "Oil on Linen",
+      location: "Studio Collection",
+      description: "Deep moody impasto with striking crimson undertones capturing contemplative psychological isolation and raw emotional weight.",
+      aspect: "4/5",
+      tone: "rgb(42, 22, 24)"
+    },
+    {
+      id: "pt-03",
+      title: "The Somber Vigil",
+      artist: "Dark Romanticism",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/__1.jpg",
+      year: "2023",
+      tag: "Classical",
+      medium: "Oil on Wood Panel",
+      location: "Studio Collection",
+      description: "Chiaroscuro study with dramatic lighting cutting through deep earthen umbers, echoing seventeenth-century masterworks.",
+      aspect: "3/4",
+      tone: "rgb(32, 26, 22)"
+    },
+    {
+      id: "pt-04",
+      title: "Veil of the Unknown",
+      artist: "Atmospheric Figurative",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__3.jpg",
+      year: "2022",
+      tag: "Symbolism",
+      medium: "Tempera & Glaze",
+      location: "Studio Collection",
+      description: "Subtle gradations of cool monochrome and misty charcoal tones, exploring enigmatic presence through soft-edged contours.",
+      aspect: "4/5",
+      tone: "rgb(30, 32, 34)"
+    },
+    {
+      id: "pt-05",
+      title: "The Wounded Angel (Hugo Simberg)",
+      artist: "Hugo Simberg",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/El_Angel_Herido_-_Hugo_Simberg_Los_Hermanos_Karamazov.jpg",
+      year: "1903",
+      tag: "Symbolism",
+      medium: "Oil on Canvas",
+      location: "Ateneum Art Museum",
+      description: "Hugo Simberg's legendary masterpiece of Finnish Symbolism: two stern peasant boys carrying a blindfolded, wounded angel across a barren Nordic landscape.",
+      aspect: "4/3",
+      tone: "rgb(44, 42, 36)"
+    },
+    {
+      id: "pt-06",
+      title: "Ascent into Twilight",
+      artist: "Mythological Landscape",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/__6.jpg",
+      year: "2024",
+      tag: "Fantasy",
+      medium: "Oil on Linen",
+      location: "Studio Collection",
+      description: "Haunting silhouettes against a dramatic atmospheric sky, evoking epic mythological journeys through untamed, twilight terrains.",
+      aspect: "3/4",
+      tone: "rgb(34, 28, 38)"
+    },
+    {
+      id: "pt-07",
+      title: "The Tactician's Move",
+      artist: "Narrative Realism",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/Check_.jpg",
+      year: "2023",
+      tag: "Classical",
+      medium: "Oil on Canvas",
+      location: "Studio Collection",
+      description: "A tension-filled study of calculation and intellect, balancing sharp focal clarity with rich warm interior shadows.",
+      aspect: "1/1",
+      tone: "rgb(36, 30, 24)"
+    },
+    {
+      id: "pt-08",
+      title: "Passage of the Wanderer",
+      artist: "Northern Atmospheric",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__5.jpg",
+      year: "2023",
+      tag: "Symbolism",
+      medium: "Oil on Canvas Board",
+      location: "Studio Collection",
+      description: "A lone figure traversing a weathered path beneath heavy overcast clouds, contemplating destiny and transient solitude.",
+      aspect: "3/4",
+      tone: "rgb(28, 30, 32)"
+    },
+    {
+      id: "pt-09",
+      title: "Nocturne in Grey & Gold",
+      artist: "Tonalist Study",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__7.jpg",
+      year: "2022",
+      tag: "Expressionism",
+      medium: "Oil on Paper mounted on Panel",
+      location: "Studio Collection",
+      description: "Tonalist balance of subdued ochre, lead white, and slate greys, capturing ephemeral dusk over quiet architectural geometry.",
+      aspect: "4/5",
+      tone: "rgb(36, 34, 30)"
+    },
+    {
+      id: "pt-10",
+      title: "Ethereal Echoes",
+      artist: "Ethereal Portraiture",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__4.jpg",
+      year: "2024",
+      tag: "Fantasy",
+      medium: "Mixed Media & Oil Glaze",
+      location: "Studio Collection",
+      description: "Delicate luminous veils and spectral wisps flowing across deep obsidian blacks, bridging portraiture and dreams.",
+      aspect: "3/4",
+      tone: "rgb(26, 26, 30)"
+    },
+    {
+      id: "pt-11",
+      title: "Gaze of the Silent Guardian",
+      artist: "Mythic Character Study",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890962/__8.jpg",
+      year: "2023",
+      tag: "Symbolism",
+      medium: "Digital & Oil Emulsion",
+      location: "Studio Collection",
+      description: "Piercing eyes peering through weathered robes and shadows, imbued with ancient wisdom and unyielding fortitude.",
+      aspect: "3/4",
+      tone: "rgb(32, 28, 26)"
+    }
+  ],
   pics: [
     {
-      id: "p-01",
-      title: "Addis Ababa Dusk Skyline",
-      location: "Addis Ababa, Bole",
-      year: "2026",
-      tag: "Addis Ababa",
-      description: "Evening light settling across the mountain ring and the construction cranes of a rapidly transforming capital.",
-      aspect: "3/2",
-      tone: "from-amber-950/30 to-zinc-900/80"
-    },
-    {
-      id: "p-02",
-      title: "Meskel Square Terraces",
-      location: "Addis Ababa, Central",
-      year: "2025",
-      tag: "Addis Ababa",
-      description: "Concentric stone amphitheater tiers where community gatherings and daily evening runners converge.",
-      aspect: "16/9",
-      tone: "from-zinc-900/80 to-black"
-    },
-    {
-      id: "p-03",
-      title: "Entoto Mountain Ridge",
-      location: "Addis Ababa, Entoto",
-      year: "2026",
-      tag: "Highlands",
-      description: "Tall eucalyptus forest canopies high above the smog line, overlooking the entire plateau basin.",
-      aspect: "4/3",
-      tone: "from-zinc-900/80 to-black"
-    },
-    {
-      id: "p-04",
-      title: "Ceremonial Clay Jebena",
-      location: "Addis Ababa",
-      year: "2025",
-      tag: "Craft",
-      description: "Freshly roasted green coffee beans resting over frankincense smoke and heated coals.",
-      aspect: "1/1",
-      tone: "from-zinc-900/80 to-black"
-    },
-    {
-      id: "p-05",
-      title: "Highland Stone Masonry",
-      location: "Lalibela / Wollo",
+      id: "pt-01",
+      title: "Green Hag: Monstrous Humanoid",
+      artist: "Fantasy RPG Dark Art",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/Green_Hag_Monstrous_Humanoid_For_Fantasy_RPGs.jpg",
       year: "2024",
-      tag: "Architecture",
-      description: "Monolithic volcanic rock sculpted downwards into the bedrock with millimeter structural tolerance.",
-      aspect: "4/5",
-      tone: "from-zinc-900/80 to-black"
+      tag: "Fantasy",
+      medium: "Digital Oil on Canvas",
+      location: "Studio Collection",
+      description: "Submerged in murky swampland shadows, a twisted crone draped in moss and ancient malice, illuminated by sickly luminescence.",
+      aspect: "3/4",
+      tone: "rgb(28, 36, 26)"
     },
     {
-      id: "p-06",
-      title: "Systems Command Rig",
-      location: "Home Lab, Addis Ababa",
-      year: "2026",
-      tag: "Craft",
-      description: "Mechanical key switches, vertical terminal monitors, and local server hardware running Docker workloads.",
-      aspect: "16/9",
-      tone: "from-zinc-900/80 to-black"
+      id: "pt-02",
+      title: "Solitude in Crimson & Shadow",
+      artist: "Expressive Figurative",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890965/__2.jpg",
+      year: "2023",
+      tag: "Expressionism",
+      medium: "Oil on Linen",
+      location: "Studio Collection",
+      description: "Deep moody impasto with striking crimson undertones capturing contemplative psychological isolation and raw emotional weight.",
+      aspect: "4/5",
+      tone: "rgb(42, 22, 24)"
+    },
+    {
+      id: "pt-03",
+      title: "The Somber Vigil",
+      artist: "Dark Romanticism",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/__1.jpg",
+      year: "2023",
+      tag: "Classical",
+      medium: "Oil on Wood Panel",
+      location: "Studio Collection",
+      description: "Chiaroscuro study with dramatic lighting cutting through deep earthen umbers, echoing seventeenth-century masterworks.",
+      aspect: "3/4",
+      tone: "rgb(32, 26, 22)"
+    },
+    {
+      id: "pt-04",
+      title: "Veil of the Unknown",
+      artist: "Atmospheric Figurative",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__3.jpg",
+      year: "2022",
+      tag: "Symbolism",
+      medium: "Tempera & Glaze",
+      location: "Studio Collection",
+      description: "Subtle gradations of cool monochrome and misty charcoal tones, exploring enigmatic presence through soft-edged contours.",
+      aspect: "4/5",
+      tone: "rgb(30, 32, 34)"
+    },
+    {
+      id: "pt-05",
+      title: "The Wounded Angel (Hugo Simberg)",
+      artist: "Hugo Simberg",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/El_Angel_Herido_-_Hugo_Simberg_Los_Hermanos_Karamazov.jpg",
+      year: "1903",
+      tag: "Symbolism",
+      medium: "Oil on Canvas",
+      location: "Ateneum Art Museum",
+      description: "Hugo Simberg's legendary masterpiece of Finnish Symbolism: two stern peasant boys carrying a blindfolded, wounded angel across a barren Nordic landscape.",
+      aspect: "4/3",
+      tone: "rgb(44, 42, 36)"
+    },
+    {
+      id: "pt-06",
+      title: "Ascent into Twilight",
+      artist: "Mythological Landscape",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890964/__6.jpg",
+      year: "2024",
+      tag: "Fantasy",
+      medium: "Oil on Linen",
+      location: "Studio Collection",
+      description: "Haunting silhouettes against a dramatic atmospheric sky, evoking epic mythological journeys through untamed, twilight terrains.",
+      aspect: "3/4",
+      tone: "rgb(34, 28, 38)"
+    },
+    {
+      id: "pt-07",
+      title: "The Tactician's Move",
+      artist: "Narrative Realism",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/Check_.jpg",
+      year: "2023",
+      tag: "Classical",
+      medium: "Oil on Canvas",
+      location: "Studio Collection",
+      description: "A tension-filled study of calculation and intellect, balancing sharp focal clarity with rich warm interior shadows.",
+      aspect: "1/1",
+      tone: "rgb(36, 30, 24)"
+    },
+    {
+      id: "pt-08",
+      title: "Passage of the Wanderer",
+      artist: "Northern Atmospheric",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__5.jpg",
+      year: "2023",
+      tag: "Symbolism",
+      medium: "Oil on Canvas Board",
+      location: "Studio Collection",
+      description: "A lone figure traversing a weathered path beneath heavy overcast clouds, contemplating destiny and transient solitude.",
+      aspect: "3/4",
+      tone: "rgb(28, 30, 32)"
+    },
+    {
+      id: "pt-09",
+      title: "Nocturne in Grey & Gold",
+      artist: "Tonalist Study",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__7.jpg",
+      year: "2022",
+      tag: "Expressionism",
+      medium: "Oil on Paper mounted on Panel",
+      location: "Studio Collection",
+      description: "Tonalist balance of subdued ochre, lead white, and slate greys, capturing ephemeral dusk over quiet architectural geometry.",
+      aspect: "4/5",
+      tone: "rgb(36, 34, 30)"
+    },
+    {
+      id: "pt-10",
+      title: "Ethereal Echoes",
+      artist: "Ethereal Portraiture",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890963/__4.jpg",
+      year: "2024",
+      tag: "Fantasy",
+      medium: "Mixed Media & Oil Glaze",
+      location: "Studio Collection",
+      description: "Delicate luminous veils and spectral wisps flowing across deep obsidian blacks, bridging portraiture and dreams.",
+      aspect: "3/4",
+      tone: "rgb(26, 26, 30)"
+    },
+    {
+      id: "pt-11",
+      title: "Gaze of the Silent Guardian",
+      artist: "Mythic Character Study",
+      url: "https://res.cloudinary.com/sq2uzfiq/image/upload/v1793890962/__8.jpg",
+      year: "2023",
+      tag: "Symbolism",
+      medium: "Digital & Oil Emulsion",
+      location: "Studio Collection",
+      description: "Piercing eyes peering through weathered robes and shadows, imbued with ancient wisdom and unyielding fortitude.",
+      aspect: "3/4",
+      tone: "rgb(32, 28, 26)"
     }
   ],
 

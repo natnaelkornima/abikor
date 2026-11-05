@@ -14,7 +14,7 @@ export function SiteHeader() {
     { href: "/articles", label: "Blog" },
     { href: "/books", label: "Books" },
     { href: "/playlists", label: "Playlists" },
-    { href: "/pics", label: "Pics" },
+    { href: "/paintings", label: "Paintings" },
     { href: "/about", label: "About" },
   ];
 

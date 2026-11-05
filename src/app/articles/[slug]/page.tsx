@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, CheckCircle2, Clock, Tag } from "lucide-react";
 import { ARTICLES_MAP } from "@/data/articles-content";
 import { Article2DFigure } from "@/components/figures/article-2d-figure";
+import { CodeBlock } from "@/components/code-block";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -134,15 +135,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               )}
 
               {section.code && (
-                <div className="my-6 rounded-md border border-[#2d2d34] bg-[#101014] overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-2 border-b border-[#24242c] bg-[#16161c] text-[11px] font-mono text-[#8a8a92]">
-                    <span>{section.code.language.toUpperCase()}</span>
-                    <span>IMMUTABLE SPEC</span>
-                  </div>
-                  <pre className="p-4 overflow-x-auto text-[12.5px] font-mono leading-relaxed text-[#e0e0e0]">
-                    <code>{section.code.snippet}</code>
-                  </pre>
-                </div>
+                <CodeBlock
+                  language={section.code.language}
+                  snippet={section.code.snippet}
+                  filename={`${section.id}.${section.code.language === "typescript" ? "ts" : section.code.language === "lua" ? "lua" : "js"}`}
+                />
               )}
             </section>
 

@@ -2,164 +2,25 @@
 
 import React, { useState } from "react";
 
-interface KinfishDiagramProps {
-  figureType: "decoupling-sms-gateways" | "deterministic-schema-guardrails" | "web-audio-api-edge" | "hexagonal-architecture-typescript" | "rrf-semantic-caching-rag";
-  title?: string;
-}
-
-interface DiagramSpec {
-  figNumber: string;
-  captionTitle: string;
-  captionDesc: string;
-  topCard: { tag: string; title: string; note: string };
-  bottomCard: { tag: string; title: string; note1: string; note2: string };
-  readouts: [string, string, string, string, string, string];
-  doors: [
-    { code: string; locked: string; open: string },
-    { code: string; locked: string; open: string },
-    { code: string; locked: string; open: string },
-    { code: string; locked: string; open: string }
-  ];
-}
-
-const SPECS: Record<string, DiagramSpec> = {
-  "decoupling-sms-gateways": {
-    figNumber: "01",
-    captionTitle: "Decoupling: Ingestion never waits on telecom delivery",
-    captionDesc: "The HTTP client receives a 202 Accepted receipt in under 22ms. Outbound carrier dispatch runs through rate-governed worker rings.",
-    topCard: { tag: "Signed in", title: "District Admin", note: "role: sender" },
-    bottomCard: { tag: "Fastify API", title: "Ingestion Edge", note1: "task: enqueue 50k", note2: "broadcast sms" },
-    readouts: [
-      "Admin triggers 50k flash broadcast",
-      "Fastify reserves atomic idempotency key",
-      "Opened 1 of 4 doors (202 Accepted)",
-      "Opened 2 of 4 doors (OTP bypass)",
-      "Opened 3 of 4 doors (Bulk queue)",
-      "Client unblocked: workers chew rate limit",
-    ],
-    doors: [
-      { code: "otp.priority", locked: "locked", open: "priority ✓ 0ms" },
-      { code: "bulk.queue", locked: "locked", open: "redis ✓ enqueued" },
-      { code: "telecom.bind", locked: "locked", open: "120/s ✓ token bucket" },
-      { code: "202.accepted", locked: "locked", open: "sub-22ms ✓ receipt" },
-    ],
-  },
-
-  "deterministic-schema-guardrails": {
-    figNumber: "01",
-    captionTitle: "Determinism: The AST gate verifies before state mutation",
-    captionDesc: "Non-deterministic model output is lexically stripped, syntax-corrected, and structurally validated before touching core domain state.",
-    topCard: { tag: "Signed in", title: "Language Model", note: "stream: JSON tokens" },
-    bottomCard: { tag: "Zod AST Guard", title: "Structural Gate", note1: "task: sanitize &", note2: "validate DTO" },
-    readouts: [
-      "Model outputs non-deterministic JSON stream",
-      "AST parser intercepts raw stream",
-      "Opened 1 of 4 doors (code fences)",
-      "Opened 2 of 4 doors (trailing commas)",
-      "Opened 3 of 4 doors (sum invariant)",
-      "Emitted 100% deterministic, type-safe entity",
-    ],
-    doors: [
-      { code: "markdown.fences", locked: "unverified", open: "stripped ✓ clean" },
-      { code: "syntax.errors", locked: "unverified", open: "normalized ✓ JSON" },
-      { code: "sum.invariants", locked: "unverified", open: "verified ✓ valid" },
-      { code: "domain.entity", locked: "locked", open: "type-safe ✓ DTO" },
-    ],
-  },
-
-  "web-audio-api-edge": {
-    figNumber: "01",
-    captionTitle: "AudioWorklet: Off-thread DSP eliminates garbage collection pops",
-    captionDesc: "Sound generation is isolated on a dedicated real-time audio thread, bypassing main-thread React reconciliation and garbage collection.",
-    topCard: { tag: "Hardware Clock", title: "AudioContext", note: "clock: 48,000 Hz" },
-    bottomCard: { tag: "AudioWorklet", title: "Dedicated Thread", note1: "task: process 128", note2: "audio frames" },
-    readouts: [
-      "AudioContext clock initializes hardware bind",
-      "Worklet thread isolates DSP from main loop",
-      "Opened 1 of 4 doors (sine oscillator)",
-      "Opened 2 of 4 doors (biquad lowpass)",
-      "Opened 3 of 4 doors (ring buffer)",
-      "Delivered to DAC with zero audio pops (2.7ms)",
-    ],
-    doors: [
-      { code: "sine.oscillator", locked: "idle", open: "440 Hz ✓ generated" },
-      { code: "biquad.filter", locked: "idle", open: "1.8 kHz ✓ lowpass" },
-      { code: "ring.buffer", locked: "idle", open: "zero-alloc ✓ circular" },
-      { code: "dac.speakers", locked: "idle", open: "latency 2.7ms ✓ 0 pops" },
-    ],
-  },
-
-  "hexagonal-architecture-typescript": {
-    figNumber: "01",
-    captionTitle: "Ports & Adapters: Core rules never import infrastructure",
-    captionDesc: "The core domain defines abstract port interfaces. Infrastructure adapters satisfy ports with zero framework leakage into business rules.",
-    topCard: { tag: "Inbound HTTP", title: "Fastify Route", note: "protocol: POST /upgrade" },
-    bottomCard: { tag: "Domain Core", title: "Pure TypeScript", note1: "task: upgradeSubscription", note2: "zero framework imports" },
-    readouts: [
-      "Inbound request arrives at Fastify controller",
-      "Domain core executes pure business rules",
-      "Opened 1 of 4 doors (UserRepoPort)",
-      "Opened 2 of 4 doors (Postgres Pool)",
-      "Opened 3 of 4 doors (EventBusPort)",
-      "Hot-swappable with in-memory test double",
-    ],
-    doors: [
-      { code: "UserRepoPort", locked: "abstract", open: "pure interface ✓" },
-      { code: "PgUserRepo", locked: "standby", open: "production pool ✓" },
-      { code: "EventBusPort", locked: "abstract", open: "decoupled ✓" },
-      { code: "MockUserRepo", locked: "standby", open: "unit test double ✓" },
-    ],
-  },
-
-  "rrf-semantic-caching-rag": {
-    figNumber: "01",
-    captionTitle: "RRF: Rank positions replace brittle score normalization",
-    captionDesc: "Semantic vector caching bypasses 41% of LLM queries, while Reciprocal Rank Fusion unifies sparse BM25 and dense embeddings.",
-    topCard: { tag: "User Prompt", title: "Search Query", note: "query: NGINX gateway timeout" },
-    bottomCard: { tag: "Hybrid Retriever", title: "RRF Orchestrator", note1: "task: semantic &", note2: "lexical fusion" },
-    readouts: [
-      "User query received by search orchestrator",
-      "Evaluating Redis semantic vector cache",
-      "Opened 1 of 4 doors (Semantic Cache)",
-      "Opened 2 of 4 doors (BM25 Inverted)",
-      "Opened 3 of 4 doors (Dense Embeddings)",
-      "Reciprocal Rank Fusion delivers verified top-5",
-    ],
-    doors: [
-      { code: "semantic.cache", locked: "checking", open: "0.92 cosim ✓ hit" },
-      { code: "bm25.sparse", locked: "idle", open: "exact error tokens ✓" },
-      { code: "hnsw.dense", locked: "idle", open: "vector intent ✓" },
-      { code: "rrf.fusion", locked: "idle", open: "fused top-5 ✓ context" },
-    ],
-  },
-};
-
-const FIGURE_TYPE_MAP: Record<string, string> = {
-  "queue-dispatcher": "decoupling-sms-gateways",
-  "schema-guardrail": "deterministic-schema-guardrails",
-  "audio-synth": "web-audio-api-edge",
-  "hexagonal-ports": "hexagonal-architecture-typescript",
-  "rrf-retrieval": "rrf-semantic-caching-rag",
-  "decoupling-sms-gateways": "decoupling-sms-gateways",
-  "deterministic-schema-guardrails": "deterministic-schema-guardrails",
-  "web-audio-api-edge": "web-audio-api-edge",
-  "hexagonal-architecture-typescript": "hexagonal-architecture-typescript",
-  "rrf-semantic-caching-rag": "rrf-semantic-caching-rag",
-};
-
-export function Article2DFigure({
-  figureType,
-  title,
-}: {
+interface Article2DFigureProps {
   figureType: string;
   title?: string;
-}) {
-  const [isPaused, setIsPaused] = useState(false);
-  const normalizedKey = FIGURE_TYPE_MAP[figureType] || "decoupling-sms-gateways";
-  const spec = SPECS[normalizedKey] || SPECS["decoupling-sms-gateways"];
+}
 
-  // Unique prefix for this figure's CSS animations
-  const p = normalizedKey.replace(/[^a-z]/g, "").slice(0, 6);
+export function Article2DFigure({ figureType }: Article2DFigureProps) {
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Normalize key
+  const key =
+    figureType === "queue-dispatcher" || figureType === "decoupling-sms-gateways"
+      ? "queue"
+      : figureType === "schema-guardrail" || figureType === "deterministic-schema-guardrails"
+      ? "schema"
+      : figureType === "audio-synth" || figureType === "web-audio-api-edge"
+      ? "audio"
+      : figureType === "hexagonal-ports" || figureType === "hexagonal-architecture-typescript"
+      ? "hex"
+      : "rag";
 
   return (
     <figure
@@ -179,12 +40,13 @@ export function Article2DFigure({
           --code: #a3a3a3;
           --ghost: #4a4a4a;
           --cap: #767676;
+          --accent: #e56b40;
         }
         .auth svg { display: block; width: 100%; height: auto; overflow: visible; }
         .auth :is(path, line, rect, circle) { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
         .auth .panel { fill: var(--face); stroke: var(--edge); stroke-width: 1; }
-        .auth .lit { fill: none; stroke: var(--lit); stroke-width: 1; stroke-dasharray: 1 2.5; }
-        .auth .edge { fill: none; stroke: var(--path); stroke-width: 1; }
+        .auth .lit { fill: none; stroke: var(--path); stroke-width: 1.2; stroke-dasharray: 1 2.5; }
+        .auth .edge { fill: none; stroke: var(--path); stroke-width: 1.2; }
         .auth .ghost { fill: none; stroke: var(--part); stroke-width: 1; stroke-dasharray: 3 3; }
         .auth .wire { fill: none; stroke: var(--part); stroke-width: 1; }
         .auth .head { fill: none; stroke: var(--lit); stroke-width: 1; }
@@ -212,277 +74,469 @@ export function Article2DFigure({
         .auth-toggle { min-height: 28px; padding: 4px 0; border: 0; background: none; color: var(--muted); font: inherit; text-transform: inherit; letter-spacing: inherit; white-space: nowrap; cursor: pointer; }
         .auth-toggle:hover { color: var(--ink); }
         .auth-toggle:focus-visible { outline: 1px dashed currentColor; outline-offset: 4px; }
-
-        /* 9-second loop keyframes exactly from kinfish.dev */
-        @keyframes ${p}-b0{0.000%{opacity:0}15.556%{opacity:0}18.333%{opacity:1}30.000%{opacity:1}32.778%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b0{animation-name:${p}-b0;animation-duration:9s;}
-        
-        @keyframes ${p}-b1{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}30.000%{opacity:0}32.778%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b1{animation-name:${p}-b1;animation-duration:9s;}
-
-        @keyframes ${p}-b2{0.000%{stroke-dashoffset:0}15.556%{stroke-dashoffset:0}22.222%{stroke-dashoffset:1}23.333%{stroke-dashoffset:1}30.000%{stroke-dashoffset:0}100.000%{stroke-dashoffset:0}}
-        .auth .${p}-b2{animation-name:${p}-b2;animation-duration:9s;}
-
-        @keyframes ${p}-b3{0.000%{opacity:0;stroke-dashoffset:0.02}23.333%{opacity:0;stroke-dashoffset:0.02}24.222%{opacity:1}29.333%{opacity:1}30.000%{opacity:0;stroke-dashoffset:-1}100.000%{opacity:0;stroke-dashoffset:-1}}
-        .auth .${p}-b3{animation-name:${p}-b3;animation-duration:9s;}
-
-        @keyframes ${p}-b4{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}28.889%{opacity:0}31.667%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b4{animation-name:${p}-b4;animation-duration:9s;}
-
-        /* Wire 1 (Door 1: Top) */
-        @keyframes ${p}-b5{0.000%{stroke-dashoffset:0}15.556%{stroke-dashoffset:0}22.222%{stroke-dashoffset:1}42.778%{stroke-dashoffset:1}49.444%{stroke-dashoffset:0}100.000%{stroke-dashoffset:0}}
-        .auth .${p}-b5{animation-name:${p}-b5;animation-duration:9s;}
-
-        @keyframes ${p}-b6{0.000%{opacity:0;stroke-dashoffset:0.02}42.778%{opacity:0;stroke-dashoffset:0.02}43.667%{opacity:1}48.778%{opacity:1}49.444%{opacity:0;stroke-dashoffset:-1}100.000%{opacity:0;stroke-dashoffset:-1}}
-        .auth .${p}-b6{animation-name:${p}-b6;animation-duration:9s;}
-
-        @keyframes ${p}-b7{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}48.333%{opacity:0}51.111%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b7{animation-name:${p}-b7;animation-duration:9s;}
-
-        @keyframes ${p}-b8{0.000%{opacity:0}49.444%{opacity:0}52.222%{opacity:0.9}55.556%{opacity:0.9}58.333%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b8{animation-name:${p}-b8;animation-duration:9s;}
-
-        @keyframes ${p}-b9{0.000%{opacity:0}17.222%{opacity:0}20.000%{opacity:1}49.444%{opacity:1}52.222%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b9{animation-name:${p}-b9;animation-duration:9s;}
-
-        @keyframes ${p}-b10{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}51.111%{opacity:0}53.889%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b10{animation-name:${p}-b10;animation-duration:9s;}
-
-        /* Wire 2 (Door 2: Middle Upper) */
-        @keyframes ${p}-b11{0.000%{stroke-dashoffset:0}15.556%{stroke-dashoffset:0}22.222%{stroke-dashoffset:1}51.111%{stroke-dashoffset:1}57.778%{stroke-dashoffset:0}100.000%{stroke-dashoffset:0}}
-        .auth .${p}-b11{animation-name:${p}-b11;animation-duration:9s;}
-
-        @keyframes ${p}-b12{0.000%{opacity:0;stroke-dashoffset:0.02}51.111%{opacity:0;stroke-dashoffset:0.02}52.000%{opacity:1}57.111%{opacity:1}57.778%{opacity:0;stroke-dashoffset:-1}100.000%{opacity:0;stroke-dashoffset:-1}}
-        .auth .${p}-b12{animation-name:${p}-b12;animation-duration:9s;}
-
-        @keyframes ${p}-b13{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}56.667%{opacity:0}59.444%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b13{animation-name:${p}-b13;animation-duration:9s;}
-
-        @keyframes ${p}-b14{0.000%{opacity:0}57.778%{opacity:0}60.556%{opacity:0.9}63.889%{opacity:0.9}66.667%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b14{animation-name:${p}-b14;animation-duration:9s;}
-
-        @keyframes ${p}-b15{0.000%{opacity:0}17.222%{opacity:0}20.000%{opacity:1}57.778%{opacity:1}60.556%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b15{animation-name:${p}-b15;animation-duration:9s;}
-
-        @keyframes ${p}-b16{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}59.444%{opacity:0}62.222%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b16{animation-name:${p}-b16;animation-duration:9s;}
-
-        /* Wire 3 (Door 3: Middle Lower) */
-        @keyframes ${p}-b17{0.000%{stroke-dashoffset:0}15.556%{stroke-dashoffset:0}22.222%{stroke-dashoffset:1}59.444%{stroke-dashoffset:1}66.111%{stroke-dashoffset:0}100.000%{stroke-dashoffset:0}}
-        .auth .${p}-b17{animation-name:${p}-b17;animation-duration:9s;}
-
-        @keyframes ${p}-b18{0.000%{opacity:0;stroke-dashoffset:0.02}59.444%{opacity:0;stroke-dashoffset:0.02}60.333%{opacity:1}65.444%{opacity:1}66.111%{opacity:0;stroke-dashoffset:-1}100.000%{opacity:0;stroke-dashoffset:-1}}
-        .auth .${p}-b18{animation-name:${p}-b18;animation-duration:9s;}
-
-        @keyframes ${p}-b19{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}65.000%{opacity:0}67.778%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b19{animation-name:${p}-b19;animation-duration:9s;}
-
-        @keyframes ${p}-b20{0.000%{opacity:0}66.111%{opacity:0}68.889%{opacity:0.9}72.222%{opacity:0.9}75.000%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b20{animation-name:${p}-b20;animation-duration:9s;}
-
-        @keyframes ${p}-b21{0.000%{opacity:0}17.222%{opacity:0}20.000%{opacity:1}66.111%{opacity:1}68.889%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b21{animation-name:${p}-b21;animation-duration:9s;}
-
-        @keyframes ${p}-b22{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}67.778%{opacity:0}70.556%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b22{animation-name:${p}-b22;animation-duration:9s;}
-
-        /* Wire 4 (Door 4: Bottom) */
-        @keyframes ${p}-b23{0.000%{stroke-dashoffset:0}15.556%{stroke-dashoffset:0}22.222%{stroke-dashoffset:1}34.444%{stroke-dashoffset:1}41.111%{stroke-dashoffset:0}100.000%{stroke-dashoffset:0}}
-        .auth .${p}-b23{animation-name:${p}-b23;animation-duration:9s;}
-
-        @keyframes ${p}-b24{0.000%{opacity:0;stroke-dashoffset:0.02}34.444%{opacity:0;stroke-dashoffset:0.02}35.333%{opacity:1}40.444%{opacity:1}41.111%{opacity:0;stroke-dashoffset:-1}100.000%{opacity:0;stroke-dashoffset:-1}}
-        .auth .${p}-b24{animation-name:${p}-b24;animation-duration:9s;}
-
-        @keyframes ${p}-b25{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}40.000%{opacity:0}42.778%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b25{animation-name:${p}-b25;animation-duration:9s;}
-
-        @keyframes ${p}-b26{0.000%{opacity:0}41.111%{opacity:0}43.889%{opacity:0.9}47.222%{opacity:0.9}50.000%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b26{animation-name:${p}-b26;animation-duration:9s;}
-
-        @keyframes ${p}-b27{0.000%{opacity:0}17.222%{opacity:0}20.000%{opacity:1}41.111%{opacity:1}43.889%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b27{animation-name:${p}-b27;animation-duration:9s;}
-
-        @keyframes ${p}-b28{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}42.778%{opacity:0}45.556%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b28{animation-name:${p}-b28;animation-duration:9s;}
-
-        /* Synced Readout Text Transitions */
-        @keyframes ${p}-b29{0.000%{opacity:0}17.222%{opacity:0}20.000%{opacity:1}30.000%{opacity:1}32.778%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b29{animation-name:${p}-b29;animation-duration:9s;}
-
-        @keyframes ${p}-b30{0.000%{opacity:0}31.667%{opacity:0}34.444%{opacity:1}41.111%{opacity:1}43.889%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b30{animation-name:${p}-b30;animation-duration:9s;}
-
-        @keyframes ${p}-b31{0.000%{opacity:0}42.778%{opacity:0}45.556%{opacity:1}49.444%{opacity:1}52.222%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b31{animation-name:${p}-b31;animation-duration:9s;}
-
-        @keyframes ${p}-b32{0.000%{opacity:0}51.111%{opacity:0}53.889%{opacity:1}57.778%{opacity:1}60.556%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b32{animation-name:${p}-b32;animation-duration:9s;}
-
-        @keyframes ${p}-b33{0.000%{opacity:0}59.444%{opacity:0}62.222%{opacity:1}66.111%{opacity:1}68.889%{opacity:0}100.000%{opacity:0}}
-        .auth .${p}-b33{animation-name:${p}-b33;animation-duration:9s;}
-
-        @keyframes ${p}-b34{0.000%{opacity:1}15.556%{opacity:1}18.333%{opacity:0}67.778%{opacity:0}70.556%{opacity:1}100.000%{opacity:1}}
-        .auth .${p}-b34{animation-name:${p}-b34;animation-duration:9s;}
       `}</style>
 
-      {/* Main SVG Structure matching kinfish.dev */}
-      <svg
-        viewBox="0 0 440 302"
-        role="img"
-        aria-label={spec.captionTitle}
-      >
+      {key === "queue" && <QueuePipelineFigure isPaused={isPaused} onToggle={() => setIsPaused(!isPaused)} />}
+      {key === "schema" && <SchemaDiverterFigure isPaused={isPaused} onToggle={() => setIsPaused(!isPaused)} />}
+      {key === "audio" && <AudioGraphFigure isPaused={isPaused} onToggle={() => setIsPaused(!isPaused)} />}
+      {key === "hex" && <HexagonalConcentricFigure isPaused={isPaused} onToggle={() => setIsPaused(!isPaused)} />}
+      {key === "rag" && <ForkJoinRetrievalFigure isPaused={isPaused} onToggle={() => setIsPaused(!isPaused)} />}
+    </figure>
+  );
+}
+
+// =========================================================================
+// 1. DECOUPLING SMS GATEWAYS: Horizontal Conveyor & Rate Limiter Pipeline
+// =========================================================================
+function QueuePipelineFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <style>{`
+        @keyframes q-b0{0%,15%{opacity:0}18%,30%{opacity:1}33%,100%{opacity:0}}
+        .auth .q-b0{animation:q-b0 8s infinite;}
+        @keyframes q-wire1{0%,15%{stroke-dashoffset:1}23%,100%{stroke-dashoffset:0}}
+        .auth .q-wire1{animation:q-wire1 8s infinite;}
+        @keyframes q-pulse1{0%,20%{opacity:0;stroke-dashoffset:0.02}22%,29%{opacity:1}30%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .q-pulse1{animation:q-pulse1 8s infinite;}
+        @keyframes q-wire2{0%,32%{stroke-dashoffset:1}40%,100%{stroke-dashoffset:0}}
+        .auth .q-wire2{animation:q-wire2 8s infinite;}
+        @keyframes q-pulse2{0%,38%{opacity:0;stroke-dashoffset:0.02}40%,47%{opacity:1}48%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .q-pulse2{animation:q-pulse2 8s infinite;}
+        @keyframes q-wire3{0%,50%{stroke-dashoffset:1}58%,100%{stroke-dashoffset:0}}
+        .auth .q-wire3{animation:q-wire3 8s infinite;}
+        @keyframes q-pulse3{0%,56%{opacity:0;stroke-dashoffset:0.02}58%,65%{opacity:1}66%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .q-pulse3{animation:q-pulse3 8s infinite;}
+        @keyframes q-r1{0%,17%{opacity:1}18%,100%{opacity:0}}
+        .auth .q-r1{animation:q-r1 8s infinite;}
+        @keyframes q-r2{0%,17%{opacity:0}18%,32%{opacity:1}33%,100%{opacity:0}}
+        .auth .q-r2{animation:q-r2 8s infinite;}
+        @keyframes q-r3{0%,32%{opacity:0}33%,50%{opacity:1}51%,100%{opacity:0}}
+        .auth .q-r3{animation:q-r3 8s infinite;}
+        @keyframes q-r4{0%,50%{opacity:0}51%,100%{opacity:1}}
+        .auth .q-r4{animation:q-r4 8s infinite;}
+      `}</style>
+      <svg viewBox="0 0 440 280" role="img" aria-label="Decoupled Fastify Ingestion Pipeline">
         <defs>
-          <pattern id={`auth-dots-${p}`} width="12" height="12" patternUnits="userSpaceOnUse">
-            <circle cx="6" cy="6" r="0.75" className="dotgrid" />
-          </pattern>
-          <radialGradient id={`auth-fade-${p}`} cx="50%" cy="55%" r="60%">
-            <stop offset="0.35" stopColor="#fff" />
-            <stop offset="1" stopColor="#fff" stopOpacity="0" />
-          </radialGradient>
-          <mask id={`auth-mask-${p}`}>
-            <rect width="440" height="302" fill={`url(#auth-fade-${p})`} />
-          </mask>
+          <pattern id="q-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
+          <radialGradient id="q-fade" cx="50%" cy="50%" r="60%"><stop offset="0.3" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="q-mask"><rect width="440" height="280" fill="url(#q-fade)" /></mask>
         </defs>
-
-        {/* Dotted Background */}
-        <rect width="440" height="302" fill={`url(#auth-dots-${p})`} mask={`url(#auth-mask-${p})`} />
-
-        {/* Top Header Row with Hint and Synced Readouts */}
+        <rect width="440" height="280" fill="url(#q-dots)" mask="url(#q-mask)" />
         <g>
-          <text x="20" y="15" className="tag hint">Point to hold</text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b29`} style={{ opacity: 0 }}>
-            {spec.readouts[0]}
-          </text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b30`} style={{ opacity: 0 }}>
-            {spec.readouts[1]}
-          </text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b31`} style={{ opacity: 0 }}>
-            {spec.readouts[2]}
-          </text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b32`} style={{ opacity: 0 }}>
-            {spec.readouts[3]}
-          </text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b33`} style={{ opacity: 0 }}>
-            {spec.readouts[4]}
-          </text>
-          <text x="420" y="15" textAnchor="end" className={`note readout m ${p}-b34`} style={{ opacity: 1 }}>
-            {spec.readouts[5]}
-          </text>
+          <text x="20" y="16" className="tag hint">Point to hold</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m q-r1">HTTP client triggers 50k broadcast</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m q-r2">Fastify enqueues job in Redis: 202 Accepted</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m q-r3">BullMQ workers acquire token bucket grant</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m q-r4">Rate limit strictly enforced (120 req/s)</text>
         </g>
 
-        {/* Interior Structure */}
-        <g transform="translate(0 28)">
-          {/* Top Left Card */}
+        {/* 3 Pipeline Stages */}
+        <g transform="translate(0 30)">
+          {/* Stage 1: Fastify Ingestion Gateway */}
           <g>
-            <rect x="20" y="24" width="130" height="64" rx="8" className="panel" />
-            <rect x="23" y="27" width="124" height="58" rx="6" className={`lit m ${p}-b0`} style={{ opacity: 0 }} />
-            <text x="32" y="42" className="tag">{spec.topCard.tag}</text>
-            <text x="32" y="60" className="title">{spec.topCard.title}</text>
-            <text x="32" y="77" className="note">{spec.topCard.note}</text>
+            <rect x="20" y="50" width="115" height="130" rx="8" className="panel" />
+            <text x="32" y="70" className="tag">Stage 01</text>
+            <text x="32" y="88" className="title">Fastify API</text>
+            <text x="32" y="106" className="code">POST /broadcast</text>
+            <rect x="28" y="118" width="99" height="50" rx="4" fill="#161619" stroke="#2c2c34" strokeWidth="1" />
+            <text x="36" y="134" className="note">idempotency ✓</text>
+            <text x="36" y="150" className="note">schema valid ✓</text>
+            <text x="36" y="164" className="code" fill="#e56b40">P99: 21.4ms</text>
           </g>
 
-          {/* Wire connecting Top to Bottom Card */}
+          {/* Wire 1: Fastify to Queue */}
           <g>
-            <path d="M85 88 V136" pathLength="1" className={`wire drawn m ${p}-b2`} style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-            <path d="M81.5 132 L85 136 L88.5 132" className={`head m ${p}-b4`} style={{ opacity: 1 }} />
-            <path d="M85 88 V136" pathLength="1" className={`pulse m ${p}-b3`} style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+            <path d="M135 115 H165" pathLength="1" className="wire drawn m q-wire1" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M161 111.5 L165 115 L161 118.5" className="head" />
+            <path d="M135 115 H165" pathLength="1" className="pulse m q-pulse1" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
           </g>
 
-          {/* Bottom Left Card */}
+          {/* Stage 2: Redis FIFO Ring */}
           <g>
-            <rect x="20" y="138" width="130" height="92" rx="8" className="panel" />
-            <rect x="23" y="141" width="124" height="86" rx="6" className={`lit m ${p}-b1`} style={{ opacity: 1 }} />
-            <text x="32" y="156" className="tag">{spec.bottomCard.tag}</text>
-            <text x="32" y="174" className="title">{spec.bottomCard.title}</text>
-            <text x="32" y="194" className="note">{spec.bottomCard.note1}</text>
-            <text x="32" y="209" className="note">{spec.bottomCard.note2}</text>
+            <rect x="165" y="30" width="125" height="170" rx="8" className="panel" />
+            <text x="177" y="50" className="tag">Stage 02</text>
+            <text x="177" y="68" className="title">Redis BullMQ</text>
+            <text x="177" y="86" className="code">Priority + Bulk</text>
+            {/* Slot Matrix */}
+            {[0, 1, 2, 3].map((row) => (
+              <g key={row} transform={`translate(173 ${96 + row * 23})`}>
+                <rect width="109" height="18" rx="3" fill="#16161a" stroke="#2e2e38" strokeWidth="1" />
+                <circle cx="10" cy="9" r="2.5" fill={row === 0 ? "#e56b40" : "#71717a"} />
+                <text x="18" y="12" className="code">{row === 0 ? "otp.high (0ms)" : `batch_${row}.msg (queued)`}</text>
+              </g>
+            ))}
           </g>
 
-          {/* Branch 1: Top Door (~/.ssh / Door 1) */}
+          {/* Wire 2: Queue to Worker */}
           <g>
-            <g>
-              <path d="M150 184 H190 Q198 184 198 176 V55 Q198 47 206 47 H288" pathLength="1" className={`wire drawn m ${p}-b5`} style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-              <path d="M284 43.5 L288 47 L284 50.5" className={`head m ${p}-b7`} style={{ opacity: 1 }} />
-              <path d="M150 184 H190 Q198 184 198 176 V55 Q198 47 206 47 H288" pathLength="1" className={`pulse m ${p}-b6`} style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
-            </g>
-            <g>
-              <rect x="290" y="24" width="130" height="46" rx="8" className="panel" />
-              <rect x="290" y="24" width="130" height="46" rx="8" className={`edge m ${p}-b8`} style={{ opacity: 0 }} />
-              <text x="302" y="44" className="code">{spec.doors[0].code}</text>
-              <text x="302" y="60" className={`note m ${p}-b9`} style={{ opacity: 0 }}>{spec.doors[0].locked}</text>
-              <text x="302" y="60" className={`note m ${p}-b10`} style={{ opacity: 1 }}>{spec.doors[0].open}</text>
-            </g>
+            <path d="M290 115 H320" pathLength="1" className="wire drawn m q-wire2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M316 111.5 L320 115 L316 118.5" className="head" />
+            <path d="M290 115 H320" pathLength="1" className="pulse m q-pulse2" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
           </g>
 
-          {/* Branch 2: Upper Middle Door (billing.db / Door 2) */}
+          {/* Stage 3: Token Bucket Limiter & Telecom Binds */}
           <g>
-            <g>
-              <path d="M150 184 H204 Q212 184 212 176 V115 Q212 107 220 107 H288" pathLength="1" className={`wire drawn m ${p}-b11`} style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-              <path d="M284 103.5 L288 107 L284 110.5" className={`head m ${p}-b13`} style={{ opacity: 1 }} />
-              <path d="M150 184 H204 Q212 184 212 176 V115 Q212 107 220 107 H288" pathLength="1" className={`pulse m ${p}-b12`} style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
-            </g>
-            <g>
-              <rect x="290" y="84" width="130" height="46" rx="8" className="panel" />
-              <rect x="290" y="84" width="130" height="46" rx="8" className={`edge m ${p}-b14`} style={{ opacity: 0 }} />
-              <text x="302" y="104" className="code">{spec.doors[1].code}</text>
-              <text x="302" y="120" className={`note m ${p}-b15`} style={{ opacity: 0 }}>{spec.doors[1].locked}</text>
-              <text x="302" y="120" className={`note m ${p}-b16`} style={{ opacity: 1 }}>{spec.doors[1].open}</text>
-            </g>
-          </g>
-
-          {/* Branch 3: Lower Middle Door (Gmail inbox / Door 3) */}
-          <g>
-            <g>
-              <path d="M150 184 H218 Q226 184 226 176 V175 Q226 167 234 167 H288" pathLength="1" className={`wire drawn m ${p}-b17`} style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-              <path d="M284 163.5 L288 167 L284 170.5" className={`head m ${p}-b19`} style={{ opacity: 1 }} />
-              <path d="M150 184 H218 Q226 184 226 176 V175 Q226 167 234 167 H288" pathLength="1" className={`pulse m ${p}-b18`} style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
-            </g>
-            <g>
-              <rect x="290" y="144" width="130" height="46" rx="8" className="panel" />
-              <rect x="290" y="144" width="130" height="46" rx="8" className={`edge m ${p}-b20`} style={{ opacity: 0 }} />
-              <text x="302" y="164" className="code">{spec.doors[2].code}</text>
-              <text x="302" y="180" className={`note m ${p}-b21`} style={{ opacity: 0 }}>{spec.doors[2].locked}</text>
-              <text x="302" y="180" className={`note m ${p}-b22`} style={{ opacity: 1 }}>{spec.doors[2].open}</text>
-            </g>
-          </g>
-
-          {/* Branch 4: Bottom Door (today.csv / Door 4) */}
-          <g>
-            <g>
-              <path d="M150 184 H232 Q240 184 240 192 V219 Q240 227 248 227 H288" pathLength="1" className={`wire drawn m ${p}-b23`} style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-              <path d="M284 223.5 L288 227 L284 230.5" className={`head m ${p}-b25`} style={{ opacity: 1 }} />
-              <path d="M150 184 H232 Q240 184 240 192 V219 Q240 227 248 227 H288" pathLength="1" className={`pulse m ${p}-b24`} style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
-            </g>
-            <g>
-              <rect x="290" y="204" width="130" height="46" rx="8" className="panel" />
-              <rect x="290" y="204" width="130" height="46" rx="8" className={`edge m ${p}-b26`} style={{ opacity: 0 }} />
-              <text x="302" y="224" className="code">{spec.doors[3].code}</text>
-              <text x="302" y="240" className={`note m ${p}-b27`} style={{ opacity: 0 }}>{spec.doors[3].locked}</text>
-              <text x="302" y="240" className={`note m ${p}-b28`} style={{ opacity: 1 }}>{spec.doors[3].open}</text>
-            </g>
+            <rect x="320" y="50" width="105" height="130" rx="8" className="panel" />
+            <text x="332" y="70" className="tag">Stage 03</text>
+            <text x="332" y="88" className="title">Token Bucket</text>
+            <text x="332" y="106" className="code">SMPP Binds</text>
+            <rect x="328" y="118" width="89" height="50" rx="4" fill="#161619" stroke="#2c2c34" strokeWidth="1" />
+            <text x="336" y="134" className="note">Rate: 120/s</text>
+            <text x="336" y="150" className="note">Carrier: Ready</text>
+            <text x="336" y="164" className="code" fill="#4ade80">Loss: 0.00%</text>
           </g>
         </g>
       </svg>
-
-      {/* Caption Bar matching kinfish.dev */}
       <figcaption className="mt-4">
         <div className="auth-cap">
-          <span>
-            Fig. {spec.figNumber} — {spec.captionTitle}
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsPaused(!isPaused)}
-            className="auth-toggle"
-            aria-pressed={isPaused}
-          >
+          <span>Fig. 01 — Asynchronous Pipeline: Ingestion decoupled from carrier delivery</span>
+          <button type="button" onClick={onToggle} className="auth-toggle">
             {isPaused ? "Play motion" : "Pause motion"}
           </button>
         </div>
         <p className="mt-1 text-sm text-[#8a8a92] font-sans leading-relaxed">
-          {spec.captionDesc}
+          The HTTP edge releases requests in 21ms via 202 Accepted. Redis buffers backpressure, and workers consume at safe carrier ceilings.
         </p>
       </figcaption>
-    </figure>
+    </>
+  );
+}
+
+// =========================================================================
+// 2. DETERMINISTIC SCHEMA GUARDRAILS: Diverter Gate & Verification Chamber
+// =========================================================================
+function SchemaDiverterFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <style>{`
+        @keyframes s-wire{0%,15%{stroke-dashoffset:1}25%,100%{stroke-dashoffset:0}}
+        .auth .s-wire{animation:s-wire 8s infinite;}
+        @keyframes s-pulse{0%,20%{opacity:0;stroke-dashoffset:0.02}24%,32%{opacity:1}34%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .s-pulse{animation:s-pulse 8s infinite;}
+        @keyframes s-divert{0%,35%{stroke-dashoffset:1}45%,100%{stroke-dashoffset:0}}
+        .auth .s-divert{animation:s-divert 8s infinite;}
+        @keyframes s-pass{0%,50%{stroke-dashoffset:1}60%,100%{stroke-dashoffset:0}}
+        .auth .s-pass{animation:s-pass 8s infinite;}
+        @keyframes s-r1{0%,20%{opacity:1}21%,100%{opacity:0}}
+        .auth .s-r1{animation:s-r1 8s infinite;}
+        @keyframes s-r2{0%,20%{opacity:0}21%,45%{opacity:1}46%,100%{opacity:0}}
+        .auth .s-r2{animation:s-r2 8s infinite;}
+        @keyframes s-r3{0%,45%{opacity:0}46%,70%{opacity:1}71%,100%{opacity:0}}
+        .auth .s-r3{animation:s-r3 8s infinite;}
+        @keyframes s-r4{0%,70%{opacity:0}71%,100%{opacity:1}}
+        .auth .s-r4{animation:s-r4 8s infinite;}
+      `}</style>
+      <svg viewBox="0 0 440 280" role="img" aria-label="AST Guardrail Diverter Gate">
+        <defs>
+          <pattern id="s-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
+          <radialGradient id="s-fade" cx="50%" cy="50%" r="60%"><stop offset="0.3" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="s-mask"><rect width="440" height="280" fill="url(#s-fade)" /></mask>
+        </defs>
+        <rect width="440" height="280" fill="url(#s-dots)" mask="url(#s-mask)" />
+        <g>
+          <text x="20" y="16" className="tag hint">Point to hold</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m s-r1">Unstructured LLM token stream arrives</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m s-r2">Scanning AST: syntax anomaly detected</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m s-r3">Diverted malformed token to quarantine</text>
+          <text x="420" y="16" textAnchor="end" className="note readout m s-r4">Verified schema passed to domain entity</text>
+        </g>
+
+        {/* Input -> Gate -> Diverted (Top) / Passed (Bottom) */}
+        <g transform="translate(0 30)">
+          {/* LLM Source */}
+          <g>
+            <rect x="20" y="85" width="110" height="85" rx="8" className="panel" />
+            <text x="32" y="105" className="tag">Input Stream</text>
+            <text x="32" y="123" className="title">LLM Tokens</text>
+            <text x="32" y="141" className="code">{"{ key: 'raw' }"}</text>
+            <text x="32" y="156" className="note">Non-deterministic</text>
+          </g>
+
+          {/* Wire to Gate */}
+          <path d="M130 127 H170" pathLength="1" className="wire drawn m s-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+          <path d="M166 123.5 L170 127 L166 130.5" className="head" />
+          <path d="M130 127 H170" pathLength="1" className="pulse m s-pulse" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+
+          {/* Central AST Scanner Gate */}
+          <g>
+            <rect x="170" y="65" width="120" height="125" rx="8" className="panel" />
+            <text x="182" y="85" className="tag">Inspection Gate</text>
+            <text x="182" y="103" className="title">Zod AST Guard</text>
+            <text x="182" y="121" className="code">Syntax Analysis</text>
+            <line x1="180" y1="130" x2="280" y2="130" stroke="#333" strokeDasharray="2 2" />
+            <text x="182" y="146" className="note">Recursive parse</text>
+            <text x="182" y="162" className="note">Invariant validation</text>
+            <text x="182" y="176" className="code" fill="#e56b40">Strict type check</text>
+          </g>
+
+          {/* Diverted Path: Upward to Quarantine */}
+          <path d="M290 100 H320 Q328 100 328 92 V50 Q328 42 336 42 H350" pathLength="1" className="wire drawn m s-divert" stroke="#e56b40" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+          <path d="M346 38.5 L350 42 L346 45.5" className="head" stroke="#e56b40" />
+          <g>
+            <rect x="350" y="25" width="75" height="50" rx="6" className="panel" stroke="#e56b40" />
+            <text x="360" y="42" className="tag" fill="#e56b40">Quarantine</text>
+            <text x="360" y="58" className="code">Rejected 422</text>
+          </g>
+
+          {/* Passed Path: Straight to Domain Entity */}
+          <path d="M290 145 H320 Q328 145 328 153 V185 Q328 193 336 193 H350" pathLength="1" className="wire drawn m s-pass" stroke="#4ade80" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+          <path d="M346 189.5 L350 193 L346 196.5" className="head" stroke="#4ade80" />
+          <g>
+            <rect x="350" y="165" width="75" height="55" rx="6" className="panel" stroke="#4ade80" />
+            <text x="360" y="182" className="tag" fill="#4ade80">Domain DTO</text>
+            <text x="360" y="198" className="title">Verified</text>
+            <text x="360" y="212" className="code">100% Safe</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption className="mt-4">
+        <div className="auth-cap">
+          <span>Fig. 01 — Structural Invariant: The AST gate verifies before state mutation</span>
+          <button type="button" onClick={onToggle} className="auth-toggle">
+            {isPaused ? "Play motion" : "Pause motion"}
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-[#8a8a92] font-sans leading-relaxed">
+          Untrusted LLM tokens are checked for mathematical invariants and coerced into pure domain objects before reaching persistence.
+        </p>
+      </figcaption>
+    </>
+  );
+}
+
+// =========================================================================
+// 3. WEB AUDIO API: DSP Signal Chain & Oscilloscope Display
+// =========================================================================
+function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <style>{`
+        @keyframes a-wave{0%{d:path("M15 40 Q 30 18, 45 40 T 75 40 T 105 40");}50%{d:path("M15 40 Q 30 62, 45 40 T 75 40 T 105 40");}100%{d:path("M15 40 Q 30 18, 45 40 T 75 40 T 105 40");}}
+        .auth .a-wave{animation:a-wave 1.8s ease-in-out infinite;}
+        @keyframes a-wire{0%,15%{stroke-dashoffset:1}28%,100%{stroke-dashoffset:0}}
+        .auth .a-wire{animation:a-wire 8s infinite;}
+        @keyframes a-pulse{0%,20%{opacity:0;stroke-dashoffset:0.02}25%,35%{opacity:1}36%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .a-pulse{animation:a-pulse 8s infinite;}
+      `}</style>
+      <svg viewBox="0 0 440 280" role="img" aria-label="Web Audio DSP Signal Graph">
+        <defs>
+          <pattern id="a-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
+          <radialGradient id="a-fade" cx="50%" cy="50%" r="60%"><stop offset="0.3" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="a-mask"><rect width="440" height="280" fill="url(#a-fade)" /></mask>
+        </defs>
+        <rect width="440" height="280" fill="url(#a-dots)" mask="url(#a-mask)" />
+        <g>
+          <text x="20" y="16" className="tag hint">Point to hold</text>
+          <text x="420" y="16" textAnchor="end" className="note readout">AudioWorklet DSP: 128 frames @ 48kHz (P99 2.7ms)</text>
+        </g>
+
+        <g transform="translate(0 30)">
+          {/* Node 1: Oscillator Node */}
+          <g>
+            <rect x="20" y="55" width="115" height="120" rx="8" className="panel" />
+            <text x="32" y="75" className="tag">Audio Generator</text>
+            <text x="32" y="93" className="title">OscillatorNode</text>
+            <text x="32" y="111" className="code">440 Hz Sine</text>
+            <rect x="28" y="122" width="99" height="42" rx="4" fill="#161619" stroke="#2c2c34" strokeWidth="1" />
+            <text x="36" y="138" className="note">Sample: 48,000</text>
+            <text x="36" y="152" className="code" fill="#e56b40">Buffer: 128 fr</text>
+          </g>
+
+          {/* Wire 1 -> Filter */}
+          <path d="M135 115 H165" pathLength="1" className="wire drawn m a-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+          <path d="M161 111.5 L165 115 L161 118.5" className="head" />
+          <path d="M135 115 H165" pathLength="1" className="pulse m a-pulse" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+
+          {/* Node 2: Biquad Filter */}
+          <g>
+            <rect x="165" y="45" width="120" height="140" rx="8" className="panel" />
+            <text x="177" y="65" className="tag">DSP Worklet</text>
+            <text x="177" y="83" className="title">BiquadFilter</text>
+            <text x="177" y="101" className="code">Lowpass 1.8kHz</text>
+            <rect x="173" y="112" width="104" height="60" rx="4" fill="#161619" stroke="#2c2c34" strokeWidth="1" />
+            <path d="M180 148 H 220 Q 240 148, 255 125" fill="none" stroke="#e56b40" strokeWidth="1.5" />
+            <text x="180" y="164" className="note">Resonance Q: 4.2</text>
+          </g>
+
+          {/* Wire 2 -> Oscilloscope */}
+          <path d="M285 115 H315" pathLength="1" className="wire drawn m a-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+          <path d="M311 111.5 L315 115 L311 118.5" className="head" />
+
+          {/* Node 3: Oscilloscope Output Screen */}
+          <g>
+            <rect x="315" y="55" width="110" height="120" rx="8" className="panel" />
+            <text x="327" y="75" className="tag">Hardware DAC</text>
+            <text x="327" y="93" className="title">Oscilloscope</text>
+            {/* Screen */}
+            <rect x="323" y="105" width="94" height="58" rx="4" fill="#0c0d10" stroke="#22232a" strokeWidth="1" />
+            <line x1="323" y1="134" x2="417" y2="134" stroke="#1d1e26" strokeDasharray="2 2" />
+            <path d="M 330 134 Q 345 116, 360 134 T 390 134 T 410 134" fill="none" stroke="#4ade80" strokeWidth="1.5" />
+          </g>
+        </g>
+      </svg>
+      <figcaption className="mt-4">
+        <div className="auth-cap">
+          <span>Fig. 01 — Dedicated Thread: AudioWorklet DSP eliminates main-thread glitches</span>
+          <button type="button" onClick={onToggle} className="auth-toggle">
+            {isPaused ? "Play motion" : "Pause motion"}
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-[#8a8a92] font-sans leading-relaxed">
+          Isolating digital signal computation on an audio worklet prevents React component re-renders from starving audio output frames.
+        </p>
+      </figcaption>
+    </>
+  );
+}
+
+// =========================================================================
+// 4. HEXAGONAL ARCHITECTURE: Concentric Domain Core & Satellite Adapters
+// =========================================================================
+function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <svg viewBox="0 0 440 280" role="img" aria-label="Hexagonal Architecture Concentric Boundaries">
+        <defs>
+          <pattern id="h-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
+          <radialGradient id="h-fade" cx="50%" cy="50%" r="60%"><stop offset="0.3" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="h-mask"><rect width="440" height="280" fill="url(#h-fade)" /></mask>
+        </defs>
+        <rect width="440" height="280" fill="url(#h-dots)" mask="url(#h-mask)" />
+        <g>
+          <text x="20" y="16" className="tag hint">Point to hold</text>
+          <text x="420" y="16" textAnchor="end" className="note readout">Pure Domain Core: Zero npm framework dependencies</text>
+        </g>
+
+        {/* Center Hexagon Core with Surrounding Adapters */}
+        <g transform="translate(0 30)">
+          {/* Center Domain Core */}
+          <g>
+            <rect x="155" y="70" width="130" height="95" rx="8" className="panel" stroke="#e56b40" strokeWidth="1.5" />
+            <text x="167" y="90" className="tag" fill="#e56b40">Domain Core</text>
+            <text x="167" y="108" className="title">Pure Entities</text>
+            <text x="167" y="126" className="code">Zero Imports</text>
+            <text x="167" y="142" className="note">100% Deterministic</text>
+            <text x="167" y="156" className="note" fill="#4ade80">Unit Testable</text>
+          </g>
+
+          {/* Left Adapter: Driving HTTP */}
+          <g>
+            <rect x="20" y="85" width="105" height="65" rx="6" className="panel" />
+            <text x="30" y="103" className="tag">Driving Port</text>
+            <text x="30" y="121" className="title">Fastify Route</text>
+            <text x="30" y="137" className="code">HTTP Inbound</text>
+          </g>
+          <path d="M125 117 H155" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+
+          {/* Right Adapter: PostgreSQL DB */}
+          <g>
+            <rect x="315" y="45" width="105" height="65" rx="6" className="panel" />
+            <text x="325" y="63" className="tag">Driven Port</text>
+            <text x="325" y="81" className="title">PgUserRepo</text>
+            <text x="325" y="97" className="code">Production DB</text>
+          </g>
+          <path d="M285 95 H315" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+
+          {/* Bottom Right Adapter: In-Memory Mock */}
+          <g>
+            <rect x="315" y="125" width="105" height="65" rx="6" className="panel" />
+            <text x="325" y="143" className="tag">Driven Port</text>
+            <text x="325" y="161" className="title">MockUserRepo</text>
+            <text x="325" y="177" className="code">In-Memory Test</text>
+          </g>
+          <path d="M285 145 H315" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+        </g>
+      </svg>
+      <figcaption className="mt-4">
+        <div className="auth-cap">
+          <span>Fig. 01 — Dependency Inversion: Adapters depend on core ports, never vice versa</span>
+          <button type="button" onClick={onToggle} className="auth-toggle">
+            {isPaused ? "Play motion" : "Pause motion"}
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-[#8a8a92] font-sans leading-relaxed">
+          The domain boundary isolates business rules from databases, HTTP frameworks, and external SDKs, enabling instant in-memory unit tests.
+        </p>
+      </figcaption>
+    </>
+  );
+}
+
+// =========================================================================
+// 5. RRF & SEMANTIC CACHING: Fork-Join Dual Retrieval Matrix
+// =========================================================================
+function ForkJoinRetrievalFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <svg viewBox="0 0 440 280" role="img" aria-label="Reciprocal Rank Fusion Hybrid Search">
+        <defs>
+          <pattern id="r-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
+          <radialGradient id="r-fade" cx="50%" cy="50%" r="60%"><stop offset="0.3" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="r-mask"><rect width="440" height="280" fill="url(#r-fade)" /></mask>
+        </defs>
+        <rect width="440" height="280" fill="url(#r-dots)" mask="url(#r-mask)" />
+        <g>
+          <text x="20" y="16" className="tag hint">Point to hold</text>
+          <text x="420" y="16" textAnchor="end" className="note readout">Hybrid Search: RRF k=60 fuses BM25 + HNSW Embeddings</text>
+        </g>
+
+        <g transform="translate(0 30)">
+          {/* Query & Semantic Cache Node */}
+          <g>
+            <rect x="20" y="70" width="115" height="95" rx="8" className="panel" />
+            <text x="32" y="90" className="tag">User Query</text>
+            <text x="32" y="108" className="title">Semantic Cache</text>
+            <text x="32" y="126" className="code">Cosine 0.92</text>
+            <text x="32" y="142" className="note" fill="#4ade80">41.8% hit rate</text>
+            <text x="32" y="156" className="note">Sub-15ms bypass</text>
+          </g>
+
+          {/* Fork into BM25 (top) and Vector (bottom) */}
+          <path d="M135 105 H155 Q163 105 163 97 V65 Q163 57 171 57 H180" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          <path d="M135 130 H155 Q163 130 163 138 V170 Q163 178 171 178 H180" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+
+          {/* Branch A: BM25 Sparse Search */}
+          <g>
+            <rect x="180" y="30" width="115" height="58" rx="6" className="panel" />
+            <text x="190" y="48" className="tag">Lexical Index</text>
+            <text x="190" y="64" className="title">BM25 Keywords</text>
+            <text x="190" y="78" className="code">Exact SKUs / IDs</text>
+          </g>
+
+          {/* Branch B: HNSW Dense Vectors */}
+          <g>
+            <rect x="180" y="150" width="115" height="58" rx="6" className="panel" />
+            <text x="190" y="168" className="tag">Dense Index</text>
+            <text x="190" y="184" className="title">HNSW Vectors</text>
+            <text x="190" y="198" className="code">Cosine Intent</text>
+          </g>
+
+          {/* Join into RRF Combiner */}
+          <path d="M295 57 H305 Q313 57 313 65 V105 Q313 113 321 113 H330" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          <path d="M295 178 H305 Q313 178 313 170 V122 Q313 114 321 114 H330" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+
+          {/* RRF Combiner Node */}
+          <g>
+            <rect x="330" y="70" width="100" height="95" rx="8" className="panel" stroke="#4ade80" strokeWidth="1.2" />
+            <text x="340" y="90" className="tag" fill="#4ade80">Fusion Matrix</text>
+            <text x="340" y="108" className="title">RRF Combiner</text>
+            <text x="340" y="126" className="code">1/(k+rank)</text>
+            <text x="340" y="142" className="note">MRR@10: +38%</text>
+            <text x="340" y="156" className="code" fill="#4ade80">Top-5 Context</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption className="mt-4">
+        <div className="auth-cap">
+          <span>Fig. 01 — Reciprocal Rank Fusion: Merging sparse exact keywords and dense semantics</span>
+          <button type="button" onClick={onToggle} className="auth-toggle">
+            {isPaused ? "Play motion" : "Pause motion"}
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-[#8a8a92] font-sans leading-relaxed">
+          Reciprocal Rank Fusion bypasses score normalization by combining rank reciprocals, maximizing context recall for LLM generation.
+        </p>
+      </figcaption>
+    </>
   );
 }

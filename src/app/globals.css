@@ -1053,3 +1053,253 @@ body {
 @media (prefers-reduced-motion:reduce) {
   .k-stack__book,.k-book-flash{transition:none;animation:none!important}
 }
+
+/* Kinfish Gallery Tile & Lightbox Viewer */
+.k-tile {
+  margin: 0;
+}
+.k-tile__button {
+  border-radius: var(--k-radius, 4px);
+  background: var(--tone, #1a1a1a);
+  cursor: zoom-in;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+.k-tile__img {
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06) brightness(0.86);
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.8s, filter 0.6s, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: block;
+}
+.k-tile__button:hover .k-tile__img,
+.k-tile__button:focus-visible .k-tile__img {
+  filter: grayscale(0) contrast(1.04) brightness(0.98);
+  transform: scale(1.04);
+}
+.k-tile__button:focus-visible {
+  outline-offset: 3px;
+  outline: 1px dashed #6e6e6e;
+}
+.k-tile__corners {
+  opacity: 0;
+  pointer-events: none;
+  background-color: transparent;
+  background-image: 
+    linear-gradient(#ededed, #ededed), linear-gradient(#ededed, #ededed),
+    linear-gradient(#ededed, #ededed), linear-gradient(#ededed, #ededed),
+    linear-gradient(#ededed, #ededed), linear-gradient(#ededed, #ededed),
+    linear-gradient(#ededed, #ededed), linear-gradient(#ededed, #ededed);
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 10px 1px, 1px 10px, 10px 1px, 1px 10px, 10px 1px, 1px 10px, 10px 1px, 1px 10px;
+  transition: opacity 0.35s, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  transform: scale(1.04);
+}
+.k-tile__button:hover .k-tile__corners,
+.k-tile__button:focus-visible .k-tile__corners {
+  opacity: 0.85;
+  transform: none;
+}
+.k-tile__number,
+.k-tile__cap {
+  color: #ededed;
+  font: 400 10px/14px var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 3px;
+  padding: 2px 6px;
+  position: absolute;
+}
+.k-tile__number {
+  top: 10px;
+  left: 10px;
+}
+.k-tile__cap {
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0;
+  width: fit-content;
+  max-width: calc(100% - 20px);
+  transition: opacity 0.3s, transform 0.3s;
+  bottom: 10px;
+  left: 10px;
+  overflow: hidden;
+  transform: translateY(4px);
+}
+.k-tile__button:hover .k-tile__cap,
+.k-tile__button:focus-visible .k-tile__cap {
+  opacity: 1;
+  transform: none;
+}
+
+/* Kinfish Viewer Lightbox */
+.k-viewer {
+  z-index: 60;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: #0c0c0cf7;
+  flex-direction: column;
+  animation: 0.3s ease-out k-viewer-in;
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.k-viewer__bar {
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  display: flex;
+}
+.k-viewer__swatch {
+  background: linear-gradient(135deg, #fafafa 50%, #222 50%);
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  transition: background 0.4s;
+  box-shadow: 0 0 0 1px #4a4a4a;
+  display: inline-block;
+}
+.k-viewer__swatch.is-on {
+  background: conic-gradient(#e9775a, #e7c35a, #6fc58a, #5aa6e7, #a77be7, #e9775a);
+}
+.k-viewer__stage {
+  touch-action: pan-y;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+  padding: 0 16px;
+  display: flex;
+  position: relative;
+}
+.k-viewer__img {
+  border-radius: var(--k-radius, 4px);
+  filter: grayscale(1) contrast(1.06);
+  width: auto;
+  max-width: min(100%, 100vw - 120px);
+  height: auto;
+  max-height: calc(100svh - 200px);
+  transition: filter 0.5s ease-out;
+  animation: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) k-viewer-img;
+  object-fit: contain;
+}
+.k-viewer__img.is-color {
+  filter: none;
+}
+.k-viewer__step {
+  width: 40px;
+  height: 40px;
+  color: #8e8e8e;
+  font: 400 16px/1 var(--font-geist-mono), ui-monospace, monospace;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2e2e2e;
+  border-radius: 50%;
+  flex-shrink: 0;
+  place-items: center;
+  transition: border-color 0.16s, color 0.16s, transform 0.16s;
+  display: grid;
+  user-select: none;
+}
+.k-viewer__step:hover {
+  color: #ededed;
+  border-color: #4a4a4a;
+}
+.k-viewer__step:active {
+  transform: scale(0.94);
+}
+.k-viewer__foot {
+  padding: 10px 20px 16px;
+}
+.k-viewer__meta {
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  display: flex;
+}
+.k-viewer__strip {
+  scrollbar-width: none;
+  gap: 6px;
+  margin-top: 12px;
+  display: flex;
+  overflow-x: auto;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6% 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6% 94%, transparent);
+  padding: 4px 2px;
+}
+.k-viewer__strip::-webkit-scrollbar {
+  display: none;
+}
+.k-viewer__thumb {
+  opacity: 0.45;
+  cursor: pointer;
+  background: #1a1a1a;
+  border: 0;
+  border-radius: 3px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 52px;
+  padding: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  overflow: hidden;
+  position: relative;
+}
+.k-viewer__thumb img {
+  object-fit: cover;
+  filter: grayscale(1);
+  width: 100%;
+  height: 100%;
+}
+.k-viewer__thumb:hover {
+  opacity: 0.8;
+}
+.k-viewer__thumb.is-current {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1.5px #ededed;
+}
+.k-viewer__thumb.is-current img {
+  filter: none;
+}
+
+@keyframes k-viewer-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes k-viewer-img {
+  0% { opacity: 0; transform: translateY(8px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 639px) {
+  .k-viewer__step {
+    display: none;
+  }
+  .k-viewer__img {
+    max-width: 100%;
+  }
+  .k-viewer__meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
