@@ -24,7 +24,7 @@ export default function PicsPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Pics</span>
           </p>
-          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 text-[26px] sm:text-[30px] font-extrabold tracking-[-0.035em] text-[#ededed]">
             Pictures
           </h1>
           <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">

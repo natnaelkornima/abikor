@@ -42,7 +42,7 @@ export default function AboutPage() {
             <span>About</span>
           </p>
 
-          <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+          <h1 className="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-[-0.035em] text-[#ededed]">
             {profile.name}
           </h1>
 
@@ -67,7 +67,7 @@ export default function AboutPage() {
         {/* Interactive Scatter Dot Portrait */}
         <div className="sm:self-stretch">
           <figure className="m-0 flex h-full flex-col justify-between gap-2.5">
-            <div className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-white/5 bg-[#141416] opacity-[0.85]">
+            <div className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-white/5 bg-[#141416]">
               <ScatterPortrait
                 darkSrc="/portrait.jpg"
                 lightSrc="/portrait.jpg"

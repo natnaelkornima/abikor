@@ -31,7 +31,7 @@ export default function Home() {
           <span>{profile.roleTitle}</span>
         </p>
 
-        <h1 className="mt-3 font-serif text-2xl font-medium tracking-[-0.025em] text-[#ededed]">
+        <h1 className="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-[-0.035em] text-[#ededed]">
           {profile.name}
         </h1>
 

@@ -93,11 +93,11 @@ void main() {
   // Calculate mouse position in pixel coordinates
   vec2 mousePixel = u_laggedMouse * u_resolution;
   
-  // Dot grid effect parameters (in pixels)
+  // Dot grid effect parameters (in pixels) - tuned for crisp photographic fidelity
   float lightDotSizePixels = 2.7;
   float lightSpacingPixels = 5.8;
-  float darkDotSizePixels = 2.5;
-  float darkSpacingPixels = 5.3;
+  float darkDotSizePixels = 2.7;
+  float darkSpacingPixels = 4.8;
   float dotSizePixels = mix(lightDotSizePixels, darkDotSizePixels, u_darkMode);
   float spacingPixels = mix(lightSpacingPixels, darkSpacingPixels, u_darkMode);
   
@@ -124,13 +124,17 @@ void main() {
     gridColor = texture2D(u_texture, originalGridUV);
   }
   
-  // Calculate brightness of the original color
-  float brightness = (gridColor.r + gridColor.g + gridColor.b) / 3.0;
+  // Calculate perceptual luminance of the original color (human vision weights)
+  float luma = dot(gridColor.rgb, vec3(0.299, 0.587, 0.114));
   
-  // Adjust dot size based on brightness (in pixels)
-  float lightAdjustedDotSize = dotSizePixels * smoothstep(0.2, 0.8, (1.0 - brightness));
-  // A faint dot even where the photo is dark, so the grid reads as a whole square.
-  float darkAdjustedDotSize = dotSizePixels * mix(0.3, 1.0, smoothstep(0.15, 1.0, brightness));
+  // Gamma and contrast expansion to clearly define facial features, eyes, smile and contours
+  float enhancedLuma = pow(luma, 0.72);
+  float contrast = smoothstep(0.06, 0.82, enhancedLuma);
+  
+  // Adjust dot size based on brightness
+  float lightAdjustedDotSize = dotSizePixels * smoothstep(0.2, 0.8, (1.0 - luma));
+  // In dark mode: dramatic dynamic range (0.16 to 1.35) so features are sharp and unmistakable
+  float darkAdjustedDotSize = dotSizePixels * mix(0.16, 1.35, contrast);
   float baseDotSize = mix(lightAdjustedDotSize, darkAdjustedDotSize, u_darkMode);
   
   float adjustedDotSize = baseDotSize;
