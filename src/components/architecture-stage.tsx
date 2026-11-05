@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { portfolio } from "@/data/portfolio";
 
 export function ArchitectureStage() {
@@ -9,7 +9,110 @@ export function ArchitectureStage() {
   const [isPaused, setIsPaused] = useState(false);
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
-  const currentArch = architectures[selectedArch];
+  // Auto-step highlighting when not paused
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev === null ? 0 : (prev + 1) % 4));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const webNodes = [
+    {
+      num: "01",
+      tag: "INGESTION",
+      title: "Edge Gateway",
+      tech: "Fastify + Proxy",
+      dot: "#4ade80",
+      metric1: "P99 < 1.2ms",
+      metric2: "40k req/s",
+      badge: "CACHE: 98%",
+      color: "#4ade80",
+    },
+    {
+      num: "02",
+      tag: "EVENT BUS",
+      title: "Redis Ring",
+      tech: "FIFO Streams",
+      dot: "#38bdf8",
+      metric1: "Zero drops",
+      metric2: "BullMQ queue",
+      badge: "RING: ACTIVE",
+      color: "#38bdf8",
+    },
+    {
+      num: "03",
+      tag: "COMPUTE",
+      title: "Worker Core",
+      tech: "Async Workers",
+      dot: "#e56b40",
+      metric1: "Concurrency: 64",
+      metric2: "Retry & Backoff",
+      badge: "JOB: PASS",
+      color: "#e56b40",
+    },
+    {
+      num: "04",
+      tag: "STORAGE",
+      title: "PostgreSQL",
+      tech: "ACID Cluster",
+      dot: "#a855f7",
+      metric1: "WAL replication",
+      metric2: "Pool: 120 binds",
+      badge: "ACID: OK",
+      color: "#a855f7",
+    },
+  ];
+
+  const aiNodes = [
+    {
+      num: "01",
+      tag: "GATEWAY",
+      title: "FastAPI Core",
+      tech: "Token Firewall",
+      dot: "#4ade80",
+      metric1: "Sanitizer pass",
+      metric2: "Injection block",
+      badge: "RATE: 120/s",
+      color: "#4ade80",
+    },
+    {
+      num: "02",
+      tag: "RETRIEVAL",
+      title: "Hybrid RAG",
+      tech: "Qdrant + BM25",
+      dot: "#38bdf8",
+      metric1: "RRF score fusion",
+      metric2: "Top-k: 8 chunks",
+      badge: "RECALL: 94%",
+      color: "#38bdf8",
+    },
+    {
+      num: "03",
+      tag: "REASONING",
+      title: "LLM Runner",
+      tech: "Structured Mode",
+      dot: "#e56b40",
+      metric1: "JSON grammar",
+      metric2: "Deterministic",
+      badge: "P99: 240ms",
+      color: "#e56b40",
+    },
+    {
+      num: "04",
+      tag: "VALIDATION",
+      title: "Guardrails",
+      tech: "Pydantic DTO",
+      dot: "#a855f7",
+      metric1: "Type assertion",
+      metric2: "Schema check",
+      badge: "VALID: 100%",
+      color: "#a855f7",
+    },
+  ];
+
+  const currentNodes = selectedArch === "web" ? webNodes : aiNodes;
 
   return (
     <div className="w-full select-none">
@@ -28,7 +131,7 @@ export function ArchitectureStage() {
                 : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
             }`}
           >
-            01 // Distributed Web
+            01 // High-Throughput Web
           </button>
           <button
             type="button"
@@ -47,13 +150,13 @@ export function ArchitectureStage() {
         </div>
 
         <div className="font-mono text-[11px] text-[#6e6e6e] hidden sm:block">
-          {currentArch.spec}
+          {architectures[selectedArch]?.spec || "FLOW // 4-STAGE DETERMINISTIC PIPELINE"}
         </div>
       </div>
 
       {/* High-Quality Animated 2D Vector Blueprint Diagram (Matching Blog Style) */}
       <figure
-        className="auth not-prose mx-auto my-2 w-full max-w-[712px] select-none"
+        className="auth not-prose mx-auto my-2 w-full max-w-[720px] select-none"
         data-hold={isPaused ? "true" : "false"}
       >
         <style>{`
@@ -69,16 +172,16 @@ export function ArchitectureStage() {
           }
           .arch-stage svg { display: block; width: 100%; height: auto; overflow: visible; }
           .arch-stage :is(path, line, rect, circle) { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-          .arch-stage .panel { fill: var(--face); stroke: var(--edge); stroke-width: 1; transition: stroke .3s, fill .3s; }
+          .arch-stage .panel { fill: var(--face); stroke: var(--edge); stroke-width: 1.2; transition: stroke .3s, fill .3s; }
           .arch-stage .panel.active { stroke: #ededed; fill: #16161c; }
           .arch-stage .wire { fill: none; stroke: var(--part); stroke-width: 1.2; }
-          .arch-stage .head { fill: none; stroke: #70707c; stroke-width: 1; }
+          .arch-stage .head { fill: none; stroke: #8e8e98; stroke-width: 1.2; }
           .arch-stage .drawn, .arch-stage .pulse { vector-effect: none; }
-          .arch-stage .pulse { fill: none; stroke: var(--path); stroke-width: 3.4; }
-          .arch-stage .tag { fill: var(--muted); font: 8.5px/1 var(--font-geist-mono), ui-monospace, monospace; text-transform: uppercase; letter-spacing: .06em; }
-          .arch-stage .title { fill: var(--ink); font: 500 12.5px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; letter-spacing: -.01em; }
-          .arch-stage .note { fill: var(--muted); font: 10px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; }
-          .arch-stage .code { fill: var(--code); font: 9.5px/1.2 var(--font-geist-mono), ui-monospace, monospace; }
+          .arch-stage .pulse { fill: none; stroke: var(--path); stroke-width: 3.2; }
+          .arch-stage .tag { fill: var(--muted); font: 8px/1 var(--font-geist-mono), ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; }
+          .arch-stage .title { fill: var(--ink); font: 500 12px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; letter-spacing: -.01em; }
+          .arch-stage .note { fill: var(--muted); font: 9.5px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; }
+          .arch-stage .code { fill: var(--code); font: 9px/1.2 var(--font-geist-mono), ui-monospace, monospace; }
           .arch-stage .readout { fill: var(--ink); font: 9.5px/1.2 var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; }
           .arch-stage .m { animation-timing-function: cubic-bezier(.65,0,.35,1); animation-iteration-count: infinite; animation-fill-mode: both; }
           .arch-stage[data-hold="true"] .m { animation-play-state: paused; }
@@ -90,23 +193,23 @@ export function ArchitectureStage() {
           }
 
           /* Sequential 4-Stage Traveling Pulse Keyframes */
-          @keyframes ap-wire1 { 0%,10% { stroke-dashoffset: 1; } 20%,100% { stroke-dashoffset: 0; } }
+          @keyframes ap-wire1 { 0%,8% { stroke-dashoffset: 1; } 18%,100% { stroke-dashoffset: 0; } }
           .arch-stage .ap-wire1 { animation: ap-wire1 8s infinite; }
-          @keyframes ap-pulse1 { 0%,12% { opacity: 0; stroke-dashoffset: 0.02; } 18%,26% { opacity: 1; } 28%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          @keyframes ap-pulse1 { 0%,10% { opacity: 0; stroke-dashoffset: 0.02; } 16%,25% { opacity: 1; } 27%,100% { opacity: 0; stroke-dashoffset: -1; } }
           .arch-stage .ap-pulse1 { animation: ap-pulse1 8s infinite; }
 
-          @keyframes ap-wire2 { 0%,32% { stroke-dashoffset: 1; } 42%,100% { stroke-dashoffset: 0; } }
+          @keyframes ap-wire2 { 0%,30% { stroke-dashoffset: 1; } 40%,100% { stroke-dashoffset: 0; } }
           .arch-stage .ap-wire2 { animation: ap-wire2 8s infinite; }
-          @keyframes ap-pulse2 { 0%,36% { opacity: 0; stroke-dashoffset: 0.02; } 42%,50% { opacity: 1; } 52%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          @keyframes ap-pulse2 { 0%,33% { opacity: 0; stroke-dashoffset: 0.02; } 39%,48% { opacity: 1; } 50%,100% { opacity: 0; stroke-dashoffset: -1; } }
           .arch-stage .ap-pulse2 { animation: ap-pulse2 8s infinite; }
 
-          @keyframes ap-wire3 { 0%,54% { stroke-dashoffset: 1; } 64%,100% { stroke-dashoffset: 0; } }
+          @keyframes ap-wire3 { 0%,55% { stroke-dashoffset: 1; } 65%,100% { stroke-dashoffset: 0; } }
           .arch-stage .ap-wire3 { animation: ap-wire3 8s infinite; }
-          @keyframes ap-pulse3 { 0%,58% { opacity: 0; stroke-dashoffset: 0.02; } 64%,72% { opacity: 1; } 74%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          @keyframes ap-pulse3 { 0%,58% { opacity: 0; stroke-dashoffset: 0.02; } 64%,73% { opacity: 1; } 75%,100% { opacity: 0; stroke-dashoffset: -1; } }
           .arch-stage .ap-pulse3 { animation: ap-pulse3 8s infinite; }
 
           /* Node Border Activations */
-          @keyframes ap-n1 { 0%,22% { stroke: #4ade80; } 28%,100% { stroke: var(--edge); } }
+          @keyframes ap-n1 { 0%,22% { stroke: #4ade80; } 26%,100% { stroke: var(--edge); } }
           .arch-stage .ap-n1 { animation: ap-n1 8s infinite; }
           @keyframes ap-n2 { 0%,24% { stroke: var(--edge); } 28%,48% { stroke: #38bdf8; } 52%,100% { stroke: var(--edge); } }
           .arch-stage .ap-n2 { animation: ap-n2 8s infinite; }
@@ -127,7 +230,7 @@ export function ArchitectureStage() {
         `}</style>
 
         <div className="arch-stage rounded-lg border border-[#24242c] bg-[#0c0c0f] p-4">
-          <svg viewBox="0 0 680 250" role="img" aria-label="Systems Architecture Flow Engine">
+          <svg viewBox="0 0 680 230" role="img" aria-label="Systems Architecture Flow Engine">
             <defs>
               <pattern id="arch-dots" width="14" height="14" patternUnits="userSpaceOnUse">
                 <circle cx="7" cy="7" r="0.75" fill="#22222c" />
@@ -137,11 +240,11 @@ export function ArchitectureStage() {
                 <stop offset="1" stopColor="#fff" stopOpacity="0" />
               </radialGradient>
               <mask id="arch-mask">
-                <rect width="680" height="250" fill="url(#arch-fade)" />
+                <rect width="680" height="230" fill="url(#arch-fade)" />
               </mask>
             </defs>
 
-            <rect width="680" height="250" fill="url(#arch-dots)" mask="url(#arch-mask)" />
+            <rect width="680" height="230" fill="url(#arch-dots)" mask="url(#arch-mask)" />
 
             {/* Top Telemetry Bar */}
             <g>
@@ -149,236 +252,215 @@ export function ArchitectureStage() {
               {selectedArch === "web" ? (
                 <>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r1">
-                    01/04: Client &rarr; Next.js Edge (Cache 98%)
+                    01/04: Client Edge &rarr; Fastify Gateway (P99 &lt; 1.2ms)
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r2">
-                    02/04: Fastify API Gateway &rarr; sub-1ms JWT rate-limit
+                    02/04: Redis FIFO Queue &rarr; Priority Ring Enqueued
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r3">
-                    03/04: BullMQ + Redis FIFO ring (50k jobs/s)
+                    03/04: BullMQ Workers &rarr; Concurrency 64 (0% Loss)
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r4">
-                    04/04: PostgreSQL ACID persist &rarr; replica cache sync
+                    04/04: PostgreSQL WAL &rarr; ACID Commits Persisted
                   </text>
                 </>
               ) : (
                 <>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r1">
-                    01/04: FastAPI gateway &rarr; prompt injection sanitizer
+                    01/04: FastAPI Gate &rarr; Prompt Injection Sanitizer Pass
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r2">
-                    02/04: RRF hybrid retrieval &rarr; Qdrant + BM25 fusion
+                    02/04: Hybrid RAG &rarr; Qdrant Dense + BM25 Sparse Fusion
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r3">
-                    03/04: LLM reasoning core &rarr; structured JSON mode
+                    03/04: LLM Reasoning Core &rarr; Deterministic JSON Grammars
                   </text>
                   <text x="656" y="20" textAnchor="end" className="note readout m ap-r4">
-                    04/04: Pydantic runtime validator &rarr; verified DTO
+                    04/04: Pydantic Guardrails &rarr; Strict Schema Validation
                   </text>
                 </>
               )}
             </g>
 
-            {/* 4 Connected Stages with Conduits & Traveling Pulses */}
-            <g transform="translate(0 32)">
-              {/* STAGE 1: NODE */}
+            {/* 4 Connected Rectangular Stages with Conduits & Traveling Pulses */}
+            {/*
+              Geometry Calculation:
+              Total width: 680
+              Nodes: 4 nodes, width = 125 each (total 500)
+              Conduits: 3 conduits, width = 46 each (total 138)
+              Total diagram span = 500 + 138 = 638
+              Left margin: (680 - 638) / 2 = 21 -> x = 21
+              Node 1: 21 -> 146
+              Conduit 1: 146 -> 192 (length 46)
+              Node 2: 192 -> 317
+              Conduit 2: 317 -> 363 (length 46)
+              Node 3: 363 -> 488
+              Conduit 3: 488 -> 534 (length 46)
+              Node 4: 534 -> 659
+              Right margin: 680 - 659 = 21. Perfectly aligned and symmetric!
+            */}
+            <g transform="translate(0 34)">
+              {/* STAGE 1: RECTANGULAR NODE */}
               <g className="cursor-pointer" onClick={() => setActiveStep(0)}>
                 <rect
-                  x="24"
-                  y="20"
-                  width="130"
+                  x="21"
+                  y="12"
+                  width="125"
                   height="150"
                   rx="8"
                   className={`panel ${activeStep === 0 ? "active" : "m ap-n1"}`}
                 />
-                <text x="36" y="44" className="tag">
-                  {selectedArch === "web" ? "01 // EDGE" : "01 // SANITIZE"}
-                </text>
-                <text x="36" y="64" className="title">
-                  {selectedArch === "web" ? "Next.js Edge" : "Input Gate"}
-                </text>
-                <text x="36" y="82" className="code">
-                  {selectedArch === "web" ? "Client Layer" : "FastAPI Firewall"}
-                </text>
+                <text x="33" y="34" className="tag">{currentNodes[0].num} // {currentNodes[0].tag}</text>
+                <text x="33" y="54" className="title">{currentNodes[0].title}</text>
+                <text x="33" y="70" className="code">{currentNodes[0].tech}</text>
 
-                {/* Inner Spec Box */}
-                <rect x="34" y="96" width="110" height="58" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
-                <circle cx="44" cy="115" r="2.5" fill="#4ade80" />
-                <text x="52" y="118" className="note">
-                  {selectedArch === "web" ? "Optimistic UI" : "Token boundary"}
-                </text>
-                <text x="44" y="138" className="code" fill="#4ade80">
-                  {selectedArch === "web" ? "CACHE: 98%" : "PASS: 100%"}
-                </text>
+                {/* Inner Spec Chip */}
+                <rect x="29" y="82" width="109" height="66" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
+                <circle cx="41" cy="99" r="2.5" fill={currentNodes[0].dot} />
+                <text x="49" y="102" className="note">{currentNodes[0].metric1}</text>
+                <text x="41" y="122" className="code">{currentNodes[0].metric2}</text>
+                <text x="41" y="138" className="code" fill={currentNodes[0].color}>{currentNodes[0].badge}</text>
               </g>
 
-              {/* CONDUIT 1 -> 2 */}
+              {/* CONDUIT 1 -> 2 WITH TRAVELING ARROW & PULSE */}
               <g>
-                <path d="M154 95 H194" pathLength="1" className="wire drawn m ap-wire1" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-                <path d="M190 91.5 L194 95 L190 98.5" className="head" />
-                <path d="M154 95 H194" pathLength="1" className="pulse m ap-pulse1" stroke="#38bdf8" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+                <path
+                  d="M146 87 H192"
+                  pathLength="1"
+                  className="wire drawn m ap-wire1"
+                  style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                />
+                <path d="M188 83.5 L192 87 L188 90.5" className="head" />
+                <path
+                  d="M146 87 H192"
+                  pathLength="1"
+                  className="pulse m ap-pulse1"
+                  stroke={currentNodes[1].color}
+                  style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                />
               </g>
 
-              {/* STAGE 2: NODE */}
+              {/* STAGE 2: RECTANGULAR NODE */}
               <g className="cursor-pointer" onClick={() => setActiveStep(1)}>
                 <rect
-                  x="194"
-                  y="20"
-                  width="134"
+                  x="192"
+                  y="12"
+                  width="125"
                   height="150"
                   rx="8"
                   className={`panel ${activeStep === 1 ? "active" : "m ap-n2"}`}
                 />
-                <text x="206" y="44" className="tag">
-                  {selectedArch === "web" ? "02 // GATEWAY" : "02 // RETRIEVAL"}
-                </text>
-                <text x="206" y="64" className="title">
-                  {selectedArch === "web" ? "Fastify API" : "Hybrid RAG"}
-                </text>
-                <text x="206" y="82" className="code">
-                  {selectedArch === "web" ? "Security Core" : "Qdrant + BM25"}
-                </text>
+                <text x="204" y="34" className="tag">{currentNodes[1].num} // {currentNodes[1].tag}</text>
+                <text x="204" y="54" className="title">{currentNodes[1].title}</text>
+                <text x="204" y="70" className="code">{currentNodes[1].tech}</text>
 
-                {/* Inner Spec Box */}
-                <rect x="204" y="96" width="114" height="58" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
-                <circle cx="214" cy="115" r="2.5" fill="#38bdf8" />
-                <text x="222" y="118" className="note">
-                  {selectedArch === "web" ? "Rate-limit pass" : "Dense & Sparse"}
-                </text>
-                <text x="214" y="138" className="code" fill="#38bdf8">
-                  {selectedArch === "web" ? "P99 < 1.2MS" : "RRF FUSION"}
-                </text>
+                {/* Inner Spec Chip */}
+                <rect x="200" y="82" width="109" height="66" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
+                <circle cx="212" cy="99" r="2.5" fill={currentNodes[1].dot} />
+                <text x="220" y="102" className="note">{currentNodes[1].metric1}</text>
+                <text x="212" y="122" className="code">{currentNodes[1].metric2}</text>
+                <text x="212" y="138" className="code" fill={currentNodes[1].color}>{currentNodes[1].badge}</text>
               </g>
 
-              {/* CONDUIT 2 -> 3 */}
+              {/* CONDUIT 2 -> 3 WITH TRAVELING ARROW & PULSE */}
               <g>
-                <path d="M328 95 H368" pathLength="1" className="wire drawn m ap-wire2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-                <path d="M364 91.5 L368 95 L364 98.5" className="head" />
-                <path d="M328 95 H368" pathLength="1" className="pulse m ap-pulse2" stroke="#e56b40" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+                <path
+                  d="M317 87 H363"
+                  pathLength="1"
+                  className="wire drawn m ap-wire2"
+                  style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                />
+                <path d="M359 83.5 L363 87 L359 90.5" className="head" />
+                <path
+                  d="M317 87 H363"
+                  pathLength="1"
+                  className="pulse m ap-pulse2"
+                  stroke={currentNodes[2].color}
+                  style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                />
               </g>
 
-              {/* STAGE 3: NODE */}
+              {/* STAGE 3: RECTANGULAR NODE */}
               <g className="cursor-pointer" onClick={() => setActiveStep(2)}>
                 <rect
-                  x="368"
-                  y="20"
-                  width="134"
+                  x="363"
+                  y="12"
+                  width="125"
                   height="150"
                   rx="8"
                   className={`panel ${activeStep === 2 ? "active" : "m ap-n3"}`}
                 />
-                <text x="380" y="44" className="tag">
-                  {selectedArch === "web" ? "03 // QUEUES" : "03 // INFERENCE"}
-                </text>
-                <text x="380" y="64" className="title">
-                  {selectedArch === "web" ? "BullMQ Ring" : "Model Core"}
-                </text>
-                <text x="380" y="82" className="code">
-                  {selectedArch === "web" ? "Redis Brokers" : "vLLM Engine"}
-                </text>
+                <text x="375" y="34" className="tag">{currentNodes[2].num} // {currentNodes[2].tag}</text>
+                <text x="375" y="54" className="title">{currentNodes[2].title}</text>
+                <text x="375" y="70" className="code">{currentNodes[2].tech}</text>
 
-                {/* Inner Spec Box */}
-                <rect x="378" y="96" width="114" height="58" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
-                <circle cx="388" cy="115" r="2.5" fill="#e56b40" />
-                <text x="396" y="118" className="note">
-                  {selectedArch === "web" ? "Idempotent ring" : "Structured JSON"}
-                </text>
-                <text x="388" y="138" className="code" fill="#e56b40">
-                  {selectedArch === "web" ? "BURST BUFFER" : "ZERO-LEAK"}
-                </text>
+                {/* Inner Spec Chip */}
+                <rect x="371" y="82" width="109" height="66" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
+                <circle cx="383" cy="99" r="2.5" fill={currentNodes[2].dot} />
+                <text x="391" y="102" className="note">{currentNodes[2].metric1}</text>
+                <text x="383" y="122" className="code">{currentNodes[2].metric2}</text>
+                <text x="383" y="138" className="code" fill={currentNodes[2].color}>{currentNodes[2].badge}</text>
               </g>
 
-              {/* CONDUIT 3 -> 4 */}
+              {/* CONDUIT 3 -> 4 WITH TRAVELING ARROW & PULSE */}
               <g>
-                <path d="M502 95 H542" pathLength="1" className="wire drawn m ap-wire3" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-                <path d="M538 91.5 L542 95 L538 98.5" className="head" />
-                <path d="M502 95 H542" pathLength="1" className="pulse m ap-pulse3" stroke="#a855f7" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+                <path
+                  d="M488 87 H534"
+                  pathLength="1"
+                  className="wire drawn m ap-wire3"
+                  style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                />
+                <path d="M530 83.5 L534 87 L530 90.5" className="head" />
+                <path
+                  d="M488 87 H534"
+                  pathLength="1"
+                  className="pulse m ap-pulse3"
+                  stroke={currentNodes[3].color}
+                  style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                />
               </g>
 
-              {/* STAGE 4: NODE */}
+              {/* STAGE 4: RECTANGULAR NODE */}
               <g className="cursor-pointer" onClick={() => setActiveStep(3)}>
                 <rect
-                  x="542"
-                  y="20"
-                  width="124"
+                  x="534"
+                  y="12"
+                  width="125"
                   height="150"
                   rx="8"
                   className={`panel ${activeStep === 3 ? "active" : "m ap-n4"}`}
                 />
-                <text x="554" y="44" className="tag">
-                  {selectedArch === "web" ? "04 // DATA" : "04 // GUARDRAIL"}
-                </text>
-                <text x="554" y="64" className="title">
-                  {selectedArch === "web" ? "PostgreSQL" : "Pydantic Fences"}
-                </text>
-                <text x="554" y="82" className="code">
-                  {selectedArch === "web" ? "ACID Store" : "Runtime Shield"}
-                </text>
+                <text x="546" y="34" className="tag">{currentNodes[3].num} // {currentNodes[3].tag}</text>
+                <text x="546" y="54" className="title">{currentNodes[3].title}</text>
+                <text x="546" y="70" className="code">{currentNodes[3].tech}</text>
 
-                {/* Inner Spec Box */}
-                <rect x="552" y="96" width="104" height="58" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
-                <circle cx="562" cy="115" r="2.5" fill="#a855f7" />
-                <text x="570" y="118" className="note">
-                  {selectedArch === "web" ? "ACID Cluster" : "Schema Guard"}
-                </text>
-                <text x="562" y="138" className="code" fill="#a855f7">
-                  {selectedArch === "web" ? "100% RELIABLE" : "STRICT DTO"}
-                </text>
+                {/* Inner Spec Chip */}
+                <rect x="542" y="82" width="109" height="66" rx="4" fill="#141418" stroke="#252530" strokeWidth="1" />
+                <circle cx="554" cy="99" r="2.5" fill={currentNodes[3].dot} />
+                <text x="562" y="102" className="note">{currentNodes[3].metric1}</text>
+                <text x="554" y="122" className="code">{currentNodes[3].metric2}</text>
+                <text x="554" y="138" className="code" fill={currentNodes[3].color}>{currentNodes[3].badge}</text>
               </g>
             </g>
           </svg>
         </div>
 
-        {/* Caption Bar with Pause Toggle */}
-        <div className="auth-cap mt-3 flex items-center justify-between text-[10px] font-mono text-[#767676]">
-          <span>
-            FIG. 04 // {currentArch.name.toUpperCase()} (CLICK STAGE TO INSPECT)
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsPaused(!isPaused)}
-            className="hover:text-[#ededed] transition-colors"
-          >
-            {isPaused ? "PLAY MOTION" : "PAUSE MOTION"}
-          </button>
-        </div>
-      </figure>
-
-      {/* Layer Deep-Dive Breakdown Grid */}
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {currentArch.layers.map((layer, idx) => {
-          const isSelected = activeStep === idx;
-          return (
-            <div
-              key={layer.step}
-              onClick={() => setActiveStep(isSelected ? null : idx)}
-              className={`rounded-md border p-3.5 transition-all duration-150 cursor-pointer ${
-                isSelected
-                  ? "border-[#ededed]/40 bg-[#17171d]"
-                  : "border-[#26262e] bg-[#121216] hover:border-white/20"
-              }`}
+        {/* Technical Caption Bar with Pause/Play Motion Toggle */}
+        <figcaption className="mt-3">
+          <div className="flex items-center justify-between gap-4 font-mono text-[9px] uppercase tracking-wider text-[#767676]">
+            <span>
+              Fig. 04 — Systems Architecture: {selectedArch === "web" ? "Distributed Ingestion & Storage Pipeline" : "Deterministic Hybrid RAG & Verification Engine"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsPaused(!isPaused)}
+              className="text-[#8e8e8e] hover:text-[#ededed] transition-colors cursor-pointer py-1"
             >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10.5px] text-[#6e6e6e]">
-                  {layer.step}
-                </span>
-                <span className="font-mono text-[10px] text-[#ededed] bg-[#22222a] px-1.5 py-0.5 rounded">
-                  {layer.metric}
-                </span>
-              </div>
-              <h3 className="mt-1.5 text-[14px] font-medium text-[#ededed]">
-                {layer.layer}
-              </h3>
-              <div className="mt-0.5 font-mono text-[11px] text-[#a3a3a3]">
-                {layer.tech}
-              </div>
-              <p className="mt-2 text-[12.5px] leading-relaxed text-[#8a8a92]">
-                {layer.detail}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+              {isPaused ? "Play motion" : "Pause motion"}
+            </button>
+          </div>
+        </figcaption>
+      </figure>
     </div>
   );
 }
