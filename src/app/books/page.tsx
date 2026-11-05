@@ -40,33 +40,41 @@ export default function BooksPage() {
         </div>
 
         <ul className="k-rows">
-          {books.map((book) => (
-            <li key={book.title} className="py-4">
-              <div className="flex flex-wrap items-baseline justify-between gap-4">
-                <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed]">
-                  {book.title}
-                </span>
-                <span className="font-mono text-[11px] text-[#6e6e6e]">
-                  {book.author} · {book.year}
-                </span>
-              </div>
+          {books.map((book) => {
+            const slug =
+              "book-" +
+              book.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+            return (
+              <li key={book.title} id={slug} className="py-4 transition-colors">
+                <div className="flex flex-wrap items-baseline justify-between gap-4">
+                  <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed]">
+                    {book.title}
+                  </span>
+                  <span className="font-mono text-[11px] text-[#6e6e6e]">
+                    {book.author} · {book.year}
+                  </span>
+                </div>
 
-              <blockquote className="mt-2 font-serif text-[13.5px] italic leading-relaxed text-[#b7b7b7] border-l border-[#3a3a3a] pl-3">
-                &ldquo;{book.quote}&rdquo;
-              </blockquote>
+                <blockquote className="mt-2 font-serif text-[13.5px] italic leading-relaxed text-[#b7b7b7] border-l border-[#3a3a3a] pl-3">
+                  &ldquo;{book.quote}&rdquo;
+                </blockquote>
 
-              <p className="mt-2 max-w-[62ch] font-sans text-[13px] leading-relaxed text-[#929292]">
-                {book.takeaway}
-              </p>
+                <p className="mt-2 max-w-[62ch] font-sans text-[13px] leading-relaxed text-[#929292]">
+                  {book.takeaway}
+                </p>
 
-              <div className="mt-2.5 flex items-center gap-2">
-                <span className="k-chip">{book.genre}</span>
-                <span className="font-mono text-[10.5px] text-[#6e6e6e]">
-                  {book.status}
-                </span>
-              </div>
-            </li>
-          ))}
+                <div className="mt-2.5 flex items-center gap-2">
+                  <span className="k-chip">{book.genre}</span>
+                  <span className="font-mono text-[10.5px] text-[#6e6e6e]">
+                    {book.status}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

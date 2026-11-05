@@ -1,66 +1,884 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  computeIsoBounds,
+  f2,
+  IsoBox,
+  IsoPlane,
+  IsoVents,
+  IsoScrews,
+  IsoFigureContainer,
+  type IsoProjector,
+} from "@/lib/iso";
+import { portfolio } from "@/data/portfolio";
 
+// Vector 3D mathematics
+type Vec3 = [number, number, number];
+
+const add = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const sub = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const mul = (a: Vec3, s: number): Vec3 => [a[0] * s, a[1] * s, a[2] * s];
+const mag = (a: Vec3): number => Math.hypot(...a);
+const unit = (a: Vec3): Vec3 => mul(a, 1 / mag(a));
+const dot = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a: Vec3, b: Vec3): Vec3 => [
+  a[1] * b[2] - a[2] * b[1],
+  a[2] * b[0] - a[0] * b[2],
+  a[0] * b[1] - a[1] * b[0],
+];
+
+// Physical scene dimensions
+const D = 7; // table height
+const O: Vec3 = [300, 250, D]; // table size
+const base = { x: 190, y: 22, w: 72, d: 60, h: 18 };
+const A = D + base.h; // base top Z (25)
+
+// Lamp articulated arm joint positions
+const j: Vec3 = [212, 37, 35]; // lower pivot
+const M: Vec3 = [180, 69, 150]; // elbow pivot
+const N: Vec3 = [125, 124, 146]; // wrist pivot
+const P: Vec3 = [115, 134, 134]; // shade mount
+
+const F = unit([1, 1, 0]); // arm lateral vector
+const I = unit([-0.22, 0.22, -1]); // lamp beam pointing direction
+const L = 34; // lamp shade cone length
+const rRear = 7; // shade rear radius
+const rRim = 24; // shade front aperture radius
+const zRim = add(P, mul(I, L)); // shade rim center
+const divergence = 0.52; // beam cone expansion rate
+const B = F; // shade orientation basis X
+const V = unit(cross(I, F)); // shade orientation basis Y
+
+// 3D circle point generator around center with radius at angle
+const circle3D = (center: Vec3, radius: number, angle: number): Vec3 =>
+  add(center, add(mul(B, radius * Math.cos(angle)), mul(V, radius * Math.sin(angle))));
+
+// Pool of light projection on plane at height zLevel
+const lightPool = (zLevel: number) => {
+  const t = (zRim[2] - zLevel) / -I[2];
+  return {
+    c: add(zRim, mul(I, t)),
+    r: rRim + divergence * t,
+  };
+};
+
+const tablePool = lightPool(D);
+
+// Book physical dimensions
+const spineX = 91;
+const pageWidth = 53;
+const pageY = [129, 197]; // page height = 197 - 129 = 68
+const bookZ = 18;
+const bookLightPool = lightPool(bookZ);
+const lineOffsets = [10, 17, 24, 31, 38, 45, 52, 59];
+
+// Compute isometric bounds & projection matrix
+const Y: IsoProjector & { viewBox: string } = computeIsoBounds([
+  [0, O[1], 0],
+  [O[0], 0, D],
+  [O[0], O[1], 0],
+  [0, 0, D],
+  [M[0], M[1], M[2] + 12],
+  [P[0], P[1], P[2] + 12],
+  circle3D(zRim, rRim, 0),
+  circle3D(zRim, rRim, Math.PI),
+  [spineX, pageY[0], 71],
+]);
+const X = Y.P;
+
+// Convex hull path helper for 2D projected silhouettes
+function convexHullPath(points: [number, number][]): string {
+  const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const crossProd = (o: [number, number], a: [number, number], b: [number, number]) =>
+    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower: [number, number][] = [];
+  const upper: [number, number][] = [];
+  for (const pt of sorted) {
+    while (lower.length >= 2 && crossProd(lower[lower.length - 2], lower[lower.length - 1], pt) <= 0) {
+      lower.pop();
+    }
+    lower.push(pt);
+  }
+  for (const pt of sorted.reverse()) {
+    while (upper.length >= 2 && crossProd(upper[upper.length - 2], upper[upper.length - 1], pt) <= 0) {
+      upper.pop();
+    }
+    upper.push(pt);
+  }
+  return `M${lower.slice(0, -1).concat(upper.slice(0, -1)).map((pt) => pt.map(f2).join(" ")).join("L")}Z`;
+}
+
+// 72-segment circle points for shade hull & light beam
+const angles72 = Array.from({ length: 72 }, (_, idx) => (idx / 72) * 2 * Math.PI);
+const shadeHullPath = convexHullPath(
+  angles72
+    .map((a) => X(...circle3D(P, rRear, a)))
+    .concat(angles72.map((a) => X(...circle3D(zRim, rRim, a))))
+);
+const beamConePath = convexHullPath(
+  angles72
+    .map((a) => X(...circle3D(zRim, rRim, a)))
+    .concat(
+      angles72.map((a) =>
+        X(
+          tablePool.c[0] + tablePool.r * 0.82 * Math.cos(a),
+          tablePool.c[1] + tablePool.r * 0.82 * Math.sin(a),
+          D
+        )
+      )
+    )
+);
+
+// Rim & circular contour lines
+function contourPath(center: Vec3, radius: number): string {
+  const lightDir: Vec3 = [1, 1, 1];
+  const slope = Math.atan2(17, L);
+  const normal = (angle: number) =>
+    add(
+      mul(add(mul(B, Math.cos(angle)), mul(V, Math.sin(angle))), Math.cos(slope)),
+      mul(I, -Math.sin(slope))
+    );
+  let pathStr = "";
+  let currentSegment: Vec3[] = [];
+  const flush = () => {
+    if (currentSegment.length > 1) {
+      pathStr += Y.path(currentSegment);
+    }
+    currentSegment = [];
+  };
+  for (let idx = 0; idx <= 72; idx++) {
+    const angle = (idx / 72) * 2 * Math.PI;
+    if (dot(normal(angle), lightDir) > 0) {
+      currentSegment.push(circle3D(center, radius, angle));
+    } else {
+      flush();
+    }
+  }
+  flush();
+  return pathStr;
+}
+
+const shadeFrontRim = contourPath(zRim, rRim);
+const shadeRidges = [0.62, 0.86].map((frac) =>
+  contourPath(add(P, mul(I, frac * L)), rRear + 17 * frac)
+);
+
+// Linkage bar between joints
+function LinkageBar({
+  a: ptA,
+  b: ptB,
+  w: barWidth,
+  off = 0,
+}: {
+  a: Vec3;
+  b: Vec3;
+  w: number;
+  off?: number;
+}) {
+  const dir = unit(sub(ptB, ptA));
+  const normal = unit(cross(F, dir));
+  return (
+    <g transform={Y.plane(add(ptA, mul(normal, off)), dir, normal)}>
+      <rect
+        className="face"
+        x={-barWidth / 2}
+        y={-barWidth / 2}
+        width={mag(sub(ptB, ptA)) + barWidth}
+        height={barWidth}
+        rx={barWidth / 2}
+      />
+    </g>
+  );
+}
+
+// Circular pivot joint
+function PivotJoint({ at: center, r: radius }: { at: Vec3; r: number }) {
+  return (
+    <g transform={Y.plane(center, unit([-1, 1, 0]), [0, 0, -1])}>
+      <circle className="face" r={radius} />
+      <circle className="detail" r={radius * 0.45} />
+      <circle className="face recess" r="1.3" />
+    </g>
+  );
+}
+
+// Tension spring coil between base and elbow
+const springPath = (() => {
+  const dir = unit(sub(M, j));
+  const normal = unit(cross(F, dir));
+  const dist = mag(sub(M, j));
+  const pts: Vec3[] = [];
+  for (let idx = 0; idx <= 160; idx++) {
+    const alpha = 0.12 + (0.6 * idx) / 160;
+    const angle = (idx / 160) * 22 * 2 * Math.PI;
+    pts.push(
+      add(
+        add(add(j, mul(dir, alpha * dist)), mul(normal, 1.8 * Math.sin(angle))),
+        mul(F, 4 + 1.8 * Math.cos(angle))
+      )
+    );
+  }
+  return Y.path(pts);
+})();
+
+// Page curve calculation
+const PAGE_TURN_DURATION = 1.6;
+const CYCLE_PERIOD = 3.4;
+const smoothStepT = (val: number) => {
+  const t = Math.min(1, Math.max(0, val));
+  return t * t * (3 - 2 * t);
+};
+
+function computePageCurve(angle: number): [number, number][] {
+  const pts: [number, number][] = [[spineX, bookZ]];
+  let [curX, curZ] = pts[0];
+  for (let idx = 1; idx <= 12; idx++) {
+    const frac = idx / 12;
+    const curAngle = angle - 0.6 * Math.sin(angle) * frac * frac;
+    curX += (Math.cos(curAngle) * pageWidth) / 12;
+    curZ += (Math.sin(curAngle) * pageWidth) / 12;
+    pts.push([curX, curZ]);
+  }
+  return pts;
+}
+
+const samplePageCurve = (curve: [number, number][], t: number): [number, number] => {
+  const scaled = Math.min(1, Math.max(0, t)) * (curve.length - 1);
+  const idx = Math.min(curve.length - 2, Math.floor(scaled));
+  const frac = scaled - idx;
+  const [x0, z0] = curve[idx];
+  const [x1, z1] = curve[idx + 1];
+  return [x0 + (x1 - x0) * frac, z0 + (z1 - z0) * frac];
+};
+
+// Turning page component
+function TurningPage({ angle, lit }: { angle: number; lit: boolean }) {
+  const curve = computePageCurve(angle);
+  const pagePath = `${Y.path([
+    ...curve.map(([px, pz]) => [px, pageY[1], pz] as Vec3),
+    ...[...curve].reverse().map(([px, pz]) => [px, pageY[0], pz] as Vec3),
+  ])}Z`;
+
+  const textLines = lineOffsets
+    .map((offset, idx) => {
+      const startPt = samplePageCurve(curve, 6 / pageWidth);
+      const endPt = samplePageCurve(
+        curve,
+        (idx === lineOffsets.length - 1 ? 30 : 46) / pageWidth
+      );
+      return Y.path([
+        [startPt[0], pageY[0] + offset, startPt[1]],
+        [endPt[0], pageY[0] + offset, endPt[1]],
+      ]);
+    })
+    .join("");
+
+  const [edgeX, edgeZ] = curve[curve.length - 1];
+
+  return (
+    <g className={`k-page${lit ? " hot" : ""}`}>
+      <path className="face top" d={pagePath} />
+      <path className="detail" d={textLines} />
+      <path
+        className="k-page-edge"
+        filter="url(#k-soft)"
+        d={Y.path([
+          [edgeX, pageY[0], edgeZ],
+          [edgeX, pageY[1], edgeZ],
+        ])}
+      />
+    </g>
+  );
+}
+
+// Static halves of the open book
+function BookHalves({ side }: { side: number }) {
+  const posX = side < 0 ? 38 : 92;
+  return (
+    <>
+      <IsoBox
+        k={Y}
+        at={[posX, pageY[0], 10]}
+        size={[52, pageY[1] - pageY[0], 8]}
+        r={1.5}
+      />
+      <IsoPlane t={Y.FRONT(posX, pageY[1], bookZ)}>
+        <IsoVents from={1.6} to={6.4} step={1.2} across={[1.5, 50.5]} vertical={false} />
+      </IsoPlane>
+      {side > 0 && (
+        <IsoPlane t={Y.SIDE(posX + pageWidth - 1, pageY[1], bookZ)}>
+          <IsoVents
+            from={1.6}
+            to={6.4}
+            step={1.2}
+            across={[1.5, pageY[1] - pageY[0] - 1.5]}
+            vertical={false}
+          />
+        </IsoPlane>
+      )}
+      <IsoPlane t={Y.TOP(posX, pageY[0], bookZ)}>
+        {lineOffsets.map((lineOffset, idx) => (
+          <line
+            key={lineOffset}
+            className="detail"
+            x1={6}
+            y1={lineOffset}
+            x2={idx === lineOffsets.length - 1 ? 30 : 46}
+            y2={lineOffset}
+          />
+        ))}
+      </IsoPlane>
+    </>
+  );
+}
+
+// Light pool illumination on the book
+function BookLightPool({ on }: { on: boolean }) {
+  const [cx, cy] = [bookLightPool.c[0] - 38, bookLightPool.c[1] - pageY[0]];
+  return (
+    <g className={`k-light${on ? " on" : ""}`}>
+      <g transform={Y.TOP(38, pageY[0], bookZ)}>
+        <g clipPath="url(#k-pages)">
+          <circle cx={f2(cx)} cy={f2(cy)} r={f2(bookLightPool.r)} fill="url(#k-pool)" />
+          <circle
+            cx={f2(cx)}
+            cy={f2(cy)}
+            r={f2(bookLightPool.r * 0.45)}
+            fill="url(#k-pool)"
+            filter="url(#k-bloom)"
+          />
+        </g>
+      </g>
+    </g>
+  );
+}
+
+// Finished books stack component on the desk
+function FinishedBooksStack({
+  k: projector,
+  at: [bx, by, bz],
+  books,
+  onPick,
+}: {
+  k: IsoProjector;
+  at: Vec3;
+  books: typeof portfolio.books;
+  onPick: (book: (typeof portfolio.books)[0] | null) => void;
+}) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const pointerTypeRef = useRef("mouse");
+
+  const hashString = (str: string) =>
+    str.split("").reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7);
+
+  let currentZ = bz;
+  const stackItems = [...books].reverse().map((book) => {
+    const hash = hashString(book.title);
+    const bookWidth = 68 + (hash % 12);
+    const bookDepth = 50 + ((hash >> 4) % 8);
+    const thickness = Math.round((3.5 + 280 / 100) * 10) / 10;
+    const item = {
+      book,
+      x: bx + (80 - bookWidth) / 2 + (((hash >> 7) % 7) - 3),
+      y: by + (58 - bookDepth),
+      z: currentZ,
+      w: bookWidth,
+      d: bookDepth,
+      t: thickness,
+      tone: hash % 4,
+    };
+    currentZ += thickness;
+    return item;
+  });
+
+  const [pullX, pullY] = projector.D(0, 13, 0);
+
+  const handlePick = (idx: number | null) => {
+    setHoveredIdx(idx);
+    onPick(idx === null ? null : stackItems[idx].book);
+  };
+
+  const handleScrollToBook = (book: (typeof portfolio.books)[0]) => {
+    const slug =
+      "book-" +
+      book.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    const el = document.getElementById(slug);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.remove("k-book-flash");
+      void el.offsetWidth;
+      el.classList.add("k-book-flash");
+    }
+  };
+
+  return (
+    <g className="k-stack seen">
+      {stackItems.map(
+        ({ book, x: itemX, y: itemY, z: itemZ, w: itemW, d: itemD, t: itemT, tone }, idx) => {
+          const isTop = idx === stackItems.length - 1;
+          const fontSize = Math.min(itemT * 0.66, 4.4);
+          const isSelected = hoveredIdx === idx;
+          return (
+            <g
+              key={book.title}
+              className={`k-stack__book${isSelected ? " out" : ""}`}
+              style={
+                {
+                  "--i": idx,
+                  "--pull": `translate(${f2(pullX)}px, ${f2(pullY)}px)`,
+                } as React.CSSProperties
+              }
+              tabIndex={0}
+              role="button"
+              aria-label={`${book.title} by ${book.author}`}
+              onPointerDown={(e) => {
+                pointerTypeRef.current = e.pointerType;
+              }}
+              onPointerEnter={(e) => {
+                if (e.pointerType === "mouse") handlePick(idx);
+              }}
+              onPointerLeave={(e) => {
+                if (e.pointerType === "mouse") handlePick(null);
+              }}
+              onFocus={() => handlePick(idx)}
+              onBlur={() => handlePick(null)}
+              onClick={() => {
+                if (pointerTypeRef.current === "touch" && hoveredIdx !== idx) {
+                  handlePick(idx);
+                } else {
+                  handleScrollToBook(book);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleScrollToBook(book);
+                }
+              }}
+            >
+              <IsoBox
+                k={projector}
+                at={[itemX, itemY, itemZ]}
+                size={[itemW, itemD, itemT]}
+                className={`tone-${tone} pages`}
+              />
+              <IsoPlane t={projector.FRONT(itemX, itemY + itemD, itemZ + itemT)}>
+                {itemT >= 5 ? (
+                  <text
+                    className="k-stack__title"
+                    x="5"
+                    y={f2(itemT / 2)}
+                    fontSize={f2(fontSize)}
+                    dominantBaseline="central"
+                  >
+                    {book.title.toUpperCase()}
+                  </text>
+                ) : (
+                  <line
+                    className="detail"
+                    x1="5"
+                    y1={f2(itemT / 2)}
+                    x2={f2(Math.min(itemW - 5, 5 + book.title.length * 1.6))}
+                    y2={f2(itemT / 2)}
+                  />
+                )}
+              </IsoPlane>
+              {isTop && (
+                <IsoPlane t={projector.TOP(itemX, itemY, itemZ + itemT)}>
+                  <text className="k-stack__title" x="7" y="12" fontSize="4.6">
+                    {book.title.toUpperCase()}
+                  </text>
+                  <line
+                    className="detail"
+                    x1="7"
+                    y1={f2(itemD - 14)}
+                    x2={f2(itemW - 7)}
+                    y2={f2(itemD - 14)}
+                  />
+                  <text className="k-stack__title" x="7" y={f2(itemD - 8)} fontSize="3.2">
+                    {book.author.toUpperCase()}
+                  </text>
+                </IsoPlane>
+              )}
+            </g>
+          );
+        }
+      )}
+    </g>
+  );
+}
+
+// Main Desk Lamp Figure
 export function DeskLampFigure() {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const switchRef = useRef<SVGGElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number; from: number; moved: boolean } | null>(null);
+
   const [lampOn, setLampOn] = useState(true);
-  const [dimmerIdx, setDimmerIdx] = useState(3);
-  const [pulledBook, setPulledBook] = useState<number | null>(null);
-  const [pageFlipped, setPageFlipped] = useState(false);
-  const [pulse, setPulse] = useState(0);
+  const [dimmer, setDimmer] = useState(0.8);
+  const [animTime, setAnimTime] = useState(PAGE_TURN_DURATION * 0.55);
+  const [pageNum, setPageNum] = useState(1);
+  const [isHeld, setIsHeld] = useState(false);
+  const [pickedBook, setPickedBook] = useState<(typeof portfolio.books)[0] | null>(null);
 
-  const dimmerLevels = [0.3, 0.55, 0.8, 1.0];
-  const dimmerAngles = [-45, 0, 45, 81];
-  const dimmer = dimmerLevels[dimmerIdx];
-  const knobAngle = dimmerAngles[dimmerIdx];
+  const cycleTimeRef = useRef(PAGE_TURN_DURATION * 0.55);
+  const stateRef = useRef({ lampOn, isHeld });
+  stateRef.current = { lampOn, isHeld };
 
-  // 1. Autonomous page-turning reading loop
+  // Autonomous page turning loop
   useEffect(() => {
-    const pageTimer = setInterval(() => {
-      setPageFlipped((f) => !f);
-    }, 4500);
-    return () => clearInterval(pageTimer);
-  }, []);
+    let animId = 0;
+    let lastTimestamp: number | null = null;
 
-  // 2. Autonomous shelf browsing loop (staggered book pullout)
-  useEffect(() => {
-    const bookTimer = setInterval(() => {
-      setPulledBook((b) => (b === null ? 0 : (b + 1) % 10));
-    }, 3200);
-    return () => clearInterval(bookTimer);
-  }, []);
+    const step = (now: number) => {
+      const dt = lastTimestamp === null ? 0 : Math.min(1 / 30, (now - lastTimestamp) / 1000);
+      lastTimestamp = now;
 
-  // 3. Natural breathing warmth pulse on lamp beam
-  useEffect(() => {
-    let animId: number;
-    let t = 0;
-    const step = () => {
-      t += 0.04;
-      setPulse(Math.sin(t) * 0.07);
+      if (stateRef.current.lampOn && !stateRef.current.isHeld) {
+        const prevCycle = cycleTimeRef.current;
+        cycleTimeRef.current = (cycleTimeRef.current + dt) % CYCLE_PERIOD;
+        if (cycleTimeRef.current < prevCycle) {
+          setPageNum((p) => p + 1);
+        }
+        setAnimTime(cycleTimeRef.current);
+      }
       animId = requestAnimationFrame(step);
     };
+
     animId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  const handleCycleDimmer = () => {
-    setDimmerIdx((idx) => (idx + 1) % dimmerLevels.length);
-    if (!lampOn) setLampOn(true);
+  const handleUpdateDimmer = (val: number) => {
+    const clamped = Math.round(Math.min(1, Math.max(0.1, val)) * 10) / 10;
+    setDimmer(clamped);
+    setLampOn(true);
   };
 
-  const handleFlipPage = () => {
-    setPageFlipped((f) => !f);
-  };
+  const currentBook = portfolio.books[0];
+  const pageAngle = Math.PI * smoothStepT(Math.min(animTime, PAGE_TURN_DURATION) / PAGE_TURN_DURATION);
+  const isTurningForward = pageAngle < Math.PI / 2;
+  const isPageLit = animTime < PAGE_TURN_DURATION && lampOn;
 
-  return (
-    <div
-      className="k-iso w-full flex items-center justify-center py-4 my-2 select-none"
-      style={{
-        opacity: lampOn ? 1 : 0.92,
-        transition: "opacity 0.3s ease",
+  const turningPageEl = <TurningPage angle={pageAngle} lit={isPageLit} />;
+
+  const openBookEl = (
+    <g
+      onPointerEnter={() => setIsHeld(true)}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "touch") setIsHeld(false);
       }}
     >
-      <svg className="w-full max-w-[580px] h-auto overflow-visible select-none" role="img" aria-label="An isometric desk lamp lighting an open book whose pages turn, beside a stack of the 10 books I&#x27;ve finished. Turn the dimmer on its base to set how bright it is, and click its switch to turn it off and on." viewBox="0 0 540.20 360.13" tabIndex={0} style={{ opacity: lampOn ? 1 : 0.95 }}><defs><filter id="k-glow" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="4" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><filter id="k-soft" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="2.2" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter><filter id="k-bloom" filterUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><feGaussianBlur stdDeviation="9"></feGaussianBlur></filter></defs><defs><radialGradient id="k-pool"><stop offset="0" stopColor="var(--iso-accent-hi)" stopOpacity={lampOn ? 0.55 * dimmer : 0}></stop><stop offset=".4" stopColor="var(--iso-accent-hi)" stopOpacity={lampOn ? 0.35 * dimmer : 0}></stop><stop offset=".75" stopColor="var(--iso-accent)" stopOpacity={lampOn ? 0.12 * dimmer : 0}></stop><stop offset="1" stopColor="var(--iso-accent)" stopOpacity="0"></stop></radialGradient><linearGradient id="k-beam" gradientUnits="userSpaceOnUse" x1="219.62" y1="84.28" x2="183.60" y2="178.82"><stop offset="0" stopColor="var(--iso-accent-hi)" stopOpacity={lampOn ? 0.3 * dimmer : 0}></stop><stop offset=".6" stopColor="var(--iso-accent)" stopOpacity={lampOn ? 0.12 * dimmer : 0}></stop><stop offset="1" stopColor="var(--iso-accent)" stopOpacity="0"></stop></linearGradient><clipPath id="k-pages"><rect x="0" y="0" width="106" height="68"></rect></clipPath></defs><path className="face" d="M501.15 211.32L501.07 212.29L500.82 213.25L500.41 214.19L499.85 215.10L499.13 215.98L498.26 216.82L497.26 217.60L496.13 218.32L303.87 329.32L301.28 330.55L298.31 331.46L295.09 332.02L291.75 332.22L288.40 332.02L285.19 331.46L282.22 330.55L279.62 329.32L44.07 193.32L42.94 192.60L41.93 191.82L41.07 190.98L40.35 190.10L39.78 189.19L39.37 188.25L39.13 187.29L39.04 186.32L39.04 179.32L39.13 180.29L39.37 181.25L39.78 182.19L40.35 183.10L41.07 183.98L41.93 184.82L42.94 185.60L44.07 186.32L279.62 322.32L282.22 323.55L285.19 324.46L288.40 325.02L291.75 325.22L295.09 325.02L298.31 324.46L301.28 323.55L303.87 322.32L496.13 211.32L497.26 210.60L498.26 209.82L499.13 208.98L499.85 208.10L500.41 207.19L500.82 206.25L501.07 205.29L501.15 204.32Z"></path><path className="face top" d="M496.13 197.32L498.26 198.82L499.85 200.53L500.82 202.38L501.15 204.32L500.82 206.25L499.85 208.10L498.26 209.82L496.13 211.32L303.87 322.32L301.28 323.55L298.31 324.46L295.09 325.02L291.75 325.22L288.40 325.02L285.19 324.46L282.22 323.55L279.62 322.32L44.07 186.32L41.93 184.82L40.35 183.10L39.37 181.25L39.04 179.32L39.37 177.38L40.35 175.53L41.93 173.82L44.07 172.32L236.32 61.32L238.92 60.08L241.89 59.17L245.10 58.61L248.45 58.42L251.79 58.61L255.01 59.17L257.97 60.08L260.57 61.32Z"></path><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 248.45 54.32)"><rect className="detail" x="9" y="9" width="282" height="232" rx="10"></rect><g><circle className="face recess" cx="18" cy="18" r="3"></circle><line className="detail" x1="16.2" y1="18" x2="19.8" y2="18"></line></g><g><circle className="face recess" cx="282" cy="18" r="3"></circle><line className="detail" x1="280.2" y1="18" x2="283.8" y2="18"></line></g><g><circle className="face recess" cx="18" cy="232" r="3"></circle><line className="detail" x1="16.2" y1="232" x2="19.8" y2="232"></line></g><g><circle className="face recess" cx="282" cy="232" r="3"></circle><line className="detail" x1="280.2" y1="232" x2="283.8" y2="232"></line></g><g className={`k-light ${lampOn ? "on" : ""}`}><circle cx="87.06" cy="161.94" r="98.13" fill="url(#k-pool)"></circle></g></g><path className="face" d="M453.25 196.32L453.21 196.73L453.11 197.14L452.93 197.55L452.69 197.94L452.38 198.32L452.01 198.67L451.58 199.01L451.10 199.32L409.53 223.32L408.42 223.84L407.14 224.24L405.77 224.48L404.33 224.56L402.90 224.48L401.52 224.24L400.25 223.84L399.14 223.32L347.17 193.32L346.69 193.01L346.26 192.67L345.89 192.32L345.58 191.94L345.34 191.55L345.16 191.14L345.06 190.73L345.02 190.32L345.02 172.32L345.06 172.73L345.16 173.14L345.34 173.55L345.58 173.94L345.89 174.32L346.26 174.67L346.69 175.01L347.17 175.32L399.14 205.32L400.25 205.84L401.52 206.24L402.90 206.48L404.33 206.56L405.77 206.48L407.14 206.24L408.42 205.84L409.53 205.32L451.10 181.32L451.58 181.01L452.01 180.67L452.38 180.32L452.69 179.94L452.93 179.55L453.11 179.14L453.21 178.73L453.25 178.32Z"></path><path className="face top" d="M451.10 175.32L452.01 175.96L452.69 176.69L453.11 177.49L453.25 178.32L453.11 179.14L452.69 179.94L452.01 180.67L451.10 181.32L409.53 205.32L408.42 205.84L407.14 206.24L405.77 206.48L404.33 206.56L402.90 206.48L401.52 206.24L400.25 205.84L399.14 205.32L347.17 175.32L346.26 174.67L345.58 173.94L345.16 173.14L345.02 172.32L345.16 171.49L345.58 170.69L346.26 169.96L347.17 169.32L388.74 145.32L389.86 144.79L391.13 144.40L392.51 144.15L393.94 144.07L395.37 144.15L396.75 144.40L398.02 144.79L399.14 145.32Z"></path><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 393.94 142.32)"><rect className="detail" x="4" y="4" width="64" height="52" rx="4"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 341.98 172.32)"><line className="detail" x1="8.00" y1="5" x2="8.00" y2="13"></line><line className="detail" x1="11.00" y1="5" x2="11.00" y2="13"></line><line className="detail" x1="14.00" y1="5" x2="14.00" y2="13"></line><line className="detail" x1="17.00" y1="5" x2="17.00" y2="13"></line><line className="detail" x1="20.00" y1="5" x2="20.00" y2="13"></line><line className="detail" x1="23.00" y1="5" x2="23.00" y2="13"></line><line className="detail" x1="26.00" y1="5" x2="26.00" y2="13"></line><line className="detail" x1="29.00" y1="5" x2="29.00" y2="13"></line><text className="label" x="64" y="11.5" fontSize="5" textAnchor="end">KF-03</text></g><path className="wire" d="M432.91 206.32L441.57 214.22L442.44 225.72L414.72 245.72L368.83 273.22"></path><g className="k-dimmer cursor-pointer" onClick={(e) => { e.stopPropagation(); handleCycleDimmer(); }}><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 381.82 174.32)"><circle className="k-dimmer__hit" r="17"></circle><line className="detail k-tick" x1="-7.78" y1="7.78" x2="-10.25" y2="10.25"></line><line className="detail k-tick" x1="-10.46" y1="3.40" x2="-12.36" y2="4.02"></line><line className="detail k-tick" x1="-10.86" y1="-1.72" x2="-12.84" y2="-2.03"></line><line className="detail k-tick" x1="-8.90" y1="-6.47" x2="-10.52" y2="-7.64"></line><line className="detail k-tick" x1="-4.99" y1="-9.80" x2="-5.90" y2="-11.58"></line><line className="detail k-tick" x1="0.00" y1="-11.00" x2="0.00" y2="-14.50"></line><line className="detail k-tick" x1="4.99" y1="-9.80" x2="5.90" y2="-11.58"></line><line className="detail k-tick" x1="8.90" y1="-6.47" x2="10.52" y2="-7.64"></line><line className="detail k-tick" x1="10.86" y1="-1.72" x2="12.84" y2="-2.03"></line><line className="detail k-tick" x1="10.46" y1="3.40" x2="12.36" y2="4.02"></line><line className="detail k-tick" x1="7.78" y1="7.78" x2="10.25" y2="10.25"></line><circle className="face top" r="9"></circle><circle className="detail" r="7"></circle><rect className="k-knob" x="-1" y="-7.7" width="2" height="7.7" rx="1" transform={`rotate(${knobAngle})`}></rect></g></g><g className={`press ${lampOn ? "latched lit" : ""}`} onClick={(e) => { e.stopPropagation(); setLampOn((l) => !l); }}><path className="face" d="M417.17 190.32L417.16 190.45L417.13 190.59L417.07 190.73L416.99 190.86L416.89 190.98L416.76 191.10L416.62 191.21L416.46 191.32L406.06 197.32L405.69 197.49L405.27 197.62L404.81 197.70L404.33 197.73L403.85 197.70L403.40 197.62L402.97 197.49L402.60 197.32L392.21 191.32L392.05 191.21L391.90 191.10L391.78 190.98L391.68 190.86L391.60 190.73L391.54 190.59L391.50 190.45L391.49 190.32L391.49 185.32L391.50 185.45L391.54 185.59L391.60 185.73L391.68 185.86L391.78 185.98L391.90 186.10L392.05 186.21L392.21 186.32L402.60 192.32L402.97 192.49L403.40 192.62L403.85 192.70L404.33 192.73L404.81 192.70L405.27 192.62L405.69 192.49L406.06 192.32L416.46 186.32L416.62 186.21L416.76 186.10L416.89 185.98L416.99 185.86L417.07 185.73L417.13 185.59L417.16 185.45L417.17 185.32Z"></path><path className="face top" d="M416.46 184.32L416.76 184.53L416.99 184.77L417.13 185.04L417.17 185.32L417.13 185.59L416.99 185.86L416.76 186.10L416.46 186.32L406.06 192.32L405.69 192.49L405.27 192.62L404.81 192.70L404.33 192.73L403.85 192.70L403.40 192.62L402.97 192.49L402.60 192.32L392.21 186.32L391.90 186.10L391.68 185.86L391.54 185.59L391.49 185.32L391.54 185.04L391.68 184.77L391.90 184.53L392.21 184.32L402.60 178.32L402.97 178.14L403.40 178.01L403.85 177.93L404.33 177.90L404.81 177.93L405.27 178.01L405.69 178.14L406.06 178.32Z"></path><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 404.33 177.32)"><line className="detail" x1="2" y1="8" x2="14" y2="8"></line><text className="label" x="8" y="6" fontSize="4.5" textAnchor="middle">I</text><text className="label" x="8" y="13.6" fontSize="4.5" textAnchor="middle">O</text></g></g><path className="face" d="M411.98 161.32L411.97 161.45L411.93 161.59L411.87 161.73L411.79 161.86L411.69 161.98L411.57 162.10L411.42 162.21L411.26 162.32L402.60 167.32L402.23 167.49L401.81 167.62L401.35 167.70L400.87 167.73L400.39 167.70L399.93 167.62L399.51 167.49L399.14 167.32L388.74 161.32L388.58 161.21L388.44 161.10L388.32 160.98L388.21 160.86L388.13 160.73L388.07 160.59L388.04 160.45L388.03 160.32L388.03 152.32L388.04 152.45L388.07 152.59L388.13 152.73L388.21 152.86L388.32 152.98L388.44 153.10L388.58 153.21L388.74 153.32L399.14 159.32L399.51 159.49L399.93 159.62L400.39 159.70L400.87 159.73L401.35 159.70L401.81 159.62L402.23 159.49L402.60 159.32L411.26 154.32L411.42 154.21L411.57 154.10L411.69 153.98L411.79 153.86L411.87 153.73L411.93 153.59L411.97 153.45L411.98 153.32Z"></path><path className="face top" d="M411.26 152.32L411.57 152.53L411.79 152.77L411.93 153.04L411.98 153.32L411.93 153.59L411.79 153.86L411.57 154.10L411.26 154.32L402.60 159.32L402.23 159.49L401.81 159.62L401.35 159.70L400.87 159.73L400.39 159.70L399.93 159.62L399.51 159.49L399.14 159.32L388.74 153.32L388.44 153.10L388.21 152.86L388.07 152.59L388.03 152.32L388.07 152.04L388.21 151.77L388.44 151.53L388.74 151.32L397.40 146.32L397.78 146.14L398.20 146.01L398.66 145.93L399.14 145.90L399.61 145.93L400.07 146.01L400.50 146.14L400.87 146.32Z"></path><g><path className="face" d="M216.26 163.32L216.24 163.45L216.21 163.59L216.15 163.73L216.07 163.86L215.97 163.98L215.84 164.10L215.70 164.21L215.54 164.32L156.65 198.32L156.28 198.49L155.85 198.62L155.40 198.70L154.92 198.73L154.44 198.70L153.98 198.62L153.56 198.49L153.19 198.32L109.02 172.82L108.86 172.71L108.71 172.60L108.59 172.48L108.49 172.36L108.41 172.23L108.35 172.09L108.31 171.95L108.30 171.82L108.30 168.82L108.31 168.95L108.35 169.09L108.41 169.23L108.49 169.36L108.59 169.48L108.71 169.60L108.86 169.71L109.02 169.82L153.19 195.32L153.56 195.49L153.98 195.62L154.44 195.70L154.92 195.73L155.40 195.70L155.85 195.62L156.28 195.49L156.65 195.32L215.54 161.32L215.70 161.21L215.84 161.10L215.97 160.98L216.07 160.86L216.15 160.73L216.21 160.59L216.24 160.45L216.26 160.32Z"></path><path className="face top" d="M215.54 159.32L215.84 159.53L216.07 159.77L216.21 160.04L216.26 160.32L216.21 160.59L216.07 160.86L215.84 161.10L215.54 161.32L156.65 195.32L156.28 195.49L155.85 195.62L155.40 195.70L154.92 195.73L154.44 195.70L153.98 195.62L153.56 195.49L153.19 195.32L109.02 169.82L108.71 169.60L108.49 169.36L108.35 169.09L108.30 168.82L108.35 168.54L108.49 168.27L108.71 168.03L109.02 167.82L167.91 133.82L168.28 133.64L168.70 133.51L169.16 133.43L169.64 133.40L170.12 133.43L170.58 133.51L171.00 133.64L171.37 133.82Z"></path><path className="face" d="M263.89 190.82L263.88 190.95L263.84 191.09L263.78 191.23L263.70 191.36L263.60 191.48L263.47 191.60L263.33 191.71L263.17 191.82L204.28 225.82L203.91 225.99L203.49 226.12L203.03 226.20L202.55 226.23L202.07 226.20L201.61 226.12L201.19 225.99L200.82 225.82L156.65 200.32L156.49 200.21L156.34 200.10L156.22 199.98L156.12 199.86L156.04 199.73L155.98 199.59L155.94 199.45L155.93 199.32L155.93 196.32L155.94 196.45L155.98 196.59L156.04 196.73L156.12 196.86L156.22 196.98L156.34 197.10L156.49 197.21L156.65 197.32L200.82 222.82L201.19 222.99L201.61 223.12L202.07 223.20L202.55 223.23L203.03 223.20L203.49 223.12L203.91 222.99L204.28 222.82L263.17 188.82L263.33 188.71L263.47 188.60L263.60 188.48L263.70 188.36L263.78 188.23L263.84 188.09L263.88 187.95L263.89 187.82Z"></path><path className="face top" d="M263.17 186.82L263.47 187.03L263.70 187.27L263.84 187.54L263.89 187.82L263.84 188.09L263.70 188.36L263.47 188.60L263.17 188.82L204.28 222.82L203.91 222.99L203.49 223.12L203.03 223.20L202.55 223.23L202.07 223.20L201.61 223.12L201.19 222.99L200.82 222.82L156.65 197.32L156.34 197.10L156.12 196.86L155.98 196.59L155.93 196.32L155.98 196.04L156.12 195.77L156.34 195.53L156.65 195.32L215.54 161.32L215.91 161.14L216.33 161.01L216.79 160.93L217.27 160.90L217.75 160.93L218.21 161.01L218.63 161.14L219.00 161.32Z"></path><path className="face" d="M213.91 160.82L213.90 160.92L213.88 161.02L213.83 161.12L213.77 161.22L213.70 161.32L213.60 161.40L213.49 161.49L213.37 161.57L157.08 194.07L156.80 194.20L156.49 194.30L156.14 194.36L155.78 194.38L155.42 194.36L155.08 194.30L154.76 194.20L154.48 194.07L112.05 169.57L111.93 169.49L111.82 169.40L111.73 169.32L111.65 169.22L111.59 169.12L111.55 169.02L111.52 168.92L111.51 168.82L111.51 160.82L111.52 160.92L111.55 161.02L111.59 161.12L111.65 161.22L111.73 161.32L111.82 161.40L111.93 161.49L112.05 161.57L154.48 186.07L154.76 186.20L155.08 186.30L155.42 186.36L155.78 186.38L156.14 186.36L156.49 186.30L156.80 186.20L157.08 186.07L213.37 153.57L213.49 153.49L213.60 153.40L213.70 153.32L213.77 153.22L213.83 153.12L213.88 153.02L213.90 152.92L213.91 152.82Z"></path><path className="face top" d="M213.37 152.07L213.60 152.23L213.77 152.41L213.88 152.61L213.91 152.82L213.88 153.02L213.77 153.22L213.60 153.40L213.37 153.57L157.08 186.07L156.80 186.20L156.49 186.30L156.14 186.36L155.78 186.38L155.42 186.36L155.08 186.30L154.76 186.20L154.48 186.07L112.05 161.57L111.82 161.40L111.65 161.22L111.55 161.02L111.51 160.82L111.55 160.61L111.65 160.41L111.82 160.23L112.05 160.07L168.34 127.57L168.62 127.43L168.94 127.34L169.28 127.28L169.64 127.26L170.00 127.28L170.34 127.34L170.66 127.43L170.94 127.57Z"></path><g transform="matrix(0.8660 0.5000 0.0000 1.0000 110.75 160.82)"><line className="detail" x1="1.5" y1="1.60" x2="50.5" y2="1.60"></line><line className="detail" x1="1.5" y1="2.80" x2="50.5" y2="2.80"></line><line className="detail" x1="1.5" y1="4.00" x2="50.5" y2="4.00"></line><line className="detail" x1="1.5" y1="5.20" x2="50.5" y2="5.20"></line><line className="detail" x1="1.5" y1="6.40" x2="50.5" y2="6.40"></line></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 169.64 126.82)"><line className="detail" x1="6" y1="10" x2="46" y2="10"></line><line className="detail" x1="6" y1="17" x2="46" y2="17"></line><line className="detail" x1="6" y1="24" x2="46" y2="24"></line><line className="detail" x1="6" y1="31" x2="46" y2="31"></line><line className="detail" x1="6" y1="38" x2="46" y2="38"></line><line className="detail" x1="6" y1="45" x2="46" y2="45"></line><line className="detail" x1="6" y1="52" x2="46" y2="52"></line><line className="detail" x1="6" y1="59" x2="30" y2="59"></line></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 169.64 126.82)"><text className="label" x="6" y="5.5" fontSize="3.6" letterSpacing="0.6">THE METAMORPHOSIS</text></g><g className={`k-light ${lampOn ? "on" : ""}`}><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 169.64 126.82)"><g clipPath="url(#k-pages)"><circle cx="51.48" cy="30.52" r="69.49" fill="url(#k-pool)"></circle><circle cx="51.48" cy="30.52" r="31.27" fill="url(#k-pool)" filter="url(#k-bloom)"></circle></g></g></g><g className={`k-page cursor-pointer ${pageFlipped ? "hot" : ""}`} onClick={(e) => { e.stopPropagation(); setPageFlipped(true); setTimeout(() => setPageFlipped(false), 900); }}><path className="face top" d="M156.65 187.32L155.77 182.51L154.94 177.72L154.19 172.96L153.54 168.23L153.03 163.56L152.69 158.96L152.56 154.47L152.65 150.11L153.01 145.92L153.66 141.94L154.62 138.22L155.93 134.83L214.82 100.83L213.51 104.22L212.54 107.94L211.90 111.92L211.54 116.11L211.45 120.47L211.58 124.96L211.92 129.56L212.43 134.23L213.08 138.96L213.83 143.72L214.66 148.51L215.54 153.32Z"></path><path className="detail" d="M205.71 151.79L204.29 111.40M199.64 155.29L198.22 114.90M193.58 158.79L192.16 118.40M187.52 162.29L186.10 121.90M181.46 165.79L180.04 125.40M175.40 169.29L173.98 128.90M169.33 172.79L167.91 132.40M163.27 176.29L160.38 150.90"></path><path className="k-page-edge" filter="url(#k-soft)" d="M214.82 100.83L155.93 134.83"></path></g><path className="face" d="M260.68 187.82L260.67 187.92L260.64 188.02L260.60 188.12L260.54 188.22L260.46 188.32L260.37 188.40L260.26 188.49L260.14 188.57L203.85 221.07L203.57 221.20L203.25 221.30L202.91 221.36L202.55 221.38L202.19 221.36L201.85 221.30L201.53 221.20L201.25 221.07L158.81 196.57L158.69 196.49L158.59 196.40L158.49 196.32L158.42 196.22L158.36 196.12L158.31 196.02L158.29 195.92L158.28 195.82L158.28 187.82L158.29 187.92L158.31 188.02L158.36 188.12L158.42 188.22L158.49 188.32L158.59 188.40L158.69 188.49L158.81 188.57L201.25 213.07L201.53 213.20L201.85 213.30L202.19 213.36L202.55 213.38L202.91 213.36L203.25 213.30L203.57 213.20L203.85 213.07L260.14 180.57L260.26 180.49L260.37 180.40L260.46 180.32L260.54 180.22L260.60 180.12L260.64 180.02L260.67 179.92L260.68 179.82Z"></path><path className="face top" d="M260.14 179.07L260.37 179.23L260.54 179.41L260.64 179.61L260.68 179.82L260.64 180.02L260.54 180.22L260.37 180.40L260.14 180.57L203.85 213.07L203.57 213.20L203.25 213.30L202.91 213.36L202.55 213.38L202.19 213.36L201.85 213.30L201.53 213.20L201.25 213.07L158.81 188.57L158.59 188.40L158.42 188.22L158.31 188.02L158.28 187.82L158.31 187.61L158.42 187.41L158.59 187.23L158.81 187.07L215.11 154.57L215.38 154.43L215.70 154.34L216.05 154.28L216.40 154.26L216.76 154.28L217.11 154.34L217.43 154.43L217.70 154.57Z"></path><g transform="matrix(0.8660 0.5000 0.0000 1.0000 157.52 187.82)"><line className="detail" x1="1.5" y1="1.60" x2="50.5" y2="1.60"></line><line className="detail" x1="1.5" y1="2.80" x2="50.5" y2="2.80"></line><line className="detail" x1="1.5" y1="4.00" x2="50.5" y2="4.00"></line><line className="detail" x1="1.5" y1="5.20" x2="50.5" y2="5.20"></line><line className="detail" x1="1.5" y1="6.40" x2="50.5" y2="6.40"></line></g><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 202.55 213.82)"><line className="detail" x1="1.5" y1="1.60" x2="66.5" y2="1.60"></line><line className="detail" x1="1.5" y1="2.80" x2="66.5" y2="2.80"></line><line className="detail" x1="1.5" y1="4.00" x2="66.5" y2="4.00"></line><line className="detail" x1="1.5" y1="5.20" x2="66.5" y2="5.20"></line><line className="detail" x1="1.5" y1="6.40" x2="66.5" y2="6.40"></line></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 216.40 153.82)"><line className="detail" x1="6" y1="10" x2="46" y2="10"></line><line className="detail" x1="6" y1="17" x2="46" y2="17"></line><line className="detail" x1="6" y1="24" x2="46" y2="24"></line><line className="detail" x1="6" y1="31" x2="46" y2="31"></line><line className="detail" x1="6" y1="38" x2="46" y2="38"></line><line className="detail" x1="6" y1="45" x2="46" y2="45"></line><line className="detail" x1="6" y1="52" x2="46" y2="52"></line><line className="detail" x1="6" y1="59" x2="30" y2="59"></line></g></g><path className="face" d="M188.80 232.32L188.79 232.42L188.76 232.52L188.72 232.62L188.66 232.72L188.58 232.82L188.49 232.90L188.38 232.99L188.26 233.07L185.66 234.57L185.38 234.70L185.07 234.80L184.72 234.86L184.36 234.88L184.00 234.86L183.66 234.80L183.34 234.70L183.06 234.57L112.91 194.07L112.79 193.99L112.69 193.90L112.59 193.82L112.52 193.72L112.46 193.62L112.41 193.52L112.39 193.42L112.38 193.32L112.38 187.32L112.39 187.42L112.41 187.52L112.46 187.62L112.52 187.72L112.59 187.82L112.69 187.90L112.79 187.99L112.91 188.07L183.06 228.57L183.34 228.70L183.66 228.80L184.00 228.86L184.36 228.88L184.72 228.86L185.07 228.80L185.38 228.70L185.66 228.57L188.26 227.07L188.38 226.99L188.49 226.90L188.58 226.82L188.66 226.72L188.72 226.62L188.76 226.52L188.79 226.42L188.80 226.32Z"></path><path className="face top" d="M188.26 225.57L188.49 225.73L188.66 225.91L188.76 226.11L188.80 226.32L188.76 226.52L188.66 226.72L188.49 226.90L188.26 227.07L185.66 228.57L185.38 228.70L185.07 228.80L184.72 228.86L184.36 228.88L184.00 228.86L183.66 228.80L183.34 228.70L183.06 228.57L112.91 188.07L112.69 187.90L112.52 187.72L112.41 187.52L112.38 187.32L112.41 187.11L112.52 186.91L112.69 186.73L112.91 186.57L115.51 185.07L115.79 184.93L116.11 184.84L116.45 184.78L116.81 184.76L117.17 184.78L117.52 184.84L117.83 184.93L118.11 185.07Z"></path><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 116.81 184.32)"><line className="detail" x1="9" y1="0" x2="9" y2="6"></line><line className="detail" x1="12" y1="0" x2="12" y2="6"></line><line className="detail" x1="14" y1="3" x2="84" y2="3"></line></g><path className="face" d="M195.11 235.82L195.11 235.89L195.09 235.95L195.06 236.02L195.02 236.09L194.97 236.15L194.91 236.21L194.84 236.26L194.75 236.32L193.02 237.32L192.84 237.40L192.62 237.47L192.40 237.51L192.16 237.52L191.92 237.51L191.69 237.47L191.48 237.40L191.29 237.32L186.09 234.32L186.01 234.26L185.94 234.21L185.88 234.15L185.83 234.09L185.79 234.02L185.76 233.95L185.74 233.89L185.74 233.82L185.74 229.82L185.74 229.89L185.76 229.95L185.79 230.02L185.83 230.09L185.88 230.15L185.94 230.21L186.01 230.26L186.09 230.32L191.29 233.32L191.48 233.40L191.69 233.47L191.92 233.51L192.16 233.52L192.40 233.51L192.62 233.47L192.84 233.40L193.02 233.32L194.75 232.32L194.84 232.26L194.91 232.21L194.97 232.15L195.02 232.09L195.06 232.02L195.09 231.95L195.11 231.89L195.11 231.82Z"></path><path className="face top" d="M194.75 231.32L194.91 231.42L195.02 231.55L195.09 231.68L195.11 231.82L195.09 231.95L195.02 232.09L194.91 232.21L194.75 232.32L193.02 233.32L192.84 233.40L192.62 233.47L192.40 233.51L192.16 233.52L191.92 233.51L191.69 233.47L191.48 233.40L191.29 233.32L186.09 230.32L185.94 230.21L185.83 230.09L185.76 229.95L185.74 229.82L185.76 229.68L185.83 229.55L185.94 229.42L186.09 229.32L187.83 228.32L188.01 228.23L188.22 228.16L188.45 228.12L188.69 228.11L188.93 228.12L189.16 228.16L189.37 228.23L189.56 228.32Z"></path><g className="k-stack"><g className={`k-stack__book ${pulledBook === 0 ? "out" : ""}`} onMouseEnter={() => setPulledBook(0)} onMouseLeave={() => setPulledBook((p) => p === 0 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 0 ? null : 0)); }} style={{ "--i": 0, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Idiot by Fyodor Dostoevsky"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 286.99 301.47)"><rect className="face tone-1 pages" width="45" height="10.1"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 223.77 264.97)"><rect className="face tone-1 pages" width="73" height="10.1"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 262.74 242.47)"><rect className="face top tone-1 pages" width="73" height="45"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 223.77 264.97)"><text className="k-stack__title" x="5" y="5.05" fontSize="4.40" dominantBaseline="central">THE IDIOT</text></g></g><g className={`k-stack__book ${pulledBook === 1 ? "out" : ""}`} onMouseEnter={() => setPulledBook(1)} onMouseLeave={() => setPulledBook((p) => p === 1 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 1 ? null : 1)); }} style={{ "--i": 1, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="Beyond Good and Evil by Friedrich Nietzsche"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 293.48 299.32)"><rect className="face tone-2 pages" width="51" height="5.9"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 232.86 264.32)"><rect className="face tone-2 pages" width="70" height="5.9"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 277.03 238.82)"><rect className="face top tone-2 pages" width="70" height="51"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 232.86 264.32)"><text className="k-stack__title" x="5" y="2.95" fontSize="3.89" dominantBaseline="central">BEYOND GOOD AND EVIL</text></g></g><g className={`k-stack__book ${pulledBook === 2 ? "out" : ""}`} onMouseEnter={() => setPulledBook(2)} onMouseLeave={() => setPulledBook((p) => p === 2 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 2 ? null : 2)); }} style={{ "--i": 2, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="Ikigai by Héctor García and Francesc Miralles"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 288.72 290.97)"><rect className="face tone-3 pages" width="46" height="5.6"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 220.30 251.47)"><rect className="face tone-3 pages" width="79" height="5.6"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 260.14 228.47)"><rect className="face top tone-3 pages" width="79" height="46"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 220.30 251.47)"><text className="k-stack__title" x="5" y="2.80" fontSize="3.70" dominantBaseline="central">IKIGAI</text></g></g><g className={`k-stack__book ${pulledBook === 3 ? "out" : ""}`} onMouseEnter={() => setPulledBook(3)} onMouseLeave={() => setPulledBook((p) => p === 3 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 3 ? null : 3)); }} style={{ "--i": 3, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Alchemist by Paulo Coelho"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 291.75 287.12)"><rect className="face tone-0 pages" width="53" height="5.6"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 229.40 251.12)"><rect className="face tone-0 pages" width="72" height="5.6"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 275.29 224.62)"><rect className="face top tone-0 pages" width="72" height="53"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 229.40 251.12)"><text className="k-stack__title" x="5" y="2.80" fontSize="3.70" dominantBaseline="central">THE ALCHEMIST</text></g></g><g className={`k-stack__book ${pulledBook === 4 ? "out" : ""}`} onMouseEnter={() => setPulledBook(4)} onMouseLeave={() => setPulledBook((p) => p === 4 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 4 ? null : 4)); }} style={{ "--i": 4, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Let Them Theory by Mel Robbins"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 289.15 278.92)"><rect className="face tone-2 pages" width="50" height="6.7"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 221.60 239.92)"><rect className="face tone-2 pages" width="78" height="6.7"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 264.90 214.92)"><rect className="face top tone-2 pages" width="78" height="50"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 221.60 239.92)"><text className="k-stack__title" x="5" y="3.35" fontSize="4.40" dominantBaseline="central">THE LET THEM THEORY</text></g></g><g className={`k-stack__book ${pulledBook === 5 ? "out" : ""}`} onMouseEnter={() => setPulledBook(5)} onMouseLeave={() => setPulledBook((p) => p === 5 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 5 ? null : 5)); }} style={{ "--i": 5, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="Crime and Punishment by Fyodor Dostoevsky"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 287.85 269.17)"><rect className="face tone-1 pages" width="47" height="9"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 224.63 232.67)"><rect className="face tone-1 pages" width="73" height="9"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 265.34 209.17)"><rect className="face top tone-1 pages" width="73" height="47"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 224.63 232.67)"><text className="k-stack__title" x="5" y="4.50" fontSize="4.40" dominantBaseline="central">CRIME AND PUNISHMENT</text></g></g><g className={`k-stack__book ${pulledBook === 6 ? "out" : ""}`} onMouseEnter={() => setPulledBook(6)} onMouseLeave={() => setPulledBook((p) => p === 6 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 6 ? null : 6)); }} style={{ "--i": 6, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="Atomic Habits by James Clear"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 284.39 260.47)"><rect className="face tone-1 pages" width="48" height="6.7"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 221.17 223.97)"><rect className="face tone-1 pages" width="73" height="6.7"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 262.74 199.97)"><rect className="face top tone-1 pages" width="73" height="48"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 221.17 223.97)"><text className="k-stack__title" x="5" y="3.35" fontSize="4.40" dominantBaseline="central">ATOMIC HABITS</text></g></g><g className={`k-stack__book ${pulledBook === 7 ? "out" : ""}`} onMouseEnter={() => setPulledBook(7)} onMouseLeave={() => setPulledBook((p) => p === 7 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 7 ? null : 7)); }} style={{ "--i": 7, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Brothers Karamazov by Fyodor Dostoevsky"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 295.65 255.47)"><rect className="face tone-1 pages" width="53" height="11.5"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 228.96 216.97)"><rect className="face tone-1 pages" width="77" height="11.5"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 274.86 190.47)"><rect className="face top tone-1 pages" width="77" height="53"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 228.96 216.97)"><text className="k-stack__title" x="5" y="5.75" fontSize="4.40" dominantBaseline="central">THE BROTHERS KARAMAZOV</text></g></g><g className={`k-stack__book ${pulledBook === 8 ? "out" : ""}`} onMouseEnter={() => setPulledBook(8)} onMouseLeave={() => setPulledBook((p) => p === 8 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 8 ? null : 8)); }} style={{ "--i": 8, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Mountain Is You by Brianna Wiest"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 287.42 244.72)"><rect className="face tone-2 pages" width="46" height="6"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 223.33 207.72)"><rect className="face tone-2 pages" width="74" height="6"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 263.17 184.72)"><rect className="face top tone-2 pages" width="74" height="46"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 223.33 207.72)"><text className="k-stack__title" x="5" y="3.00" fontSize="3.96" dominantBaseline="central">THE MOUNTAIN IS YOU</text></g></g><g className={`k-stack__book ${pulledBook === 9 ? "out" : ""}`} onMouseEnter={() => setPulledBook(9)} onMouseLeave={() => setPulledBook((p) => p === 9 ? null : p)} onClick={(e) => { e.stopPropagation(); setPulledBook((p) => (p === 9 ? null : 9)); }} style={{ "--i": 9, "--pull": "translate(-11.26px, 6.50px)" } as React.CSSProperties} tabIndex={0} role="button" aria-label="The Art of Being Alone by Renuka Gavrani"><g transform="matrix(0.8660 -0.5000 0.0000 1.0000 290.02 240.82)"><rect className="face tone-0 pages" width="52" height="5.4"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 227.66 204.82)"><rect className="face tone-0 pages" width="72" height="5.4"></rect></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 272.70 178.82)"><rect className="face top tone-0 pages" width="72" height="52"></rect></g><g transform="matrix(0.8660 0.5000 0.0000 1.0000 227.66 204.82)"><text className="k-stack__title" x="5" y="2.70" fontSize="3.56" dominantBaseline="central">THE ART OF BEING ALONE</text></g><g transform="matrix(0.8660 0.5000 -0.8660 0.5000 272.70 178.82)"><text className="k-stack__title" x="7" y="12.00" fontSize="4.6">THE ART OF</text><text className="k-stack__title" x="7" y="18.40" fontSize="4.6">BEING ALONE</text><line className="detail" x1="7" y1="38.00" x2="65.00" y2="38.00"></line><text className="k-stack__title" x="7" y="44.00" fontSize="3.2">RENUKA GAVRANI</text></g></g></g><path className={`k-light ${lampOn ? "on" : ""}`} d="M107.79 178.82L108.08 175.00L108.95 171.22L110.38 167.49L112.37 163.85L114.90 160.32L194.19 70.65L195.32 69.62L196.63 68.71L198.12 67.91L199.78 67.24L201.58 66.70L203.52 66.29L205.59 66.02L207.76 65.89L210.02 65.89L212.36 66.04L214.75 66.33L217.18 66.75L219.62 67.31L222.07 68.00L224.50 68.81L226.89 69.73L229.22 70.77L231.48 71.91L233.66 73.15L235.72 74.47L237.66 75.86L239.47 77.32L241.12 78.83L242.61 80.39L243.93 81.97L245.06 83.57L246.00 85.18L246.73 86.78L247.26 88.36L247.58 89.90L259.12 175.00L259.41 178.82L259.12 182.63L258.25 186.42L256.82 190.14L254.83 193.78L252.30 197.31L249.25 200.70L245.70 203.92L241.67 206.95L237.20 209.76L232.33 212.34L227.08 214.67L221.50 216.72L215.64 218.48L209.53 219.94L203.22 221.09L196.76 221.92L190.21 222.42L183.60 222.58L176.99 222.42L170.44 221.92L163.98 221.09L157.67 219.94L151.56 218.48L145.70 216.72L140.12 214.67L134.87 212.34L130.00 209.76L125.53 206.95L121.50 203.92L117.95 200.70L114.90 197.31L112.37 193.78L110.38 190.14L108.95 186.42L108.08 182.63Z" fill="url(#k-beam)"></path><g transform="matrix(-0.4485 -0.9305 1.1397 -0.3662 395.44 152.28)"><rect className="face" x="-1.7" y="-1.7" width="126.9839795442759" height="3.4" rx="1.7"></rect></g><g transform="matrix(-0.4485 -0.9305 1.1397 -0.3662 404.56 149.35)"><rect className="face" x="-1.7" y="-1.7" width="126.9839795442759" height="3.4" rx="1.7"></rect></g><path className="k-spring" d="M393.35 141.12L394.70 139.74L394.96 138.13L393.80 137.12L391.89 137.11L390.42 137.81L390.28 138.42L391.42 138.22L392.89 137.04L393.53 135.41L392.72 134.17L390.90 133.88L389.20 134.45L388.65 135.18L389.51 135.24L391.02 134.30L391.98 132.71L391.57 131.29L389.93 130.72L388.07 131.11L387.14 131.88L387.65 132.18L389.10 131.51L390.32 130.03L390.31 128.47L388.94 127.63L387.02 127.80L385.74 128.54L385.87 129.05L387.16 128.66L388.57 127.34L388.95 125.72L387.91 124.63L386.01 124.53L384.46 125.19L384.18 125.85L385.23 125.73L386.73 124.63L387.48 123.00L386.81 121.70L385.04 121.32L383.27 121.84L382.60 122.58L383.34 122.73L384.84 121.88L385.89 120.32L385.62 118.84L384.06 118.18L382.17 118.50L381.12 119.27L381.51 119.65L382.91 119.07L384.20 117.63L384.33 116.05L383.06 115.12L381.13 115.20L379.76 115.93L379.75 116.49L380.98 116.19L382.42 114.94L382.93 113.31L382.00 112.14L380.14 111.95L378.51 112.57L378.10 113.26L379.06 113.24L380.56 112.22L381.42 110.61L380.88 109.24L379.17 108.77L377.35 109.22L376.55 109.98L377.18 110.21L378.66 109.45L379.80 107.92L379.66 106.40L378.19 105.65L376.28 105.90L375.11 106.66L375.37 107.10L376.72 106.62L378.08 105.24L378.33 103.63L377.17 102.62L375.26 102.61L373.79 103.31L373.65 103.92L374.79 103.72L376.27 102.54L376.90 100.91L376.10 99.67L374.28 99.38L372.57 99.95L372.03 100.68L372.88 100.74L374.39 99.80L375.35 98.21L374.94 96.79L373.30 96.22L371.44 96.61L370.52 97.38L371.03 97.68L372.47 97.01L373.69 95.53L373.69 93.97L372.31 93.13L370.39 93.30L369.12 94.04L369.24 94.55L370.54 94.16L371.94 92.84L372.33 91.22L371.28 90.13L369.39 90.03L367.83 90.69L367.55 91.35L368.61 91.23L370.11 90.13L370.85 88.50L370.18 87.20L368.41 86.82L366.64 87.34L365.97 88.08L366.71 88.23L368.21 87.38L369.27 85.82L368.99 84.34L367.43 83.68L365.54 84.00L364.49 84.77L364.88 85.15L366.28 84.57L367.58 83.13L367.70 81.55L366.43 80.62L364.51 80.70L363.13 81.43L363.13 81.99L364.35 81.69L365.79 80.44L366.30 78.81L365.38 77.64L363.52 77.45L361.88 78.07L361.47 78.76L362.43 78.74L363.94 77.72L364.79 76.11L364.25 74.74L362.54 74.27L360.72 74.72L359.92 75.48L360.55 75.71L362.03 74.95L363.17 73.42L363.03 71.90L361.56 71.15L359.65 71.40L358.49 72.16L358.74 72.60L360.10 72.12"></path><g transform="matrix(-1.2247 0.0000 0.0000 1.0000 400.00 150.82)"><circle className="face" r="6.5"></circle><circle className="detail" r="2.9250000000000003"></circle><circle className="face recess" r="1.3"></circle></g><g transform="matrix(-1.2231 0.0514 -0.0629 -0.9987 344.80 39.41)"><rect className="face" x="-1.6" y="-1.6" width="81.08452991448303" height="3.2" rx="1.6"></rect></g><g transform="matrix(-1.2231 0.0514 -0.0629 -0.9987 344.35 32.22)"><rect className="face" x="-1.6" y="-1.6" width="81.08452991448303" height="3.2" rx="1.6"></rect></g><g transform="matrix(-1.2247 0.0000 0.0000 1.0000 344.58 35.82)"><circle className="face" r="7"></circle><circle className="detail" r="3.15"></circle><circle className="face recess" r="1.3"></circle></g><g transform="matrix(-0.9339 0.6470 -0.7924 -0.7625 249.31 39.82)"><rect className="face" x="-2.1" y="-2.1" width="22.747236990991407" height="4.2" rx="2.1"></rect></g><g transform="matrix(-1.2247 0.0000 0.0000 1.0000 249.31 39.82)"><circle className="face" r="5.5"></circle><circle className="detail" r="2.475"></circle><circle className="face recess" r="1.3"></circle></g><g className={`k-light ${lampOn ? "on" : ""}`}><g transform="matrix(0.0000 0.7071 1.1695 0.2971 219.62 84.28)"><circle className="halo hot" style={{ opacity: 0.7 }} r="27.599999999999998" filter="url(#k-bloom)"></circle><circle className="accent" r="13.200000000000001" filter="url(#k-glow)"></circle></g></g><path className="face" d="M191.56 77.15L191.66 75.70L191.98 74.31L192.51 73.00L193.25 71.78L194.19 70.65L195.32 69.62L224.90 47.54L225.29 47.27L225.72 47.04L226.20 46.85L226.73 46.69L227.30 46.57L227.90 46.49L228.53 46.45L229.19 46.45L229.87 46.50L230.57 46.58L231.28 46.70L231.99 46.87L232.71 47.07L233.41 47.30L234.11 47.57L234.79 47.88L235.45 48.21L236.09 48.57L236.69 48.95L237.26 49.36L237.78 49.79L238.26 50.23L238.70 50.68L239.08 51.14L239.41 51.61L239.69 52.08L239.90 52.54L240.06 53.00L240.15 53.46L247.58 89.90L247.69 91.41L247.58 92.86L247.26 94.25L246.73 95.56L246.00 96.78L245.06 97.91L243.93 98.94L242.61 99.86L241.12 100.65L239.47 101.32L237.66 101.86L235.72 102.27L233.66 102.54L231.48 102.67L229.22 102.67L226.89 102.52L224.50 102.23L222.07 101.81L219.62 101.25L217.18 100.57L214.75 99.76L212.36 98.83L210.02 97.79L207.76 96.65L205.59 95.41L203.52 94.09L201.58 92.70L199.78 91.24L198.12 89.73L196.63 88.17L195.32 86.59L194.19 84.99L193.25 83.39L192.51 81.79L191.98 80.21L191.66 78.66Z"></path><path className="detail" d="M224.32 84.35L226.11 84.75L227.89 85.06L229.63 85.27L231.34 85.38L232.99 85.39L234.58 85.29L236.09 85.09L237.51 84.79L238.83 84.40L240.04 83.91L241.13 83.33L242.09 82.66L242.91 81.91L243.60 81.08L244.14 80.19L244.52 79.23L244.76 78.22L244.84 77.15L244.76 76.05M206.56 61.23L205.73 61.98L205.05 62.81L204.51 63.70L204.12 64.66L203.89 65.67L203.81 66.73L203.89 67.83L204.12 68.97L204.51 70.12L205.05 71.29L205.73 72.46L206.56 73.63L207.52 74.79L208.61 75.92L209.82 77.03L211.14 78.10L212.56 79.11L214.07 80.08L215.65 80.98L217.31 81.82L219.01 82.58L220.76 83.25L222.54 83.85L224.32 84.35"></path><path className="detail" d="M221.35 95.02L223.56 95.52L225.74 95.91L227.90 96.16L230.00 96.30L232.04 96.31L234.00 96.19L235.86 95.94L237.61 95.58L239.23 95.09L240.72 94.48L242.07 93.77L243.25 92.94L244.27 92.02L245.11 91.00L245.78 89.90L246.25 88.72L246.54 87.47L246.64 86.16L246.54 84.80M199.46 66.53L198.44 67.45L197.60 68.47L196.93 69.57L196.46 70.76L196.17 72.00L196.07 73.31L196.17 74.67L196.46 76.06L196.93 77.49L197.60 78.93L198.44 80.38L199.46 81.82L200.64 83.24L201.99 84.64L203.48 86.00L205.10 87.32L206.85 88.57L208.71 89.76L210.67 90.88L212.71 91.90L214.81 92.84L216.96 93.68L219.15 94.41L221.35 95.02"></path><g transform="matrix(0.0000 0.7071 1.1695 0.2971 231.99 51.82)"><circle className="face top" r="7"></circle><circle className="detail" r="4.6"></circle></g><path className="k-rim-bloom k-light" d="M219.62 101.25L222.07 101.81L224.50 102.23L226.89 102.52L229.22 102.67L231.48 102.67L233.66 102.54L235.72 102.27L237.66 101.86L239.47 101.32L241.12 100.65L242.61 99.86L243.93 98.94L245.06 97.91L246.00 96.78L246.73 95.56L247.26 94.25L247.58 92.86L247.69 91.41L247.58 89.90M195.32 69.62L194.19 70.65L193.25 71.78L192.51 73.00L191.98 74.31L191.66 75.70L191.56 77.15L191.66 78.66L191.98 80.21L192.51 81.79L193.25 83.39L194.19 84.99L195.32 86.59L196.63 88.17L198.12 89.73L199.78 91.24L201.58 92.70L203.52 94.09L205.59 95.41L207.76 96.65L210.02 97.79L212.36 98.83L214.75 99.76L217.18 100.57L219.62 101.25" filter="url(#k-bloom)"></path><path className="k-rim" d="M219.62 101.25L222.07 101.81L224.50 102.23L226.89 102.52L229.22 102.67L231.48 102.67L233.66 102.54L235.72 102.27L237.66 101.86L239.47 101.32L241.12 100.65L242.61 99.86L243.93 98.94L245.06 97.91L246.00 96.78L246.73 95.56L247.26 94.25L247.58 92.86L247.69 91.41L247.58 89.90M195.32 69.62L194.19 70.65L193.25 71.78L192.51 73.00L191.98 74.31L191.66 75.70L191.56 77.15L191.66 78.66L191.98 80.21L192.51 81.79L193.25 83.39L194.19 84.99L195.32 86.59L196.63 88.17L198.12 89.73L199.78 91.24L201.58 92.70L203.52 94.09L205.59 95.41L207.76 96.65L210.02 97.79L212.36 98.83L214.75 99.76L217.18 100.57L219.62 101.25"></path></svg>
-    </div>
+      <IsoBox k={Y} at={[36, pageY[0] - 2, D]} size={[55, pageY[1] - pageY[0] + 4, 3]} r={2} />
+      <IsoBox k={Y} at={[spineX, pageY[0] - 2, D]} size={[55, pageY[1] - pageY[0] + 4, 3]} r={2} />
+      <BookHalves side={-1} />
+      {currentBook && (
+        <IsoPlane t={Y.TOP(38, pageY[0], bookZ)}>
+          <text className="label" x="6" y="5.5" fontSize="3.6" letterSpacing="0.6">
+            {currentBook.title.slice(0, 16).toUpperCase()}
+          </text>
+        </IsoPlane>
+      )}
+      {isTurningForward ? (
+        <>
+          <BookHalves side={1} />
+          <BookLightPool on={lampOn} />
+          {turningPageEl}
+        </>
+      ) : (
+        <>
+          <BookLightPool on={lampOn} />
+          {turningPageEl}
+          <BookHalves side={1} />
+        </>
+      )}
+    </g>
+  );
+
+  const readoutText = pickedBook
+    ? `${pickedBook.title} · ${pickedBook.author}`
+    : lampOn
+    ? `${currentBook ? `${currentBook.title.slice(0, 15)} · ` : ""}page ${pageNum} · ${Math.round(
+        dimmer * 100
+      )}%`
+    : "lamp off";
+
+  const hintText = isHeld
+    ? "Holding the page"
+    : portfolio.books.length
+    ? "Turn the dimmer · pick a book"
+    : "Turn the dimmer · click the switch";
+
+  return (
+    <IsoFigureContainer
+      rootRef={rootRef}
+      name="Desk lamp"
+      hint={hintText}
+      readout={readoutText}
+      power={lampOn}
+      viewBox={Y.viewBox}
+      label="An isometric desk lamp lighting an open book whose pages turn, beside a stack of finished books. Turn the dimmer on its base to set how bright it is, and click its switch to turn it off and on."
+      svgProps={{
+        tabIndex: 0,
+        style: { "--lamp": dimmer } as React.CSSProperties,
+        onKeyDown: (e: React.KeyboardEvent<SVGSVGElement>) => {
+          if (e.key === "ArrowUp" || e.key === "ArrowRight") {
+            handleUpdateDimmer(dimmer + 0.1);
+          } else if (e.key === "ArrowDown" || e.key === "ArrowLeft") {
+            handleUpdateDimmer(dimmer - 0.1);
+          } else if (e.key === " " || e.key === "Enter") {
+            setLampOn((l) => !l);
+          } else {
+            return;
+          }
+          e.preventDefault();
+        },
+      }}
+    >
+      <defs>
+        <radialGradient id="k-pool">
+          <stop offset="0" stopColor="var(--iso-accent-hi)" stopOpacity=".5" />
+          <stop offset=".4" stopColor="var(--iso-accent-hi)" stopOpacity=".3" />
+          <stop offset=".75" stopColor="var(--iso-accent)" stopOpacity=".1" />
+          <stop offset="1" stopColor="var(--iso-accent)" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient
+          id="k-beam"
+          gradientUnits="userSpaceOnUse"
+          x1={f2(X(...zRim)[0])}
+          y1={f2(X(...zRim)[1])}
+          x2={f2(X(...tablePool.c)[0])}
+          y2={f2(X(...tablePool.c)[1])}
+        >
+          <stop offset="0" stopColor="var(--iso-accent-hi)" stopOpacity=".26" />
+          <stop offset=".6" stopColor="var(--iso-accent)" stopOpacity=".1" />
+          <stop offset="1" stopColor="var(--iso-accent)" stopOpacity="0" />
+        </linearGradient>
+        <clipPath id="k-pages">
+          <rect x="0" y="0" width={106} height={pageY[1] - pageY[0]} />
+        </clipPath>
+      </defs>
+
+      {/* Desk Surface Table */}
+      <IsoBox k={Y} at={[0, 0, 0]} size={O} r={14} />
+      <IsoPlane t={Y.TOP(0, 0, D)}>
+        <rect
+          className="detail"
+          x="9"
+          y="9"
+          width={O[0] - 18}
+          height={O[1] - 18}
+          rx="10"
+        />
+        <IsoScrews
+          at={[
+            [18, 18],
+            [O[0] - 18, 18],
+            [18, O[1] - 18],
+            [O[0] - 18, O[1] - 18],
+          ]}
+        />
+        <g className={`k-light${lampOn ? " on" : ""}`}>
+          <circle
+            cx={f2(tablePool.c[0])}
+            cy={f2(tablePool.c[1])}
+            r={f2(tablePool.r * 1.3)}
+            fill="url(#k-pool)"
+          />
+        </g>
+      </IsoPlane>
+
+      {/* Lamp Base */}
+      <IsoBox k={Y} at={[base.x, base.y, D]} size={[base.w, base.d, base.h]} r={6} />
+      <IsoPlane t={Y.TOP(base.x, base.y, A)}>
+        <rect
+          className="detail"
+          x="4"
+          y="4"
+          width={base.w - 8}
+          height={base.d - 8}
+          rx="4"
+        />
+      </IsoPlane>
+      <IsoPlane t={Y.FRONT(base.x, base.y + base.d, A)}>
+        <IsoVents from={8} to={30} step={3} across={[5, 13]} />
+        <text className="label" x={base.w - 8} y="11.5" fontSize="5" textAnchor="end">
+          KF-03
+        </text>
+      </IsoPlane>
+
+      {/* Power Cord Wire */}
+      <path
+        className="wire"
+        d={Y.path([
+          [base.x + base.w, base.y + base.d - 33, 10.5],
+          [base.x + base.w + 10, base.y + base.d - 33, 7.6],
+          [base.x + base.w + 22, base.y + base.d - 22, 7.6],
+          [base.x + base.w + 26, base.y + base.d + 14, 7.6],
+          [base.x + base.w + 27, 150, 7.6],
+        ])}
+      />
+
+      {/* Interactive Dimmer Knob with 11 Radial Ticks */}
+      <g
+        className="k-dimmer"
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            from: dimmer,
+            moved: false,
+          };
+        }}
+        onPointerMove={(e) => {
+          const drag = dragRef.current;
+          if (!drag) return;
+          const dx = e.clientX - drag.x;
+          const dy = e.clientY - drag.y;
+          if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+          if (drag.moved) handleUpdateDimmer(drag.from + (dx - dy) / 110);
+        }}
+        onPointerUp={() => {
+          const drag = dragRef.current;
+          dragRef.current = null;
+          if (drag && !drag.moved) {
+            handleUpdateDimmer(dimmer >= 1 ? 0.1 : dimmer + 0.1);
+          }
+        }}
+        onPointerCancel={() => {
+          dragRef.current = null;
+        }}
+      >
+        <IsoPlane t={Y.TOP(215, 61, A)}>
+          <circle className="k-dimmer__hit" r="17" />
+          {Array.from({ length: 11 }, (_, idx) => {
+            const rad = ((-135 + idx * 27) * Math.PI) / 180;
+            const rx = Math.sin(rad);
+            const ry = -Math.cos(rad);
+            const outer = idx % 5 ? 13 : 14.5;
+            const isTickLit = lampOn && idx <= Math.round(dimmer * 10);
+            return (
+              <line
+                key={idx}
+                className={`detail k-tick${isTickLit ? " on" : ""}`}
+                x1={f2(rx * 11)}
+                y1={f2(ry * 11)}
+                x2={f2(rx * outer)}
+                y2={f2(ry * outer)}
+              />
+            );
+          })}
+          <circle className="face top" r="9" />
+          <circle className="detail" r="7" />
+          <rect
+            className="k-knob"
+            x="-1"
+            y="-7.7"
+            width="2"
+            height="7.7"
+            rx="1"
+            transform={`rotate(${f2(-135 + 270 * dimmer)})`}
+          />
+        </IsoPlane>
+      </g>
+
+      {/* Rocker Power Switch (I / O) */}
+      <g
+        className={`press${lampOn ? " latched" : ""}`}
+        ref={switchRef}
+        onClick={() => setLampOn((l) => !l)}
+      >
+        <IsoBox k={Y} at={[236, 56, A]} size={[16, 16, 5]} r={2} />
+        <IsoPlane t={Y.TOP(236, 56, A + 5)}>
+          <line className="detail" x1="2" y1="8" x2="14" y2="8" />
+          <text className="label" x="8" y="6" fontSize="4.5" textAnchor="middle">
+            I
+          </text>
+          <text className="label" x="8" y="13.6" fontSize="4.5" textAnchor="middle">
+            O
+          </text>
+        </IsoPlane>
+      </g>
+
+      {/* Arm Base Mount */}
+      <IsoBox k={Y} at={[204, 30, A]} size={[16, 14, 8]} r={2} />
+
+      {/* Open Book and Turning Page */}
+      {openBookEl}
+
+      {/* Ruler and Eraser */}
+      <IsoBox k={Y} at={[60, 212, D]} size={[84, 6, 6]} r={1.5} />
+      <IsoPlane t={Y.TOP(60, 212, 13)}>
+        <line className="detail" x1="9" y1="0" x2="9" y2="6" />
+        <line className="detail" x1="12" y1="0" x2="12" y2="6" />
+        <line className="detail" x1="14" y1="3" x2="84" y2="3" />
+      </IsoPlane>
+      <IsoBox k={Y} at={[144, 213, 8]} size={[8, 4, 4]} r={1} />
+
+      {/* Finished Books Stack */}
+      {portfolio.books.length > 0 && (
+        <FinishedBooksStack
+          k={Y}
+          at={[209, 177, D]}
+          books={portfolio.books}
+          onPick={setPickedBook}
+        />
+      )}
+
+      {/* Light Beam Volumetric Cone */}
+      <path className={`k-light${lampOn ? " on" : ""}`} d={beamConePath} fill="url(#k-beam)" />
+
+      {/* Articulated Double Arms, Linkages, and Joints */}
+      <LinkageBar a={j} b={M} w={3.4} off={-4} />
+      <LinkageBar a={j} b={M} w={3.4} off={4} />
+      <path className="k-spring" d={springPath} />
+      <PivotJoint at={j} r={6.5} />
+
+      <LinkageBar a={M} b={N} w={3.2} off={-3.6} />
+      <LinkageBar a={M} b={N} w={3.2} off={3.6} />
+      <PivotJoint at={M} r={7} />
+
+      <LinkageBar a={N} b={P} w={4.2} />
+      <PivotJoint at={N} r={5.5} />
+
+      {/* Glowing Bulb and Filament Halo */}
+      <g className={`k-light${lampOn ? " on" : ""}`}>
+        <g transform={Y.plane(zRim, B, V)}>
+          <circle
+            className="halo hot"
+            style={{ opacity: 0.7 }}
+            r={rRim * 1.15}
+            filter="url(#k-bloom)"
+          />
+          <circle className="accent" r={rRim * 0.55} filter="url(#k-glow)" />
+        </g>
+      </g>
+
+      {/* Lamp Shade Silhouette & Decorative Ridges */}
+      <path className="face" d={shadeHullPath} />
+      {shadeRidges.map((ridgeD, idx) => (
+        <path key={idx} className="detail" d={ridgeD} />
+      ))}
+
+      {/* Lamp Shade Rear Mount */}
+      <g transform={Y.plane(P, B, V)}>
+        <circle className="face top" r={rRear} />
+        <circle className="detail" r={4.6} />
+      </g>
+
+      {/* Lamp Shade Front Aperture Rim & Bloom */}
+      <path
+        className={`k-rim-bloom k-light${lampOn ? " on" : ""}`}
+        d={shadeFrontRim}
+        filter="url(#k-bloom)"
+      />
+      <path className={`k-rim${lampOn ? " on" : ""}`} d={shadeFrontRim} />
+    </IsoFigureContainer>
   );
 }
