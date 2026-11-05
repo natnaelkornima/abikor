@@ -7,7 +7,7 @@ interface Article2DFigureProps {
   title?: string;
 }
 
-export function Article2DFigure({ figureType, title }: Article2DFigureProps) {
+export function Article2DFigure({ figureType }: Article2DFigureProps) {
   const [isPaused, setIsPaused] = useState(false);
 
   const key =
@@ -91,8 +91,6 @@ function QueuePipelineFigure({ isPaused, onToggle }: { isPaused: boolean; onTogg
   return (
     <>
       <style>{`
-        @keyframes q-b0{0%,15%{opacity:0}18%,30%{opacity:1}33%,100%{opacity:0}}
-        .auth .q-b0{animation:q-b0 8s infinite;}
         @keyframes q-wire1{0%,15%{stroke-dashoffset:1}23%,100%{stroke-dashoffset:0}}
         .auth .q-wire1{animation:q-wire1 8s infinite;}
         @keyframes q-pulse1{0%,20%{opacity:0;stroke-dashoffset:0.02}22%,29%{opacity:1}30%,100%{opacity:0;stroke-dashoffset:-1}}
@@ -206,19 +204,25 @@ function SchemaDiverterFigure({ isPaused, onToggle }: { isPaused: boolean; onTog
   return (
     <>
       <style>{`
-        @keyframes s-wire{0%,15%{stroke-dashoffset:1}25%,100%{stroke-dashoffset:0}}
-        .auth .s-wire{animation:s-wire 8s infinite;}
-        @keyframes s-pulse{0%,20%{opacity:0;stroke-dashoffset:0.02}24%,32%{opacity:1}34%,100%{opacity:0;stroke-dashoffset:-1}}
-        .auth .s-pulse{animation:s-pulse 8s infinite;}
-        @keyframes s-divert{0%,35%{stroke-dashoffset:1}45%,100%{stroke-dashoffset:0}}
-        .auth .s-divert{animation:s-divert 8s infinite;}
-        @keyframes s-pass{0%,50%{stroke-dashoffset:1}60%,100%{stroke-dashoffset:0}}
-        .auth .s-pass{animation:s-pass 8s infinite;}
-        @keyframes s-r1{0%,20%{opacity:1}21%,100%{opacity:0}}
+        @keyframes s-wire1{0%,12%{stroke-dashoffset:1}22%,100%{stroke-dashoffset:0}}
+        .auth .s-wire1{animation:s-wire1 8s infinite;}
+        @keyframes s-pulse1{0%,15%{opacity:0;stroke-dashoffset:0.02}18%,26%{opacity:1}28%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .s-pulse1{animation:s-pulse1 8s infinite;}
+        @keyframes s-gate-scan{0%,20%{stroke:#2c2c2c;}26%,48%{stroke:#e56b40;}52%,100%{stroke:#2c2c2c;}}
+        .auth .s-gate-scan{animation:s-gate-scan 8s infinite;}
+        @keyframes s-divert-wire{0%,35%{stroke-dashoffset:1}46%,100%{stroke-dashoffset:0}}
+        .auth .s-divert-wire{animation:s-divert-wire 8s infinite;}
+        @keyframes s-divert-pulse{0%,40%{opacity:0;stroke-dashoffset:0.02}44%,52%{opacity:1}54%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .s-divert-pulse{animation:s-divert-pulse 8s infinite;}
+        @keyframes s-pass-wire{0%,55%{stroke-dashoffset:1}66%,100%{stroke-dashoffset:0}}
+        .auth .s-pass-wire{animation:s-pass-wire 8s infinite;}
+        @keyframes s-pass-pulse{0%,60%{opacity:0;stroke-dashoffset:0.02}64%,72%{opacity:1}74%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .s-pass-pulse{animation:s-pass-pulse 8s infinite;}
+        @keyframes s-r1{0%,22%{opacity:1}23%,100%{opacity:0}}
         .auth .s-r1{animation:s-r1 8s infinite;}
-        @keyframes s-r2{0%,20%{opacity:0}21%,45%{opacity:1}46%,100%{opacity:0}}
+        @keyframes s-r2{0%,22%{opacity:0}23%,46%{opacity:1}47%,100%{opacity:0}}
         .auth .s-r2{animation:s-r2 8s infinite;}
-        @keyframes s-r3{0%,45%{opacity:0}46%,70%{opacity:1}71%,100%{opacity:0}}
+        @keyframes s-r3{0%,46%{opacity:0}47%,70%{opacity:1}71%,100%{opacity:0}}
         .auth .s-r3{animation:s-r3 8s infinite;}
         @keyframes s-r4{0%,70%{opacity:0}71%,100%{opacity:1}}
         .auth .s-r4{animation:s-r4 8s infinite;}
@@ -249,14 +253,16 @@ function SchemaDiverterFigure({ isPaused, onToggle }: { isPaused: boolean; onTog
             <text x="32" y="152" className="note">Untrusted stream</text>
           </g>
 
-          {/* Wire to Gate */}
-          <path d="M132 125 H165" pathLength="1" className="wire drawn m s-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-          <path d="M161 121.5 L165 125 L161 128.5" className="head" />
-          <path d="M132 125 H165" pathLength="1" className="pulse m s-pulse" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          {/* Wire to Gate with Animated Pulse */}
+          <g>
+            <path d="M132 125 H165" pathLength="1" className="wire drawn m s-wire1" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M161 121.5 L165 125 L161 128.5" className="head" />
+            <path d="M132 125 H165" pathLength="1" className="pulse m s-pulse1" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Central AST Scanner Gate */}
           <g>
-            <rect x="165" y="60" width="130" height="130" rx="8" className="panel" />
+            <rect x="165" y="60" width="130" height="130" rx="8" className="panel m s-gate-scan" />
             <text x="177" y="80" className="tag">Inspection Gate</text>
             <text x="177" y="98" className="title">Zod AST Guard</text>
             <text x="177" y="115" className="code">Syntax Parser</text>
@@ -267,22 +273,28 @@ function SchemaDiverterFigure({ isPaused, onToggle }: { isPaused: boolean; onTog
           </g>
 
           {/* Diverted Path: Upward to Quarantine */}
-          <path d="M295 95 H315 Q325 95 325 87 V46 Q325 38 335 38 H345" pathLength="1" className="wire drawn m s-divert" stroke="#e56b40" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-          <path d="M341 34.5 L345 38 L341 41.5" className="head" stroke="#e56b40" />
           <g>
-            <rect x="345" y="20" width="95" height="52" rx="6" className="panel" stroke="#e56b40" />
-            <text x="355" y="38" className="tag" fill="#e56b40">Quarantine</text>
-            <text x="355" y="54" className="code">Rejected 422</text>
+            <path d="M295 95 H315 Q325 95 325 87 V46 Q325 38 335 38 H345" pathLength="1" className="wire drawn m s-divert-wire" stroke="#e56b40" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M341 34.5 L345 38 L341 41.5" className="head" stroke="#e56b40" />
+            <path d="M295 95 H315 Q325 95 325 87 V46 Q325 38 335 38 H345" pathLength="1" className="pulse m s-divert-pulse" stroke="#e56b40" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+            <g>
+              <rect x="345" y="20" width="95" height="52" rx="6" className="panel" stroke="#e56b40" />
+              <text x="355" y="38" className="tag" fill="#e56b40">Quarantine</text>
+              <text x="355" y="54" className="code">Rejected 422</text>
+            </g>
           </g>
 
           {/* Passed Path: Straight to Domain Entity */}
-          <path d="M295 155 H315 Q325 155 325 163 V195 Q325 203 335 203 H345" pathLength="1" className="wire drawn m s-pass" stroke="#4ade80" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-          <path d="M341 199.5 L345 203 L341 206.5" className="head" stroke="#4ade80" />
           <g>
-            <rect x="345" y="175" width="95" height="58" rx="6" className="panel" stroke="#4ade80" />
-            <text x="355" y="193" className="tag" fill="#4ade80">Domain DTO</text>
-            <text x="355" y="210" className="title">Verified DTO</text>
-            <text x="355" y="224" className="code">100% Invariant</text>
+            <path d="M295 155 H315 Q325 155 325 163 V195 Q325 203 335 203 H345" pathLength="1" className="wire drawn m s-pass-wire" stroke="#4ade80" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M341 199.5 L345 203 L341 206.5" className="head" stroke="#4ade80" />
+            <path d="M295 155 H315 Q325 155 325 163 V195 Q325 203 335 203 H345" pathLength="1" className="pulse m s-pass-pulse" stroke="#4ade80" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+            <g>
+              <rect x="345" y="175" width="95" height="58" rx="6" className="panel" stroke="#4ade80" />
+              <text x="355" y="193" className="tag" fill="#4ade80">Domain DTO</text>
+              <text x="355" y="210" className="title">Verified DTO</text>
+              <text x="355" y="224" className="code">100% Invariant</text>
+            </g>
           </g>
         </g>
       </svg>
@@ -308,10 +320,24 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
   return (
     <>
       <style>{`
-        @keyframes a-wire{0%,15%{stroke-dashoffset:1}28%,100%{stroke-dashoffset:0}}
-        .auth .a-wire{animation:a-wire 8s infinite;}
-        @keyframes a-pulse{0%,20%{opacity:0;stroke-dashoffset:0.02}25%,35%{opacity:1}36%,100%{opacity:0;stroke-dashoffset:-1}}
-        .auth .a-pulse{animation:a-pulse 8s infinite;}
+        @keyframes a-wire1{0%,12%{stroke-dashoffset:1}22%,100%{stroke-dashoffset:0}}
+        .auth .a-wire1{animation:a-wire1 8s infinite;}
+        @keyframes a-pulse1{0%,15%{opacity:0;stroke-dashoffset:0.02}20%,30%{opacity:1}32%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .a-pulse1{animation:a-pulse1 8s infinite;}
+        @keyframes a-wire2{0%,40%{stroke-dashoffset:1}50%,100%{stroke-dashoffset:0}}
+        .auth .a-wire2{animation:a-wire2 8s infinite;}
+        @keyframes a-pulse2{0%,44%{opacity:0;stroke-dashoffset:0.02}48%,58%{opacity:1}60%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .a-pulse2{animation:a-pulse2 8s infinite;}
+        @keyframes a-crt-wave{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-80}}
+        .auth .a-crt-wave{animation:a-crt-wave 1.6s linear infinite;}
+        @keyframes a-r1{0%,24%{opacity:1}25%,100%{opacity:0}}
+        .auth .a-r1{animation:a-r1 8s infinite;}
+        @keyframes a-r2{0%,24%{opacity:0}25%,48%{opacity:1}49%,100%{opacity:0}}
+        .auth .a-r2{animation:a-r2 8s infinite;}
+        @keyframes a-r3{0%,48%{opacity:0}49%,72%{opacity:1}73%,100%{opacity:0}}
+        .auth .a-r3{animation:a-r3 8s infinite;}
+        @keyframes a-r4{0%,72%{opacity:0}73%,100%{opacity:1}}
+        .auth .a-r4{animation:a-r4 8s infinite;}
       `}</style>
       <svg viewBox="0 0 460 260" role="img" aria-label="Web Audio DSP Signal Graph">
         <defs>
@@ -322,7 +348,10 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
         <rect width="460" height="260" fill="url(#a-dots)" mask="url(#a-mask)" />
         <g>
           <text x="20" y="16" className="tag hint">Point to hold</text>
-          <text x="440" y="16" textAnchor="end" className="note readout">AudioWorklet DSP: 128 frames (P99 2.7ms)</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m a-r1">Audio generator: 440Hz sine</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m a-r2">AudioWorklet DSP: 128 frames</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m a-r3">Biquad lowpass filter active</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m a-r4">Hardware DAC: zero glitch (2.7ms)</text>
         </g>
 
         <g transform="translate(0 24)">
@@ -338,9 +367,11 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
           </g>
 
           {/* Wire 1 -> Filter */}
-          <path d="M138 112 H168" pathLength="1" className="wire drawn m a-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-          <path d="M164 108.5 L168 112 L164 115.5" className="head" />
-          <path d="M138 112 H168" pathLength="1" className="pulse m a-pulse" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          <g>
+            <path d="M138 112 H168" pathLength="1" className="wire drawn m a-wire1" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M164 108.5 L168 112 L164 115.5" className="head" />
+            <path d="M138 112 H168" pathLength="1" className="pulse m a-pulse1" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Node 2: Biquad Filter */}
           <g>
@@ -354,8 +385,11 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
           </g>
 
           {/* Wire 2 -> Oscilloscope */}
-          <path d="M292 112 H322" pathLength="1" className="wire drawn m a-wire" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
-          <path d="M318 108.5 L322 112 L318 115.5" className="head" />
+          <g>
+            <path d="M292 112 H322" pathLength="1" className="wire drawn m a-wire2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M318 108.5 L322 112 L318 115.5" className="head" />
+            <path d="M292 112 H322" pathLength="1" className="pulse m a-pulse2" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Node 3: Oscilloscope Output Screen */}
           <g>
@@ -365,7 +399,20 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
             {/* Screen */}
             <rect x="330" y="100" width="102" height="62" rx="4" fill="#0c0d10" stroke="#22232a" strokeWidth="1" />
             <line x1="330" y1="131" x2="432" y2="131" stroke="#1d1e26" strokeDasharray="2 2" />
-            <path d="M 336 131 Q 352 112, 368 131 T 400 131 T 426 131" fill="none" stroke="#4ade80" strokeWidth="1.5" />
+            {/* Animated CRT Sine Wave */}
+            <g clipPath="url(#crt-clip)">
+              <clipPath id="crt-clip">
+                <rect x="331" y="101" width="100" height="60" rx="3" />
+              </clipPath>
+              <path
+                d="M 330 131 Q 345 110, 360 131 T 390 131 T 420 131 T 450 131"
+                fill="none"
+                stroke="#4ade80"
+                strokeWidth="1.8"
+                className="a-crt-wave"
+                style={{ strokeDasharray: "30 0" }}
+              />
+            </g>
           </g>
         </g>
       </svg>
@@ -390,6 +437,30 @@ function AudioGraphFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle:
 function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
   return (
     <>
+      <style>{`
+        @keyframes h-wire-in{0%,15%{stroke-dashoffset:1}25%,100%{stroke-dashoffset:0}}
+        .auth .h-wire-in{animation:h-wire-in 8s infinite;}
+        @keyframes h-pulse-in{0%,18%{opacity:0;stroke-dashoffset:0.02}22%,30%{opacity:1}32%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .h-pulse-in{animation:h-pulse-in 8s infinite;}
+        @keyframes h-core-ring{0%,28%{stroke:#2c2c2c;}30%,54%{stroke:#e56b40;}56%,100%{stroke:#2c2c2c;}}
+        .auth .h-core-ring{animation:h-core-ring 8s infinite;}
+        @keyframes h-wire-db{0%,45%{stroke-dashoffset:1}56%,100%{stroke-dashoffset:0}}
+        .auth .h-wire-db{animation:h-wire-db 8s infinite;}
+        @keyframes h-pulse-db{0%,50%{opacity:0;stroke-dashoffset:0.02}54%,62%{opacity:1}64%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .h-pulse-db{animation:h-pulse-db 8s infinite;}
+        @keyframes h-wire-mock{0%,65%{stroke-dashoffset:1}76%,100%{stroke-dashoffset:0}}
+        .auth .h-wire-mock{animation:h-wire-mock 8s infinite;}
+        @keyframes h-pulse-mock{0%,70%{opacity:0;stroke-dashoffset:0.02}74%,82%{opacity:1}84%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .h-pulse-mock{animation:h-pulse-mock 8s infinite;}
+        @keyframes h-r1{0%,24%{opacity:1}25%,100%{opacity:0}}
+        .auth .h-r1{animation:h-r1 8s infinite;}
+        @keyframes h-r2{0%,24%{opacity:0}25%,48%{opacity:1}49%,100%{opacity:0}}
+        .auth .h-r2{animation:h-r2 8s infinite;}
+        @keyframes h-r3{0%,48%{opacity:0}49%,72%{opacity:1}73%,100%{opacity:0}}
+        .auth .h-r3{animation:h-r3 8s infinite;}
+        @keyframes h-r4{0%,72%{opacity:0}73%,100%{opacity:1}}
+        .auth .h-r4{animation:h-r4 8s infinite;}
+      `}</style>
       <svg viewBox="0 0 460 260" role="img" aria-label="Hexagonal Architecture Concentric Boundaries">
         <defs>
           <pattern id="h-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
@@ -399,14 +470,17 @@ function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; 
         <rect width="460" height="260" fill="url(#h-dots)" mask="url(#h-mask)" />
         <g>
           <text x="20" y="16" className="tag hint">Point to hold</text>
-          <text x="440" y="16" textAnchor="end" className="note readout">Domain Core: Zero external dependencies</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m h-r1">Inbound HTTP driving port</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m h-r2">Domain Invariant Core: Zero deps</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m h-r3">Driven port &rarr; Postgres adapter</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m h-r4">Mock adapter: 100% test isolated</text>
         </g>
 
         {/* Center Hexagon Core with Surrounding Adapters */}
         <g transform="translate(0 22)">
           {/* Center Domain Core */}
           <g>
-            <rect x="158" y="65" width="144" height="105" rx="8" className="panel" stroke="#e56b40" strokeWidth="1.5" />
+            <rect x="158" y="65" width="144" height="105" rx="8" className="panel m h-core-ring" strokeWidth="1.5" />
             <text x="170" y="86" className="tag" fill="#e56b40">Domain Core</text>
             <text x="170" y="104" className="title">Pure Entities</text>
             <text x="170" y="122" className="code">Zero Imports</text>
@@ -421,7 +495,12 @@ function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; 
             <text x="30" y="118" className="title">Fastify Route</text>
             <text x="30" y="134" className="code">HTTP Inbound</text>
           </g>
-          <path d="M128 117 H158" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          {/* Wire: Driving to Core */}
+          <g>
+            <path d="M128 117 H158" pathLength="1" className="wire drawn m h-wire-in" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M154 113.5 L158 117 L154 120.5" className="head" />
+            <path d="M128 117 H158" pathLength="1" className="pulse m h-pulse-in" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Right Adapter: PostgreSQL DB */}
           <g>
@@ -430,7 +509,12 @@ function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; 
             <text x="342" y="78" className="title">PgUserRepo</text>
             <text x="342" y="94" className="code">Postgres DB</text>
           </g>
-          <path d="M302 92 H332" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          {/* Wire: Core to DB */}
+          <g>
+            <path d="M302 92 H332" pathLength="1" className="wire drawn m h-wire-db" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M328 88.5 L332 92 L328 95.5" className="head" />
+            <path d="M302 92 H332" pathLength="1" className="pulse m h-pulse-db" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Bottom Right Adapter: In-Memory Mock */}
           <g>
@@ -439,7 +523,12 @@ function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; 
             <text x="342" y="158" className="title">MockUserRepo</text>
             <text x="342" y="174" className="code">Mock Memory</text>
           </g>
-          <path d="M302 142 H332" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          {/* Wire: Core to Mock */}
+          <g>
+            <path d="M302 142 H332" pathLength="1" className="wire drawn m h-wire-mock" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M328 138.5 L332 142 L328 145.5" className="head" />
+            <path d="M302 142 H332" pathLength="1" className="pulse m h-pulse-mock" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
         </g>
       </svg>
       <figcaption className="mt-4">
@@ -463,6 +552,26 @@ function HexagonalConcentricFigure({ isPaused, onToggle }: { isPaused: boolean; 
 function ForkJoinRetrievalFigure({ isPaused, onToggle }: { isPaused: boolean; onToggle: () => void }) {
   return (
     <>
+      <style>{`
+        @keyframes r-pulse-in{0%,14%{opacity:0;stroke-dashoffset:0.02}18%,26%{opacity:1}28%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .r-pulse-in{animation:r-pulse-in 8s infinite;}
+        @keyframes r-fork-wire{0%,26%{stroke-dashoffset:1}38%,100%{stroke-dashoffset:0}}
+        .auth .r-fork-wire{animation:r-fork-wire 8s infinite;}
+        @keyframes r-fork-pulse{0%,34%{opacity:0;stroke-dashoffset:0.02}38%,48%{opacity:1}50%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .r-fork-pulse{animation:r-fork-pulse 8s infinite;}
+        @keyframes r-join-wire{0%,54%{stroke-dashoffset:1}66%,100%{stroke-dashoffset:0}}
+        .auth .r-join-wire{animation:r-join-wire 8s infinite;}
+        @keyframes r-join-pulse{0%,62%{opacity:0;stroke-dashoffset:0.02}66%,76%{opacity:1}78%,100%{opacity:0;stroke-dashoffset:-1}}
+        .auth .r-join-pulse{animation:r-join-pulse 8s infinite;}
+        @keyframes r-r1{0%,24%{opacity:1}25%,100%{opacity:0}}
+        .auth .r-r1{animation:r-r1 8s infinite;}
+        @keyframes r-r2{0%,24%{opacity:0}25%,48%{opacity:1}49%,100%{opacity:0}}
+        .auth .r-r2{animation:r-r2 8s infinite;}
+        @keyframes r-r3{0%,48%{opacity:0}49%,72%{opacity:1}73%,100%{opacity:0}}
+        .auth .r-r3{animation:r-r3 8s infinite;}
+        @keyframes r-r4{0%,72%{opacity:0}73%,100%{opacity:1}}
+        .auth .r-r4{animation:r-r4 8s infinite;}
+      `}</style>
       <svg viewBox="0 0 460 260" role="img" aria-label="Reciprocal Rank Fusion Hybrid Search">
         <defs>
           <pattern id="r-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="0.75" className="dotgrid" /></pattern>
@@ -472,7 +581,10 @@ function ForkJoinRetrievalFigure({ isPaused, onToggle }: { isPaused: boolean; on
         <rect width="460" height="260" fill="url(#r-dots)" mask="url(#r-mask)" />
         <g>
           <text x="20" y="16" className="tag hint">Point to hold</text>
-          <text x="440" y="16" textAnchor="end" className="note readout">Hybrid RRF: BM25 + HNSW fusion</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m r-r1">Query: cosine cache check</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m r-r2">Dual fork &rarr; BM25 + HNSW</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m r-r3">Reciprocal Rank fusion combiner</text>
+          <text x="440" y="16" textAnchor="end" className="note readout m r-r4">Top-5 grounded context (MRR +38%)</text>
         </g>
 
         <g transform="translate(0 22)">
@@ -486,9 +598,17 @@ function ForkJoinRetrievalFigure({ isPaused, onToggle }: { isPaused: boolean; on
             <text x="32" y="151" className="note">Sub-15ms hit</text>
           </g>
 
-          {/* Fork into BM25 (top) and Vector (bottom) */}
-          <path d="M138 100 H158 Q166 100 166 92 V60 Q166 52 174 52 H180" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
-          <path d="M138 135 H158 Q166 135 166 143 V175 Q166 183 174 183 H180" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          {/* Fork into BM25 (top) and Vector (bottom) with Animated Pulses */}
+          <g>
+            <path d="M138 100 H158 Q166 100 166 92 V60 Q166 52 174 52 H180" pathLength="1" className="wire drawn m r-fork-wire" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M176 48.5 L180 52 L176 55.5" className="head" />
+            <path d="M138 100 H158 Q166 100 166 92 V60 Q166 52 174 52 H180" pathLength="1" className="pulse m r-fork-pulse" stroke="#e56b40" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
+          <g>
+            <path d="M138 135 H158 Q166 135 166 143 V175 Q166 183 174 183 H180" pathLength="1" className="wire drawn m r-fork-wire" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M176 179.5 L180 183 L176 186.5" className="head" />
+            <path d="M138 135 H158 Q166 135 166 143 V175 Q166 183 174 183 H180" pathLength="1" className="pulse m r-fork-pulse" stroke="#4ade80" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* Branch A: BM25 Sparse Search */}
           <g>
@@ -506,9 +626,17 @@ function ForkJoinRetrievalFigure({ isPaused, onToggle }: { isPaused: boolean; on
             <text x="190" y="200" className="code">Dense vectors</text>
           </g>
 
-          {/* Join into RRF Combiner */}
-          <path d="M304 52 H314 Q322 52 322 60 V102 Q322 110 330 110 H338" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
-          <path d="M304 183 H314 Q322 183 322 175 V125 Q322 117 330 117 H338" className="wire" stroke="#d4d4d4" strokeWidth="1.2" />
+          {/* Join into RRF Combiner with Animated Pulses */}
+          <g>
+            <path d="M304 52 H314 Q322 52 322 60 V102 Q322 110 330 110 H338" pathLength="1" className="wire drawn m r-join-wire" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M334 106.5 L338 110 L334 113.5" className="head" />
+            <path d="M304 52 H314 Q322 52 322 60 V102 Q322 110 330 110 H338" pathLength="1" className="pulse m r-join-pulse" stroke="#e56b40" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
+          <g>
+            <path d="M304 183 H314 Q322 183 322 175 V125 Q322 117 330 117 H338" pathLength="1" className="wire drawn m r-join-wire" stroke="#d4d4d4" strokeWidth="1.2" style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }} />
+            <path d="M334 113.5 L338 117 L334 120.5" className="head" />
+            <path d="M304 183 H314 Q322 183 322 175 V125 Q322 117 330 117 H338" pathLength="1" className="pulse m r-join-pulse" stroke="#4ade80" style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }} />
+          </g>
 
           {/* RRF Combiner Node */}
           <g>
