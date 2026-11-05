@@ -90,7 +90,10 @@ export default function PaintingsPage() {
 
       {/* Crafted Isometric Studio Easel Figure */}
       <div className="mt-10">
-        <EaselFigure totalPaintings={filteredPaintings.length} />
+        <EaselFigure
+          totalPaintings={filteredPaintings.length}
+          onOpenViewer={(idx) => openViewer(idx)}
+        />
       </div>
 
       {/* Tag Filters */}

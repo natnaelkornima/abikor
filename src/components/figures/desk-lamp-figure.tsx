@@ -372,21 +372,82 @@ function FinishedBooksStack({
   const hashString = (str: string) =>
     str.split("").reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7);
 
+  // Specific realistic book dimensional profiles for rich thickness and size variation
+  const BOOK_PROFILES: Record<string, { w: number; d: number; t: number; spine: string }> = {
+    "Designing Data-Intensive Applications": {
+      w: 86,
+      d: 62,
+      t: 11.2,
+      spine: "DATA-INTENSIVE APPS",
+    },
+    "Structure and Interpretation of Computer Programs (SICP)": {
+      w: 88,
+      d: 64,
+      t: 12.6,
+      spine: "SICP · COMP. PROGRAMS",
+    },
+    "Gödel, Escher, Bach: An Eternal Golden Braid": {
+      w: 84,
+      d: 60,
+      t: 10.5,
+      spine: "GÖDEL, ESCHER, BACH",
+    },
+    "Site Reliability Engineering": {
+      w: 80,
+      d: 56,
+      t: 8.8,
+      spine: "SITE RELIABILITY ENG.",
+    },
+    "The Pragmatic Programmer": {
+      w: 76,
+      d: 52,
+      t: 7.4,
+      spine: "PRAGMATIC PROGRAMMER",
+    },
+    "Clean Architecture": {
+      w: 74,
+      d: 50,
+      t: 6.8,
+      spine: "CLEAN ARCHITECTURE",
+    },
+    "Atomic Habits": {
+      w: 68,
+      d: 48,
+      t: 5.6,
+      spine: "ATOMIC HABITS",
+    },
+    "Meditations": {
+      w: 62,
+      d: 44,
+      t: 4.8,
+      spine: "MEDITATIONS",
+    },
+  };
+
   let currentZ = bz;
-  const stackItems = [...books].reverse().map((book) => {
+  const stackItems = [...books].reverse().map((book, idx) => {
     const hash = hashString(book.title);
-    const bookWidth = 68 + (hash % 12);
-    const bookDepth = 50 + ((hash >> 4) % 8);
-    const thickness = Math.round((3.5 + 280 / 100) * 10) / 10;
+    const profile = BOOK_PROFILES[book.title] || {
+      w: 72 + (hash % 14),
+      d: 48 + ((hash >> 3) % 10),
+      t: 5.2 + ((hash >> 6) % 6),
+      spine: book.title.toUpperCase(),
+    };
+
+    const bookWidth = profile.w;
+    const bookDepth = profile.d;
+    const thickness = profile.t;
+
     const item = {
       book,
-      x: bx + (80 - bookWidth) / 2 + (((hash >> 7) % 7) - 3),
-      y: by + (58 - bookDepth),
+      spineText: profile.spine,
+      x: bx + (88 - bookWidth) / 2 + (((hash >> 7) % 5) - 2),
+      y: by + (64 - bookDepth),
       z: currentZ,
       w: bookWidth,
       d: bookDepth,
       t: thickness,
-      tone: hash % 4,
+      tone: (idx + hash) % 4,
     };
     currentZ += thickness;
     return item;
@@ -418,10 +479,12 @@ function FinishedBooksStack({
   return (
     <g className="k-stack seen">
       {stackItems.map(
-        ({ book, x: itemX, y: itemY, z: itemZ, w: itemW, d: itemD, t: itemT, tone }, idx) => {
+        ({ book, spineText, x: itemX, y: itemY, z: itemZ, w: itemW, d: itemD, t: itemT, tone }, idx) => {
           const isTop = idx === stackItems.length - 1;
-          const fontSize = Math.min(itemT * 0.66, 4.4);
+          const fontSize = Math.min(itemT * 0.55, 3.8);
           const isSelected = hoveredIdx === idx;
+          const maxSpineLen = itemW - 12;
+
           return (
             <g
               key={book.title}
@@ -468,40 +531,55 @@ function FinishedBooksStack({
                 className={`tone-${tone} pages`}
               />
               <IsoPlane t={projector.FRONT(itemX, itemY + itemD, itemZ + itemT)}>
-                {itemT >= 5 ? (
+                {itemT >= 4.5 ? (
                   <text
                     className="k-stack__title"
-                    x="5"
+                    x="6"
                     y={f2(itemT / 2)}
                     fontSize={f2(fontSize)}
                     dominantBaseline="central"
+                    textLength={f2(Math.min(maxSpineLen, spineText.length * fontSize * 0.68))}
+                    lengthAdjust="spacingAndGlyphs"
                   >
-                    {book.title.toUpperCase()}
+                    {spineText}
                   </text>
                 ) : (
                   <line
                     className="detail"
-                    x1="5"
+                    x1="6"
                     y1={f2(itemT / 2)}
-                    x2={f2(Math.min(itemW - 5, 5 + book.title.length * 1.6))}
+                    x2={f2(Math.min(itemW - 6, 6 + spineText.length * 1.5))}
                     y2={f2(itemT / 2)}
                   />
                 )}
               </IsoPlane>
               {isTop && (
                 <IsoPlane t={projector.TOP(itemX, itemY, itemZ + itemT)}>
-                  <text className="k-stack__title" x="7" y="12" fontSize="4.6">
-                    {book.title.toUpperCase()}
+                  <text
+                    className="k-stack__title"
+                    x="7"
+                    y="11"
+                    fontSize="3.8"
+                    textLength={f2(Math.min(itemW - 14, spineText.length * 2.6))}
+                    lengthAdjust="spacingAndGlyphs"
+                  >
+                    {spineText}
                   </text>
                   <line
                     className="detail"
                     x1="7"
-                    y1={f2(itemD - 14)}
+                    y1={f2(itemD - 13)}
                     x2={f2(itemW - 7)}
-                    y2={f2(itemD - 14)}
+                    y2={f2(itemD - 13)}
                   />
-                  <text className="k-stack__title" x="7" y={f2(itemD - 8)} fontSize="3.2">
-                    {book.author.toUpperCase()}
+                  <text
+                    className="k-stack__title"
+                    x="7"
+                    y={f2(itemD - 7)}
+                    fontSize="2.8"
+                    opacity="0.8"
+                  >
+                    {book.author.toUpperCase().slice(0, 20)}
                   </text>
                 </IsoPlane>
               )}
