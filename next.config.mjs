@@ -6,6 +6,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
+  webpack: (config, { dev }) => {
+    config.resolve.symlinks = false;
+
+    // Use polling for file watching to avoid EMFILE / inotify limits
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+
+    return config;
+  },
 };
 
 export default nextConfig;
