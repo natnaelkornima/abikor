@@ -88,9 +88,10 @@ export default function PaintingsPage() {
         </div>
       </header>
 
-      {/* Crafted Isometric Studio Easel Figure */}
+      {/* Crafted Isometric Studio Canvas Crate Figure */}
       <div className="mt-10">
         <EaselFigure
+          paintings={filteredPaintings}
           totalPaintings={filteredPaintings.length}
           onOpenViewer={(idx) => openViewer(idx)}
         />
