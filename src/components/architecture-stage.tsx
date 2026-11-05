@@ -1,111 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { portfolio } from "@/data/portfolio";
 
 export function ArchitectureStage() {
   const { architectures } = portfolio;
-  const [selectedArch, setSelectedArch] = useState<"web" | "ai">("web");
+  const [selectedArch, setSelectedArch] = useState<"ai" | "web">("ai");
   const [isPaused, setIsPaused] = useState(false);
-  const [activeStep, setActiveStep] = useState<number | null>(null);
-
-  // Auto-step highlighting synchronized with pulse animations
-  useEffect(() => {
-    if (isPaused) return;
-    const interval = setInterval(() => {
-      setActiveStep((prev) => (prev === null ? 0 : (prev + 1) % 4));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [isPaused]);
-
-  // Clean, high-signal node definitions with minimal text and rich technical detail
-  const webStages = [
-    {
-      num: "01",
-      tag: "INGESTION",
-      title: "Edge Gateway",
-      protocol: "Fastify / HTTP3",
-      accent: "#4ade80",
-      metricTop: "p99: 1.2ms",
-      metricBot: "40k req/s",
-      state: "CACHE HIT 98%",
-    },
-    {
-      num: "02",
-      tag: "BUFFER",
-      title: "Redis Streams",
-      protocol: "FIFO Event Ring",
-      accent: "#38bdf8",
-      metricTop: "Zero loss",
-      metricBot: "BullMQ queue",
-      state: "RING ACTIVE",
-    },
-    {
-      num: "03",
-      tag: "COMPUTE",
-      title: "Worker Core",
-      protocol: "Async Pool",
-      accent: "#e56b40",
-      metricTop: "Threads: 64",
-      metricBot: "Retry & backoff",
-      state: "JOB PASS",
-    },
-    {
-      num: "04",
-      tag: "STORAGE",
-      title: "PostgreSQL",
-      protocol: "WAL Cluster",
-      accent: "#a855f7",
-      metricTop: "120 binds",
-      metricBot: "ACID verify",
-      state: "SYNCED ✓",
-    },
-  ];
-
-  const aiStages = [
-    {
-      num: "01",
-      tag: "GATEWAY",
-      title: "FastAPI Core",
-      protocol: "Token Firewall",
-      accent: "#4ade80",
-      metricTop: "Sanitize pass",
-      metricBot: "Rate: 120/s",
-      state: "SECURE ✓",
-    },
-    {
-      num: "02",
-      tag: "RETRIEVAL",
-      title: "Hybrid RAG",
-      protocol: "Dense + Sparse",
-      accent: "#38bdf8",
-      metricTop: "Qdrant + BM25",
-      metricBot: "Top-k: 8 chunks",
-      state: "RECALL 94%",
-    },
-    {
-      num: "03",
-      tag: "REASONING",
-      title: "LLM Engine",
-      protocol: "JSON Grammars",
-      accent: "#e56b40",
-      metricTop: "Deterministic",
-      metricBot: "p99: 240ms",
-      state: "INFERENCE OK",
-    },
-    {
-      num: "04",
-      tag: "VALIDATION",
-      title: "Guardrails",
-      protocol: "Pydantic DTO",
-      accent: "#a855f7",
-      metricTop: "Strict schema",
-      metricBot: "100% invariant",
-      state: "VERIFIED ✓",
-    },
-  ];
-
-  const currentStages = selectedArch === "web" ? webStages : aiStages;
 
   return (
     <div className="w-full select-none">
@@ -114,197 +15,104 @@ export function ArchitectureStage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              setSelectedArch("web");
-              setActiveStep(null);
-            }}
-            className={`rounded-[4px] border px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors duration-140 ${
-              selectedArch === "web"
-                ? "border-white/30 bg-[#ededed] text-black font-semibold"
-                : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
-            }`}
-          >
-            01 // High-Throughput Web
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedArch("ai");
-              setActiveStep(null);
-            }}
+            onClick={() => setSelectedArch("ai")}
             className={`rounded-[4px] border px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors duration-140 ${
               selectedArch === "ai"
                 ? "border-white/30 bg-[#ededed] text-black font-semibold"
                 : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
             }`}
           >
-            02 // Deterministic AI &amp; RAG
+            01 // Deterministic AI &amp; RAG
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedArch("web")}
+            className={`rounded-[4px] border px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors duration-140 ${
+              selectedArch === "web"
+                ? "border-white/30 bg-[#ededed] text-black font-semibold"
+                : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
+            }`}
+          >
+            02 // High-Throughput Web
           </button>
         </div>
 
         <div className="font-mono text-[11px] text-[#6e6e6e] hidden sm:block">
-          {architectures[selectedArch]?.spec || "FLOW // 4-STAGE DETERMINISTIC PIPELINE"}
+          {architectures[selectedArch]?.spec || "FORK-JOIN RETRIEVAL & CONCURRENCY MATRIX"}
         </div>
       </div>
 
-      {/* High-Quality Animated 2D Vector Blueprint Diagram Matching Blog Style */}
+      {/* High-Quality Animated 2D Blueprint Diagram (Exact Match to Blog Figure) */}
       <figure
-        className="arch-fig not-prose mx-auto my-2 w-full max-w-[720px] select-none"
+        className="auth not-prose mx-auto my-2 w-full max-w-[720px] select-none"
         data-hold={isPaused ? "true" : "false"}
       >
         <style>{`
-          .arch-fig {
-            --face: #101014;
+          .auth {
+            --face: #111114;
             --edge: #26262e;
             --dot: #252530;
-            --wire: #3e3e4a;
-            --path: #e6e6e6;
+            --part: #3a3a46;
+            --lit: #6b6b6b;
+            --path: #d4d4d4;
             --ink: #ededed;
             --muted: #767676;
             --code: #a3a3a3;
-            --panel-bg: #141419;
-            --inner-bg: #191920;
+            --ghost: #4a4a4a;
+            --cap: #767676;
+            --accent: #e56b40;
           }
-          .arch-fig svg { display: block; width: 100%; height: auto; overflow: visible; }
-          .arch-fig :is(path, line, rect, circle) { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-          
-          /* Rectangular Node Panels */
-          .arch-fig .node-panel {
-            fill: var(--panel-bg);
-            stroke: var(--edge);
-            stroke-width: 1.2;
-            transition: stroke .25s ease, fill .25s ease, filter .25s ease;
-          }
-          .arch-fig .node-panel:hover {
-            fill: #171720;
-            stroke: #484856;
-          }
-          .arch-fig .node-panel.active {
-            stroke: #ededed;
-            fill: #191924;
-          }
-          
-          /* Wire Conduits & Arrowheads */
-          .arch-fig .wire-base {
-            fill: none;
-            stroke: var(--wire);
-            stroke-width: 1.2;
-          }
-          .arch-fig .arrow-head {
-            fill: none;
-            stroke: #8a8a98;
-            stroke-width: 1.2;
-          }
-          .arch-fig .pulse {
-            vector-effect: none;
-            fill: none;
-            stroke-width: 3;
-            stroke-linecap: round;
-          }
-
-          /* Typography */
-          .arch-fig .tag {
-            fill: var(--muted);
-            font: 8px/1 var(--font-geist-mono), ui-monospace, monospace;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-          }
-          .arch-fig .title {
-            fill: var(--ink);
-            font: 500 12px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui;
-            letter-spacing: -.01em;
-          }
-          .arch-fig .code {
-            fill: var(--code);
-            font: 9px/1.2 var(--font-geist-mono), ui-monospace, monospace;
-          }
-          .arch-fig .metric {
-            fill: #b3b3bc;
-            font: 8.5px/1.2 var(--font-geist-mono), ui-monospace, monospace;
-          }
-          .arch-fig .readout {
-            fill: var(--ink);
-            font: 9.5px/1.2 var(--font-geist-mono), ui-monospace, monospace;
-            font-variant-numeric: tabular-nums;
-          }
-
-          /* Animation Timers & Controls */
-          .arch-fig .m {
-            animation-timing-function: cubic-bezier(.65, 0, .35, 1);
-            animation-iteration-count: infinite;
-            animation-fill-mode: both;
-          }
-          .arch-fig[data-hold="true"] .m { animation-play-state: paused; }
+          .auth svg { display: block; width: 100%; height: auto; overflow: visible; }
+          .auth :is(path, line, rect, circle) { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+          .auth .panel { fill: var(--face); stroke: var(--edge); stroke-width: 1.2; transition: stroke .25s ease, fill .25s ease; }
+          .auth .panel:hover { stroke: #ededed; fill: #16161c; }
+          .auth .wire { fill: none; stroke: var(--part); stroke-width: 1.2; }
+          .auth .head { fill: none; stroke: #8e8e98; stroke-width: 1.2; }
+          .auth .drawn, .auth .pulse { vector-effect: none; }
+          .auth .pulse { fill: none; stroke: var(--path); stroke-width: 3.2; }
+          .auth .tag { fill: var(--muted); font: 8.5px/1 var(--font-geist-mono), ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; }
+          .auth .title { fill: var(--ink); font: 500 13px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; letter-spacing: -.01em; }
+          .auth .note { fill: var(--muted); font: 9.5px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; }
+          .auth .code { fill: var(--code); font: 9.5px/1.2 var(--font-geist-mono), ui-monospace, monospace; }
+          .auth .readout { fill: var(--ink); font: 10px/1.2 var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+          .auth .m { animation-timing-function: cubic-bezier(.65,0,.35,1); animation-iteration-count: infinite; animation-fill-mode: both; }
+          .auth[data-hold="true"] .m { animation-play-state: paused; }
           @media (hover: hover) and (pointer: fine) {
-            .arch-fig svg:hover .m { animation-play-state: paused; }
+            .auth svg:hover .m { animation-play-state: paused; }
           }
           @media (prefers-reduced-motion: reduce) {
-            .arch-fig .m { animation: none !important; }
+            .auth .m { animation: none !important; }
           }
 
-          /* Traveling Arrow Packet Pulses across 3 conduits (8s loop) */
-          @keyframes ap-pulse1 {
-            0%, 6% { opacity: 0; stroke-dashoffset: 0.05; }
-            12%, 22% { opacity: 1; }
-            28%, 100% { opacity: 0; stroke-dashoffset: -1; }
-          }
-          .arch-fig .ap-pulse1 { animation: ap-pulse1 8s infinite; }
+          /* Traveling Animated Wire Pulses */
+          @keyframes r-pulse-in { 0%,14% { opacity: 0; stroke-dashoffset: 0.02; } 18%,26% { opacity: 1; } 28%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          .auth .r-pulse-in { animation: r-pulse-in 8s infinite; }
 
-          @keyframes ap-pulse2 {
-            0%, 31% { opacity: 0; stroke-dashoffset: 0.05; }
-            37%, 47% { opacity: 1; }
-            53%, 100% { opacity: 0; stroke-dashoffset: -1; }
-          }
-          .arch-fig .ap-pulse2 { animation: ap-pulse2 8s infinite; }
+          @keyframes r-fork-wire { 0%,26% { stroke-dashoffset: 1; } 38%,100% { stroke-dashoffset: 0; } }
+          .auth .r-fork-wire { animation: r-fork-wire 8s infinite; }
 
-          @keyframes ap-pulse3 {
-            0%, 56% { opacity: 0; stroke-dashoffset: 0.05; }
-            62%, 72% { opacity: 1; }
-            78%, 100% { opacity: 0; stroke-dashoffset: -1; }
-          }
-          .arch-fig .ap-pulse3 { animation: ap-pulse3 8s infinite; }
+          @keyframes r-fork-pulse { 0%,34% { opacity: 0; stroke-dashoffset: 0.02; } 38%,48% { opacity: 1; } 50%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          .auth .r-fork-pulse { animation: r-fork-pulse 8s infinite; }
 
-          /* Synchronized Border Pulses */
-          @keyframes ap-border1 {
-            0%, 20% { stroke: #4ade80; }
-            26%, 100% { stroke: var(--edge); }
-          }
-          .arch-fig .ap-border1 { animation: ap-border1 8s infinite; }
+          @keyframes r-join-wire { 0%,54% { stroke-dashoffset: 1; } 66%,100% { stroke-dashoffset: 0; } }
+          .auth .r-join-wire { animation: r-join-wire 8s infinite; }
 
-          @keyframes ap-border2 {
-            0%, 25% { stroke: var(--edge); }
-            31%, 49% { stroke: #38bdf8; }
-            54%, 100% { stroke: var(--edge); }
-          }
-          .arch-fig .ap-border2 { animation: ap-border2 8s infinite; }
+          @keyframes r-join-pulse { 0%,62% { opacity: 0; stroke-dashoffset: 0.02; } 66%,76% { opacity: 1; } 78%,100% { opacity: 0; stroke-dashoffset: -1; } }
+          .auth .r-join-pulse { animation: r-join-pulse 8s infinite; }
 
-          @keyframes ap-border3 {
-            0%, 50% { stroke: var(--edge); }
-            56%, 74% { stroke: #e56b40; }
-            79%, 100% { stroke: var(--edge); }
-          }
-          .arch-fig .ap-border3 { animation: ap-border3 8s infinite; }
-
-          @keyframes ap-border4 {
-            0%, 75% { stroke: var(--edge); }
-            81%, 97% { stroke: #a855f7; }
-            100% { stroke: var(--edge); }
-          }
-          .arch-fig .ap-border4 { animation: ap-border4 8s infinite; }
-
-          /* Live Top Status Telemetry */
-          @keyframes ap-stat1 { 0%, 24% { opacity: 1; } 25%, 100% { opacity: 0; } }
-          .arch-fig .ap-stat1 { animation: ap-stat1 8s infinite; }
-          @keyframes ap-stat2 { 0%, 24% { opacity: 0; } 25%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-          .arch-fig .ap-stat2 { animation: ap-stat2 8s infinite; }
-          @keyframes ap-stat3 { 0%, 49% { opacity: 0; } 50%, 74% { opacity: 1; } 75%, 100% { opacity: 0; } }
-          .arch-fig .ap-stat3 { animation: ap-stat3 8s infinite; }
-          @keyframes ap-stat4 { 0%, 74% { opacity: 0; } 75%, 100% { opacity: 1; } }
-          .arch-fig .ap-stat4 { animation: ap-stat4 8s infinite; }
+          /* Live Readout Text Steps */
+          @keyframes r-r1 { 0%,24% { opacity: 1; } 25%,100% { opacity: 0; } }
+          .auth .r-r1 { animation: r-r1 8s infinite; }
+          @keyframes r-r2 { 0%,24% { opacity: 0; } 25%,48% { opacity: 1; } 49%,100% { opacity: 0; } }
+          .auth .r-r2 { animation: r-r2 8s infinite; }
+          @keyframes r-r3 { 0%,48% { opacity: 0; } 49%,72% { opacity: 1; } 73%,100% { opacity: 0; } }
+          .auth .r-r3 { animation: r-r3 8s infinite; }
+          @keyframes r-r4 { 0%,72% { opacity: 0; } 73%,100% { opacity: 1; } }
+          .auth .r-r4 { animation: r-r4 8s infinite; }
         `}</style>
 
-        <div className="arch-fig rounded-lg border border-[#24242c] bg-[#0c0c0f] p-4">
-          <svg viewBox="0 0 680 230" role="img" aria-label="Systems Architecture Flow Blueprint">
+        <div className="rounded-lg border border-[#24242c] bg-[#0c0c0f] p-4">
+          <svg viewBox="0 0 560 300" role="img" aria-label="Systems Architecture Fork-Join Retrieval Flow">
             <defs>
               {/* Dot Grid Background Pattern */}
               <pattern id="arch-dots" width="14" height="14" patternUnits="userSpaceOnUse">
@@ -315,228 +123,307 @@ export function ArchitectureStage() {
                 <stop offset="1" stopColor="#fff" stopOpacity="0" />
               </radialGradient>
               <mask id="arch-mask">
-                <rect width="680" height="230" fill="url(#arch-fade)" />
+                <rect width="560" height="300" fill="url(#arch-fade)" />
               </mask>
             </defs>
 
             {/* Background Grid */}
-            <rect width="680" height="230" fill="url(#arch-dots)" mask="url(#arch-mask)" />
+            <rect width="560" height="300" fill="url(#arch-dots)" mask="url(#arch-mask)" />
 
             {/* Top Telemetry Header */}
             <g>
-              <text x="20" y="20" className="tag">
-                POINT TO HOLD &middot; CLICK STAGE TO INSPECT
-              </text>
-              {selectedArch === "web" ? (
+              <text x="25" y="22" className="tag">POINT TO HOLD</text>
+              {selectedArch === "ai" ? (
                 <>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat1">
-                    01/04: Fastify Edge &rarr; P99 &lt; 1.2ms (40k req/s)
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r1">
+                    Top-5 grounded context (MRR +38%)
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat2">
-                    02/04: Redis Ring &rarr; Zero-drop FIFO queue buffer
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r2">
+                    Dual fork &rarr; BM25 Keywords + HNSW Vectors
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat3">
-                    03/04: BullMQ Workers &rarr; Concurrency 64 workers
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r3">
+                    Reciprocal Rank fusion combiner
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat4">
-                    04/04: PostgreSQL WAL &rarr; ACID Commits persisted
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r4">
+                    Top-5 grounded context (MRR +38%)
                   </text>
                 </>
               ) : (
                 <>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat1">
-                    01/04: FastAPI Gate &rarr; Prompt Injection Firewall
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r1">
+                    Edge Ingestion &rarr; P99 &lt; 1.2ms (40k req/s)
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat2">
-                    02/04: Hybrid RAG &rarr; Dense + Sparse Fusion (94% recall)
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r2">
+                    Dual fork &rarr; Redis FIFO Queue + Fast Cache
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat3">
-                    03/04: LLM Engine &rarr; Structured JSON grammar output
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r3">
+                    Worker Pool &rarr; 64 Concurrency (0% loss)
                   </text>
-                  <text x="660" y="20" textAnchor="end" className="readout m ap-stat4">
-                    04/04: Guardrails &rarr; Strict schema assertions
+                  <text x="535" y="22" textAnchor="end" className="readout m r-r4">
+                    PostgreSQL WAL &rarr; ACID Commits Persisted
                   </text>
                 </>
               )}
             </g>
 
             {/*
-              =================================================================
-              GEOMETRICALLY ALIGNED 4 RECTANGULAR NODES & CONNECTING ARROWS
-              =================================================================
-              Total diagram width: 680
-              Nodes: 4 nodes, width = 124px each -> 4 * 124 = 496px
-              Conduits: 3 conduits, width = 48px each -> 3 * 48 = 144px
-              Total diagram span = 496 + 144 = 640px
-              Left margin: (680 - 640) / 2 = 20px
-              
-              Node 1: X = 20 -> 144
-              Arrow 1: X = 144 -> 192 (length 48, Center Y = 120)
-              Node 2: X = 192 -> 316
-              Arrow 2: X = 316 -> 364 (length 48, Center Y = 120)
-              Node 3: X = 364 -> 488
-              Arrow 3: X = 488 -> 536 (length 48, Center Y = 120)
-              Node 4: X = 536 -> 660
-              Right margin = 680 - 660 = 20px (Perfect symmetry!)
-              
-              Node Top: Y = 46, Node Height: 148, Node Center Y: 120
+              =============================================================
+              FORK-JOIN ARCHITECTURE NODES & CONNECTING CONDUITS
+              Left Node: [25, 82, 140, 136] -> Center: (165, 150)
+              Middle Top Node: [205, 32, 150, 80] -> Center Y: 72
+              Middle Bottom Node: [205, 188, 150, 80] -> Center Y: 228
+              Right Node: [395, 82, 140, 136] -> Center: (395, 150)
+              =============================================================
             */}
-
-            {/* ================= STAGE 1: RECTANGULAR NODE ================= */}
-            <g className="cursor-pointer" onClick={() => setActiveStep(0)}>
-              <rect
-                x="20"
-                y="46"
-                width="124"
-                height="148"
-                rx="8"
-                className={`node-panel ${activeStep === 0 ? "active" : "m ap-border1"}`}
-              />
-              <text x="32" y="68" className="tag">{currentStages[0].num} // {currentStages[0].tag}</text>
-              <text x="32" y="87" className="title">{currentStages[0].title}</text>
-              <text x="32" y="103" className="code">{currentStages[0].protocol}</text>
-
-              {/* Inset Visual Card */}
-              <rect x="28" y="112" width="108" height="68" rx="5" fill="#131317" stroke="#252530" strokeWidth="1" />
-              <circle cx="39" cy="128" r="2.5" fill={currentStages[0].accent} />
-              <text x="47" y="131" className="metric">{currentStages[0].metricTop}</text>
-              <line x1="36" y1="141" x2="128" y2="141" stroke="#202028" strokeDasharray="2 2" />
-              <text x="39" y="153" className="metric">{currentStages[0].metricBot}</text>
-              <rect x="36" y="160" width="92" height="13" rx="2" fill="#181822" />
-              <text x="82" y="170" textAnchor="middle" className="code" fill={currentStages[0].accent}>
-                {currentStages[0].state}
-              </text>
-            </g>
-
-            {/* ================= ARROW 1 -> 2 WITH TRAVELING PULSE ================= */}
-            <g>
-              {/* Base line */}
-              <line x1="144" y1="120" x2="192" y2="120" className="wire-base" />
-              {/* Arrow Head */}
-              <path d="M187 116.5 L192 120 L187 123.5" className="arrow-head" />
-              {/* Glowing Traveling Pulse */}
-              <path
-                d="M144 120 H192"
-                pathLength="1"
-                className="pulse m ap-pulse1"
-                stroke={currentStages[1].accent}
-                style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
-              />
-            </g>
-
-            {/* ================= STAGE 2: RECTANGULAR NODE ================= */}
-            <g className="cursor-pointer" onClick={() => setActiveStep(1)}>
-              <rect
-                x="192"
-                y="46"
-                width="124"
-                height="148"
-                rx="8"
-                className={`node-panel ${activeStep === 1 ? "active" : "m ap-border2"}`}
-              />
-              <text x="204" y="68" className="tag">{currentStages[1].num} // {currentStages[1].tag}</text>
-              <text x="204" y="87" className="title">{currentStages[1].title}</text>
-              <text x="204" y="103" className="code">{currentStages[1].protocol}</text>
-
-              {/* Inset Visual Card: Queue Slot Matrix */}
-              <rect x="200" y="112" width="108" height="68" rx="5" fill="#131317" stroke="#252530" strokeWidth="1" />
-              {/* 3 Visual Queue Buffers */}
-              {[0, 1, 2].map((i) => (
-                <g key={i} transform={`translate(206, ${119 + i * 18})`}>
-                  <rect width="96" height="14" rx="2.5" fill="#181822" stroke="#232330" strokeWidth="0.8" />
-                  <circle cx="7" cy="7" r="2" fill={i === 0 ? currentStages[1].accent : "#606070"} />
-                  <text x="14" y="10" className="metric" fill={i === 0 ? "#ededed" : "#767682"}>
-                    {i === 0 ? "buf.p0 (active)" : i === 1 ? "buf.p1 (stream)" : "buf.p2 (ready)"}
-                  </text>
+            {selectedArch === "ai" ? (
+              /* ================== AI & RAG ARCHITECTURE ================== */
+              <g>
+                {/* 1. Left Node: User Query & Semantic Cache */}
+                <g className="cursor-pointer">
+                  <rect x="25" y="82" width="140" height="136" rx="8" className="panel" />
+                  <text x="38" y="105" className="tag">USER QUERY</text>
+                  <text x="38" y="126" className="title">Semantic Cache</text>
+                  <text x="38" y="147" className="code">Cosine 0.92</text>
+                  <text x="38" y="165" className="note" fill="#4ade80">41.8% hit rate</text>
+                  <text x="38" y="181" className="note">Sub-15ms hit</text>
                 </g>
-              ))}
-            </g>
 
-            {/* ================= ARROW 2 -> 3 WITH TRAVELING PULSE ================= */}
-            <g>
-              <line x1="316" y1="120" x2="364" y2="120" className="wire-base" />
-              <path d="M359 116.5 L364 120 L359 123.5" className="arrow-head" />
-              <path
-                d="M316 120 H364"
-                pathLength="1"
-                className="pulse m ap-pulse2"
-                stroke={currentStages[2].accent}
-                style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
-              />
-            </g>
+                {/* Fork Wire: Left Node -> Top Middle Node (BM25) */}
+                <g>
+                  <path
+                    d="M165 126 H180 Q192 126 192 114 V84 Q192 72 205 72"
+                    pathLength="1"
+                    className="wire drawn m r-fork-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M200 68.5 L205 72 L200 75.5" className="head" />
+                  <path
+                    d="M165 126 H180 Q192 126 192 114 V84 Q192 72 205 72"
+                    pathLength="1"
+                    className="pulse m r-fork-pulse"
+                    stroke="#e56b40"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
 
-            {/* ================= STAGE 3: RECTANGULAR NODE ================= */}
-            <g className="cursor-pointer" onClick={() => setActiveStep(2)}>
-              <rect
-                x="364"
-                y="46"
-                width="124"
-                height="148"
-                rx="8"
-                className={`node-panel ${activeStep === 2 ? "active" : "m ap-border3"}`}
-              />
-              <text x="376" y="68" className="tag">{currentStages[2].num} // {currentStages[2].tag}</text>
-              <text x="376" y="87" className="title">{currentStages[2].title}</text>
-              <text x="376" y="103" className="code">{currentStages[2].protocol}</text>
+                {/* Fork Wire: Left Node -> Bottom Middle Node (HNSW) */}
+                <g>
+                  <path
+                    d="M165 174 H180 Q192 174 192 186 V216 Q192 228 205 228"
+                    pathLength="1"
+                    className="wire drawn m r-fork-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M200 224.5 L205 228 L200 231.5" className="head" />
+                  <path
+                    d="M165 174 H180 Q192 174 192 186 V216 Q192 228 205 228"
+                    pathLength="1"
+                    className="pulse m r-fork-pulse"
+                    stroke="#4ade80"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
 
-              {/* Inset Visual Card: Worker Core Grid */}
-              <rect x="372" y="112" width="108" height="68" rx="5" fill="#131317" stroke="#252530" strokeWidth="1" />
-              <circle cx="383" cy="128" r="2.5" fill={currentStages[2].accent} />
-              <text x="391" y="131" className="metric">{currentStages[2].metricTop}</text>
-              <line x1="380" y1="141" x2="472" y2="141" stroke="#202028" strokeDasharray="2 2" />
-              <text x="383" y="153" className="metric">{currentStages[2].metricBot}</text>
-              <rect x="380" y="160" width="92" height="13" rx="2" fill="#181822" />
-              <text x="426" y="170" textAnchor="middle" className="code" fill={currentStages[2].accent}>
-                {currentStages[2].state}
-              </text>
-            </g>
+                {/* 2. Middle Top Node: Lexical Index (BM25) */}
+                <g className="cursor-pointer">
+                  <rect x="205" y="32" width="150" height="80" rx="8" className="panel" />
+                  <text x="218" y="54" className="tag">LEXICAL INDEX</text>
+                  <text x="218" y="74" className="title">BM25 Keywords</text>
+                  <text x="218" y="93" className="code">Exact SKUs / IDs</text>
+                </g>
 
-            {/* ================= ARROW 3 -> 4 WITH TRAVELING PULSE ================= */}
-            <g>
-              <line x1="488" y1="120" x2="536" y2="120" className="wire-base" />
-              <path d="M531 116.5 L536 120 L531 123.5" className="arrow-head" />
-              <path
-                d="M488 120 H536"
-                pathLength="1"
-                className="pulse m ap-pulse3"
-                stroke={currentStages[3].accent}
-                style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
-              />
-            </g>
+                {/* 3. Middle Bottom Node: Dense Index (HNSW) */}
+                <g className="cursor-pointer">
+                  <rect x="205" y="188" width="150" height="80" rx="8" className="panel" />
+                  <text x="218" y="210" className="tag">DENSE INDEX</text>
+                  <text x="218" y="230" className="title">HNSW Vectors</text>
+                  <text x="218" y="249" className="code">Dense vectors</text>
+                </g>
 
-            {/* ================= STAGE 4: RECTANGULAR NODE ================= */}
-            <g className="cursor-pointer" onClick={() => setActiveStep(3)}>
-              <rect
-                x="536"
-                y="46"
-                width="124"
-                height="148"
-                rx="8"
-                className={`node-panel ${activeStep === 3 ? "active" : "m ap-border4"}`}
-              />
-              <text x="548" y="68" className="tag">{currentStages[3].num} // {currentStages[3].tag}</text>
-              <text x="548" y="87" className="title">{currentStages[3].title}</text>
-              <text x="548" y="103" className="code">{currentStages[3].protocol}</text>
+                {/* Join Wire: Top Middle Node (BM25) -> Right Node */}
+                <g>
+                  <path
+                    d="M355 72 H368 Q380 72 380 84 V114 Q380 126 395 126"
+                    pathLength="1"
+                    className="wire drawn m r-join-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M390 122.5 L395 126 L390 129.5" className="head" />
+                  <path
+                    d="M355 72 H368 Q380 72 380 84 V114 Q380 126 395 126"
+                    pathLength="1"
+                    className="pulse m r-join-pulse"
+                    stroke="#e56b40"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
 
-              {/* Inset Visual Card: ACID Verification Database */}
-              <rect x="544" y="112" width="108" height="68" rx="5" fill="#131317" stroke="#252530" strokeWidth="1" />
-              <circle cx="555" cy="128" r="2.5" fill={currentStages[3].accent} />
-              <text x="563" y="131" className="metric">{currentStages[3].metricTop}</text>
-              <line x1="552" y1="141" x2="644" y2="141" stroke="#202028" strokeDasharray="2 2" />
-              <text x="555" y="153" className="metric">{currentStages[3].metricBot}</text>
-              <rect x="552" y="160" width="92" height="13" rx="2" fill="#181822" />
-              <text x="598" y="170" textAnchor="middle" className="code" fill={currentStages[3].accent}>
-                {currentStages[3].state}
-              </text>
-            </g>
+                {/* Join Wire: Bottom Middle Node (HNSW) -> Right Node */}
+                <g>
+                  <path
+                    d="M355 228 H368 Q380 228 380 216 V186 Q380 174 395 174"
+                    pathLength="1"
+                    className="wire drawn m r-join-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M390 170.5 L395 174 L390 177.5" className="head" />
+                  <path
+                    d="M355 228 H368 Q380 228 380 216 V186 Q380 174 395 174"
+                    pathLength="1"
+                    className="pulse m r-join-pulse"
+                    stroke="#4ade80"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
+
+                {/* 4. Right Node: Fusion Matrix (RRF Combiner) */}
+                <g className="cursor-pointer">
+                  <rect x="395" y="82" width="140" height="136" rx="8" className="panel" />
+                  <text x="408" y="105" className="tag">FUSION MATRIX</text>
+                  <text x="408" y="126" className="title">RRF Combiner</text>
+                  <text x="408" y="147" className="code">1/(k+rank)</text>
+                  <text x="408" y="165" className="note">MRR: +38%</text>
+                  <text x="408" y="181" className="code">Top-5 context</text>
+                </g>
+              </g>
+            ) : (
+              /* ================== HIGH-THROUGHPUT WEB ARCHITECTURE ================== */
+              <g>
+                {/* 1. Left Node: Ingestion Gateway */}
+                <g className="cursor-pointer">
+                  <rect x="25" y="82" width="140" height="136" rx="8" className="panel" />
+                  <text x="38" y="105" className="tag">INGESTION</text>
+                  <text x="38" y="126" className="title">Fastify Gateway</text>
+                  <text x="38" y="147" className="code">HTTP/3 · Edge</text>
+                  <text x="38" y="165" className="note" fill="#4ade80">40k req/s</text>
+                  <text x="38" y="181" className="note">p99 &lt; 1.2ms</text>
+                </g>
+
+                {/* Fork Wire: Left Node -> Top Middle Node (Redis Buffer) */}
+                <g>
+                  <path
+                    d="M165 126 H180 Q192 126 192 114 V84 Q192 72 205 72"
+                    pathLength="1"
+                    className="wire drawn m r-fork-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M200 68.5 L205 72 L200 75.5" className="head" />
+                  <path
+                    d="M165 126 H180 Q192 126 192 114 V84 Q192 72 205 72"
+                    pathLength="1"
+                    className="pulse m r-fork-pulse"
+                    stroke="#38bdf8"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
+
+                {/* Fork Wire: Left Node -> Bottom Middle Node (Edge Cache) */}
+                <g>
+                  <path
+                    d="M165 174 H180 Q192 174 192 186 V216 Q192 228 205 228"
+                    pathLength="1"
+                    className="wire drawn m r-fork-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M200 224.5 L205 228 L200 231.5" className="head" />
+                  <path
+                    d="M165 174 H180 Q192 174 192 186 V216 Q192 228 205 228"
+                    pathLength="1"
+                    className="pulse m r-fork-pulse"
+                    stroke="#4ade80"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
+
+                {/* 2. Middle Top Node: Async Buffer (Redis) */}
+                <g className="cursor-pointer">
+                  <rect x="205" y="32" width="150" height="80" rx="8" className="panel" />
+                  <text x="218" y="54" className="tag">ASYNC BUFFER</text>
+                  <text x="218" y="74" className="title">Redis FIFO Ring</text>
+                  <text x="218" y="93" className="code">BullMQ Streams</text>
+                </g>
+
+                {/* 3. Middle Bottom Node: Fast Path (In-Memory Cache) */}
+                <g className="cursor-pointer">
+                  <rect x="205" y="188" width="150" height="80" rx="8" className="panel" />
+                  <text x="218" y="210" className="tag">FAST PATH</text>
+                  <text x="218" y="230" className="title">In-Memory Cache</text>
+                  <text x="218" y="249" className="code">Sub-millisecond</text>
+                </g>
+
+                {/* Join Wire: Top Middle Node (Redis) -> Right Node */}
+                <g>
+                  <path
+                    d="M355 72 H368 Q380 72 380 84 V114 Q380 126 395 126"
+                    pathLength="1"
+                    className="wire drawn m r-join-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M390 122.5 L395 126 L390 129.5" className="head" />
+                  <path
+                    d="M355 72 H368 Q380 72 380 84 V114 Q380 126 395 126"
+                    pathLength="1"
+                    className="pulse m r-join-pulse"
+                    stroke="#38bdf8"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
+
+                {/* Join Wire: Bottom Middle Node (Cache) -> Right Node */}
+                <g>
+                  <path
+                    d="M355 228 H368 Q380 228 380 216 V186 Q380 174 395 174"
+                    pathLength="1"
+                    className="wire drawn m r-join-wire"
+                    stroke="#d4d4d4"
+                    strokeWidth="1.2"
+                    style={{ strokeDasharray: "1 1", strokeDashoffset: 0 }}
+                  />
+                  <path d="M390 170.5 L395 174 L390 177.5" className="head" />
+                  <path
+                    d="M355 228 H368 Q380 228 380 216 V186 Q380 174 395 174"
+                    pathLength="1"
+                    className="pulse m r-join-pulse"
+                    stroke="#4ade80"
+                    style={{ strokeDasharray: "0.001 2", strokeDashoffset: -1, opacity: 0 }}
+                  />
+                </g>
+
+                {/* 4. Right Node: Storage / Persistence (PostgreSQL Cluster) */}
+                <g className="cursor-pointer">
+                  <rect x="395" y="82" width="140" height="136" rx="8" className="panel" />
+                  <text x="408" y="105" className="tag">PERSISTENCE</text>
+                  <text x="408" y="126" className="title">Postgres Cluster</text>
+                  <text x="408" y="147" className="code">WAL replication</text>
+                  <text x="408" y="165" className="note">Pool: 120 binds</text>
+                  <text x="408" y="181" className="code" fill="#4ade80">ACID: Verified ✓</text>
+                </g>
+              </g>
+            )}
           </svg>
         </div>
 
-        {/* Caption Bar with Pause/Play Motion Toggle */}
+        {/* Technical Caption Bar with Pause/Play Motion Toggle */}
         <figcaption className="mt-3">
           <div className="flex items-center justify-between gap-4 font-mono text-[9px] uppercase tracking-wider text-[#767676]">
             <span>
-              Fig. 04 — Systems Architecture: {selectedArch === "web" ? "Distributed Ingestion & Storage Pipeline" : "Deterministic Hybrid RAG & Verification Engine"}
+              {selectedArch === "ai"
+                ? "Fig. 04 — Reciprocal Rank Fusion: Merging sparse exact keywords and dense semantics"
+                : "Fig. 04 — Asynchronous Pipeline: Ingestion decoupled from persistence via dual-path buffers"}
             </span>
             <button
               type="button"

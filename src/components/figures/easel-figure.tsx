@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { IsoFigureContainer } from "@/lib/iso";
 import { portfolio, Painting } from "@/data/portfolio";
 
 interface CanvasCrateFigureProps {
@@ -63,12 +64,10 @@ export function EaselFigure({
   }, [activeIdx, isPaused, paintings.length]);
 
   const currentPainting: Painting = paintings[activeIdx] || paintings[0];
-  const activeSpec = CANVAS_SPECS[activeIdx % CANVAS_SPECS.length];
 
   return (
-    <figure
-      className="crate-fig not-prose mx-auto my-6 w-full max-w-[720px] select-none"
-      data-hold={isPaused ? "true" : "false"}
+    <div
+      className="w-full select-none"
       onMouseEnter={() => {
         isHoveredRef.current = true;
       }}
@@ -77,26 +76,7 @@ export function EaselFigure({
       }}
     >
       <style>{`
-        .crate-fig {
-          --face: #101014;
-          --edge: #25252e;
-          --ink: #ededed;
-          --muted: #767676;
-          --box-bg: #13141a;
-          --box-border: #2c2d3a;
-          --box-wood: #181922;
-          --accent: #4ade80;
-        }
-        .crate-fig svg { display: block; width: 100%; height: auto; overflow: visible; }
-        .crate-fig :is(path, line, rect, polygon) { vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-        .crate-fig .tag { fill: var(--muted); font: 8px/1 var(--font-geist-mono), ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; }
-        .crate-fig .readout { fill: var(--ink); font: 9.5px/1.2 var(--font-geist-mono), ui-monospace, monospace; }
-        .crate-fig .title { fill: var(--ink); font: 500 12px/1.2 var(--font-geist-sans), ui-sans-serif, system-ui; }
-        .crate-fig .metric { fill: #8a8a98; font: 8.5px/1.2 var(--font-geist-mono), ui-monospace, monospace; }
-        .crate-fig .m { animation-timing-function: cubic-bezier(.65,0,.35,1); animation-iteration-count: infinite; }
-        .crate-fig[data-hold="true"] .m { animation-play-state: paused; }
-
-        /* Animation: Smooth physical arc pulling canvas OUT from the box to the ground */
+        /* Smooth physical arc extracting canvas OUT from the box onto the ground */
         @keyframes extract-out-to-ground {
           0% {
             transform: translate(250px, -55px) scale(0.65) rotate(4deg);
@@ -130,456 +110,391 @@ export function EaselFigure({
           animation: shadow-settle 0.75s cubic-bezier(0.18, 0.9, 0.25, 1) forwards;
           transform-origin: 160px 348px;
         }
-
-        /* Canvas spine hover effect in crate */
-        .canvas-spine {
-          transition: fill 0.2s ease, stroke 0.2s ease;
-        }
-        .canvas-spine:hover {
-          stroke: #ffffff;
-          stroke-width: 1.2px;
-        }
       `}</style>
 
-      {/* Main Container */}
-      <div className="crate-fig rounded-lg border border-[#24242c] bg-[#0c0c10] p-4">
-        <svg
-          viewBox="0 0 720 400"
-          role="img"
-          aria-label="Rectangular archival box with vertically stacked canvases like books. One canvas animates out from the box and is displayed standing on the ground."
-        >
-          <defs>
-            {/* Background Dot Grid */}
-            <pattern id="crate-dots" width="14" height="14" patternUnits="userSpaceOnUse">
-              <circle cx="7" cy="7" r="0.75" fill="#20212a" />
-            </pattern>
-            <radialGradient id="crate-fade" cx="50%" cy="50%" r="65%">
-              <stop offset="0.35" stopColor="#fff" />
-              <stop offset="1" stopColor="#fff" stopOpacity="0" />
-            </radialGradient>
-            <mask id="crate-mask">
-              <rect width="720" height="400" fill="url(#crate-fade)" />
-            </mask>
+      {/* Official Isometric Anatomy Figure Container (.k-iso) */}
+      <IsoFigureContainer
+        name="Fig 04. / Archival Storage Box: Vertical Canvases with Ground Display"
+        hint="Click any canvas in box to extract · Click ground canvas to expand"
+        readout={`ON GROUND: ${String(activeIdx + 1).padStart(2, "0")}/${paintings.length} · "${currentPainting.title.toUpperCase().slice(0, 24)}"`}
+        power={true}
+        viewBox="0 0 720 400"
+        label="Isometric anatomy figure showing a rectangular archival box with vertically stacked canvases like books, with one canvas pulled out and displayed standing on the studio ground in front."
+      >
+        <defs>
+          {/* Clipping path for ground canvas artwork */}
+          <clipPath id="ground-canvas-clip">
+            <rect x="76" y="105" width="168" height="235" rx="2" />
+          </clipPath>
+        </defs>
 
-            {/* Clipping path for ground canvas artwork */}
-            <clipPath id="ground-canvas-clip">
-              <rect x="76" y="105" width="168" height="235" rx="2" />
-            </clipPath>
+        {/* Studio Ground Perspective Guidelines */}
+        <g opacity="0.7">
+          <line className="detail" x1="20" y1="360" x2="700" y2="360" />
+          <line className="detail" x1="80" y1="390" x2="250" y2="280" strokeDasharray="4 4" />
+          <line className="detail" x1="400" y1="390" x2="520" y2="280" strokeDasharray="4 4" />
+        </g>
 
-            {/* Soft Shadow Filter */}
-            <filter id="ground-shadow-blur" x="-25%" y="-25%" width="150%" height="150%">
-              <feGaussianBlur stdDeviation="4.5" />
-            </filter>
-          </defs>
+        {/* ========================================================== */}
+        {/* 1. RECTANGULAR ARCHIVAL STORAGE BOX (IN PERSPECTIVE)       */}
+        {/* ========================================================== */}
+        <g transform="translate(285, 65)">
+          {/* Box Floor Base Contact Shadow */}
+          <polygon
+            points="15,225 395,225 410,240 0,240"
+            fill="#050508"
+            opacity="0.8"
+            filter="url(#k-soft)"
+          />
 
-          {/* Dot Grid Background */}
-          <rect width="720" height="400" fill="url(#crate-dots)" mask="url(#crate-mask)" />
+          {/* Box Interior Rear Wall */}
+          <rect className="face recess" x="18" y="12" width="372" height="188" rx="4" />
+          {/* Inner Slat Guidelines */}
+          <line className="detail" x1="18" y1="75" x2="390" y2="75" />
+          <line className="detail" x1="18" y1="135" x2="390" y2="135" />
 
-          {/* Top Telemetry Header */}
-          <g>
-            <text x="24" y="20" className="tag">
-              ARCHIVAL BOX // VERTICAL CANVASES (LIKE BOOKS) &middot; CLICK ANY TO EXTRACT
-            </text>
-            <text x="696" y="20" textAnchor="end" className="readout">
-              ON GROUND: {String(activeIdx + 1).padStart(2, "0")}/{paintings.length} &middot; &ldquo;{currentPainting.title.toUpperCase().slice(0, 24)}&rdquo;
-            </text>
-          </g>
+          {/* Box Interior Floor Rack (Where canvases stand vertically) */}
+          <polygon points="18,185 390,185 405,215 5,215" className="face" />
+          {/* Rack support lines */}
+          <line className="detail" x1="10" y1="195" x2="400" y2="195" strokeWidth="1.5" />
+          <line className="detail" x1="6" y1="205" x2="404" y2="205" strokeWidth="1.5" />
 
-          {/* Perspective Studio Floor Guidelines */}
-          <g opacity="0.6">
-            <line x1="30" y1="360" x2="690" y2="360" stroke="#1d1e28" strokeWidth="1" />
-            <line x1="80" y1="390" x2="250" y2="280" stroke="#161720" strokeWidth="0.8" strokeDasharray="4 4" />
-            <line x1="400" y1="390" x2="520" y2="280" stroke="#161720" strokeWidth="0.8" strokeDasharray="4 4" />
-          </g>
-
-          {/* ========================================================== */}
-          {/* 1. RECTANGULAR ARCHIVAL STORAGE BOX (IN THE BACKGROUND)   */}
-          {/* ========================================================== */}
+          {/* ======================================================== */}
+          {/* 2. VERTICALLY STACKED CANVASES INSIDE THE BOX           */}
+          {/* ======================================================== */}
           {/*
-            A structured rectangular storage crate in perspective.
-            Canvases sit vertically stacked inside it like books on a bookshelf.
+            Each canvas has its own thickness/width (t) and height (h) like books on a shelf!
+            When clicked, it extracts out onto the ground!
           */}
-          <g transform="translate(285, 65)">
-            {/* Box Floor Base Shadow */}
-            <polygon
-              points="15,225 395,225 410,240 0,240"
-              fill="#060609"
-              opacity="0.8"
-              filter="url(#ground-shadow-blur)"
-            />
+          {(() => {
+            let currentX = 28;
+            return CANVAS_SPECS.map((spec, i) => {
+              const isSelected = i === activeIdx;
+              const canvasX = currentX;
+              currentX += spec.t + 6;
 
-            {/* Box Interior Rear Wall */}
-            <rect x="18" y="12" width="372" height="188" rx="4" fill="#0f1015" stroke="#22232c" strokeWidth="1" />
-            {/* Inner Wood Slats & Shading */}
-            <line x1="18" y1="75" x2="390" y2="75" stroke="#181922" strokeWidth="1" />
-            <line x1="18" y1="135" x2="390" y2="135" stroke="#181922" strokeWidth="1" />
-
-            {/* Box Interior Floor Rack (Where canvases rest) */}
-            <polygon points="18,185 390,185 405,215 5,215" fill="#14151c" stroke="#252632" strokeWidth="1" />
-            {/* Bottom guide rails */}
-            <line x1="10" y1="195" x2="400" y2="195" stroke="#20212b" strokeWidth="1.5" />
-            <line x1="6" y1="205" x2="404" y2="205" stroke="#20212b" strokeWidth="1.5" />
-
-            {/* ======================================================== */}
-            {/* 2. VERTICALLY STACKED CANVASES INSIDE THE BOX           */}
-            {/* ======================================================== */}
-            {/*
-              Each canvas has its own width (t) and height (h) like books on a shelf!
-              When clicked, it animates out onto the ground!
-            */}
-            {(() => {
-              let currentX = 28;
-              return CANVAS_SPECS.map((spec, i) => {
-                const isSelected = i === activeIdx;
-                const canvasX = currentX;
-                currentX += spec.t + 6; // advance by this canvas's individual width + gap
-
-                // If this is the extracted canvas, render the empty slot with guide lines!
-                if (isSelected) {
-                  return (
-                    <g key={i}>
-                      {/* Empty Slot Groove / Extraction Guide */}
-                      <rect
-                        x={canvasX}
-                        y={195 - spec.h + 20}
-                        width={spec.t}
-                        height={spec.h - 15}
-                        rx="2"
-                        fill="none"
-                        stroke="#e56b40"
-                        strokeWidth="1.2"
-                        strokeDasharray="3 3"
-                        opacity="0.85"
-                      />
-                      <line
-                        x1={canvasX + spec.t / 2}
-                        y1={195}
-                        x2={canvasX + spec.t / 2}
-                        y2={212}
-                        stroke="#e56b40"
-                        strokeWidth="1.5"
-                      />
-                      {/* Empty Slot Callout */}
-                      <text
-                        x={canvasX + spec.t / 2}
-                        y={190 - spec.h + 12}
-                        textAnchor="middle"
-                        fill="#e56b40"
-                        fontSize="7"
-                        fontFamily="var(--font-geist-mono)"
-                        fontWeight="600"
-                      >
-                        [OUT]
-                      </text>
-                    </g>
-                  );
-                }
-
-                // Normal Standing Vertical Canvas inside the box
+              // If this is the extracted canvas, render the empty slot with guide lines!
+              if (isSelected) {
                 return (
-                  <g
-                    key={i}
-                    className="cursor-pointer group"
-                    onClick={() => handleSelect(i)}
-                  >
-                    {/* Canvas Body Shadow / Left side */}
-                    <rect
-                      x={canvasX - 1}
-                      y={195 - spec.h + 20}
-                      width={spec.t + 2}
-                      height={spec.h - 15}
-                      rx="2"
-                      fill="#0a0a0d"
-                      opacity="0.5"
-                    />
-
-                    {/* Canvas Spine (Front Vertical Edge facing forward like a book) */}
+                  <g key={i}>
+                    {/* Empty Slot Groove / Extraction Guide */}
                     <rect
                       x={canvasX}
                       y={195 - spec.h + 20}
                       width={spec.t}
                       height={spec.h - 15}
-                      rx="2.5"
-                      fill={spec.spine}
-                      stroke="#2e303d"
-                      strokeWidth="1"
-                      className="canvas-spine"
-                    />
-
-                    {/* Top Canvas Stretched Fold Edge */}
-                    <polygon
-                      points={`
-                        ${canvasX},${195 - spec.h + 20}
-                        ${canvasX + spec.t},${195 - spec.h + 20}
-                        ${canvasX + spec.t - 3},${195 - spec.h + 16}
-                        ${canvasX + 3},${195 - spec.h + 16}
-                      `}
-                      fill="#3a3d4d"
-                      opacity="0.7"
-                    />
-
-                    {/* Color Swatch / Palette Accent Ribbon */}
-                    <rect
-                      x={canvasX + 2}
-                      y={195 - spec.h + 26}
-                      width={Math.max(4, spec.t - 4)}
-                      height="4"
-                      rx="1"
-                      fill={spec.accent}
-                    />
-
-                    {/* Vertical Canvas Number & Name */}
-                    <g transform={`translate(${canvasX + spec.t / 2}, ${195 - spec.h + 46}) rotate(90)`}>
-                      <text
-                        x="0"
-                        y="2.5"
-                        textAnchor="start"
-                        fill="#8a8a9a"
-                        fontSize="7.5"
-                        fontFamily="var(--font-geist-mono)"
-                        className="group-hover:fill-[#ededed] transition-colors"
-                        letterSpacing="0.05em"
-                      >
-                        {spec.tag} &middot; {spec.name.toUpperCase()}
-                      </text>
-                    </g>
-
-                    {/* Bottom Stretcher Joint */}
-                    <line
-                      x1={canvasX + 2}
-                      y1={195 - 4}
-                      x2={canvasX + spec.t - 2}
-                      y2={195 - 4}
-                      stroke="#181820"
+                      rx="2"
+                      fill="none"
+                      stroke="var(--iso-accent-hi)"
                       strokeWidth="1.2"
+                      strokeDasharray="3 3"
+                      opacity="0.85"
                     />
+                    <line
+                      className="detail"
+                      x1={canvasX + spec.t / 2}
+                      y1={195}
+                      x2={canvasX + spec.t / 2}
+                      y2={212}
+                      strokeWidth="1.5"
+                    />
+                    {/* Empty Slot Callout */}
+                    <text
+                      className="accent"
+                      x={canvasX + spec.t / 2}
+                      y={190 - spec.h + 12}
+                      textAnchor="middle"
+                      fontSize="7"
+                      fontWeight="bold"
+                    >
+                      [OUT]
+                    </text>
                   </g>
                 );
-              });
-            })()}
+              }
 
-            {/* Box Front Lower Wall (Retaining Lip) */}
-            <polygon
-              points="0,215 410,215 410,240 0,240"
-              fill="#181922"
-              stroke="#2e303d"
-              strokeWidth="1.2"
-            />
-            {/* Box Left Wall */}
-            <polygon
-              points="0,15 18,12 18,185 0,215"
-              fill="#13141a"
-              stroke="#292a36"
-              strokeWidth="1"
-            />
-            {/* Box Right Wall */}
-            <polygon
-              points="390,12 410,15 410,215 390,185"
-              fill="#101117"
-              stroke="#252632"
-              strokeWidth="1"
-            />
+              // Normal Standing Vertical Canvas inside the box
+              return (
+                <g
+                  key={i}
+                  className="press"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleSelect(i)}
+                >
+                  {/* Canvas Body Left Shadow */}
+                  <rect
+                    x={canvasX - 1}
+                    y={195 - spec.h + 20}
+                    width={spec.t + 2}
+                    height={spec.h - 15}
+                    rx="2"
+                    fill="#0a0a0d"
+                    opacity="0.5"
+                  />
 
-            {/* Brass / Steel Reinforced Corners */}
-            <rect x="0" y="215" width="16" height="25" fill="#2b2d3a" stroke="#3e4154" strokeWidth="0.8" />
-            <circle cx="8" cy="222" r="1.5" fill="#c5a059" />
-            <circle cx="8" cy="233" r="1.5" fill="#c5a059" />
+                  {/* Canvas Spine (Front Vertical Edge facing forward like a book) */}
+                  <rect
+                    className="face"
+                    x={canvasX}
+                    y={195 - spec.h + 20}
+                    width={spec.t}
+                    height={spec.h - 15}
+                    rx="2.5"
+                    style={{ fill: spec.spine }}
+                  />
 
-            <rect x="394" y="215" width="16" height="25" fill="#2b2d3a" stroke="#3e4154" strokeWidth="0.8" />
-            <circle cx="402" cy="222" r="1.5" fill="#c5a059" />
-            <circle cx="402" cy="233" r="1.5" fill="#c5a059" />
+                  {/* Top Canvas Fold Edge */}
+                  <polygon
+                    className="face top"
+                    points={`
+                      ${canvasX},${195 - spec.h + 20}
+                      ${canvasX + spec.t},${195 - spec.h + 20}
+                      ${canvasX + spec.t - 3},${195 - spec.h + 16}
+                      ${canvasX + 3},${195 - spec.h + 16}
+                    `}
+                  />
 
-            {/* Archival Box Stencil Title */}
-            <text
-              x="20"
-              y="232"
-              fill="#7a7c8e"
-              fontSize="8"
-              fontFamily="var(--font-geist-mono)"
-              letterSpacing="0.1em"
-              fontWeight="500"
-            >
-              ARCHIVE CRATE // {paintings.length} VERTICAL CANVASES (SELECTABLE)
-            </text>
+                  {/* Color Swatch / Palette Accent Ribbon */}
+                  <rect
+                    x={canvasX + 2}
+                    y={195 - spec.h + 26}
+                    width={Math.max(4, spec.t - 4)}
+                    height="4"
+                    rx="1"
+                    fill={spec.accent}
+                  />
+
+                  {/* Vertical Canvas Number & Name along spine */}
+                  <g transform={`translate(${canvasX + spec.t / 2}, ${195 - spec.h + 46}) rotate(90)`}>
+                    <text
+                      className="label"
+                      x="0"
+                      y="2.5"
+                      textAnchor="start"
+                      fontSize="7.5"
+                      letterSpacing="0.05em"
+                    >
+                      {spec.tag} &middot; {spec.name.toUpperCase()}
+                    </text>
+                  </g>
+
+                  {/* Bottom Stretcher Joint */}
+                  <line
+                    className="detail"
+                    x1={canvasX + 2}
+                    y1={195 - 4}
+                    x2={canvasX + spec.t - 2}
+                    y2={195 - 4}
+                  />
+                </g>
+              );
+            });
+          })()}
+
+          {/* Box Front Lower Wall (Retaining Lip) */}
+          <polygon
+            points="0,215 410,215 410,240 0,240"
+            className="face top"
+          />
+          {/* Box Left Wall */}
+          <polygon
+            points="0,15 18,12 18,185 0,215"
+            className="face"
+          />
+          {/* Box Right Wall */}
+          <polygon
+            points="390,12 410,15 410,215 390,185"
+            className="face"
+          />
+
+          {/* Brass / Metallic Reinforced Corners with Screws */}
+          <g>
+            <rect className="face recess" x="0" y="215" width="16" height="25" />
+            <circle className="accent" cx="8" cy="222" r="1.5" />
+            <line className="detail" x1="6.8" y1="222" x2="9.2" y2="222" />
+            <circle className="accent" cx="8" cy="233" r="1.5" />
+            <line className="detail" x1="6.8" y1="233" x2="9.2" y2="233" />
+
+            <rect className="face recess" x="394" y="215" width="16" height="25" />
+            <circle className="accent" cx="402" cy="222" r="1.5" />
+            <line className="detail" x1="400.8" y1="222" x2="403.2" y2="222" />
+            <circle className="accent" cx="402" cy="233" r="1.5" />
+            <line className="detail" x1="400.8" y1="233" x2="403.2" y2="233" />
           </g>
 
-          {/* ========================================================== */}
-          {/* 3. THE EXTRACTED CANVAS DISPLAYED ON THE GROUND IN FRONT   */}
-          {/* ========================================================== */}
-          {/*
-            This canvas has animated out of the box and is standing on the ground!
-            Clicking it opens the high-resolution lightbox modal!
-          */}
-          <g
-            key={activeIdx}
-            className="cursor-pointer anim-extract"
-            onClick={() => {
-              if (onOpenViewer) onOpenViewer(activeIdx);
-            }}
+          {/* Archival Box Stencil Title */}
+          <text
+            className="label"
+            x="20"
+            y="232"
+            fontSize="8"
+            letterSpacing="0.1em"
+            fontWeight="500"
           >
-            {/* Ground Contact Shadow (Firmly anchoring the canvas to the floor) */}
-            <ellipse
-              cx="160"
-              cy="348"
-              rx="102"
-              ry="11"
-              fill="#000000"
-              opacity="0.9"
-              filter="url(#ground-shadow-blur)"
-              className="anim-shadow"
-            />
+            ARCHIVE CRATE // {paintings.length} VERTICAL CANVASES (SELECTABLE)
+          </text>
+        </g>
 
-            {/* 3D Stretcher Bar Depth (Left Edge of the Canvas) */}
-            <polygon
-              points="64,114 76,105 76,340 64,345"
-              fill="#181920"
-              stroke="#2c2d38"
-              strokeWidth="1"
-            />
-            {/* Raw Linen Wrapped Staples on side edge */}
-            {[0, 1, 2, 3, 4, 5].map((s) => (
-              <line
-                key={s}
-                x1="68"
-                y1={140 + s * 34}
-                x2="72"
-                y2={142 + s * 34}
-                stroke="#4a4c5d"
-                strokeWidth="1.2"
-              />
-            ))}
+        {/* ========================================================== */}
+        {/* 3. THE EXTRACTED CANVAS DISPLAYED ON THE GROUND IN FRONT   */}
+        {/* ========================================================== */}
+        {/*
+          This canvas has animated out of the box and is standing on the ground!
+          Clicking it opens the high-resolution lightbox modal!
+        */}
+        <g
+          key={activeIdx}
+          className="cursor-pointer anim-extract"
+          onClick={() => {
+            if (onOpenViewer) onOpenViewer(activeIdx);
+          }}
+        >
+          {/* Ground Contact Shadow */}
+          <ellipse
+            cx="160"
+            cy="348"
+            rx="102"
+            ry="11"
+            fill="#000000"
+            opacity="0.9"
+            filter="url(#k-soft)"
+            className="anim-shadow"
+          />
 
-            {/* Front Canvas Face with Framed Artwork */}
-            <rect
+          {/* 3D Stretcher Bar Depth (Left Edge of Canvas) */}
+          <polygon
+            className="face"
+            points="64,114 76,105 76,340 64,345"
+          />
+          {/* Raw Linen Wrapped Staples on side edge */}
+          {[0, 1, 2, 3, 4, 5].map((s) => (
+            <line
+              key={s}
+              className="detail"
+              x1="68"
+              y1={140 + s * 34}
+              x2="72"
+              y2={142 + s * 34}
+              strokeWidth="1.2"
+            />
+          ))}
+
+          {/* Front Canvas Face with Framed Artwork */}
+          <rect
+            className="face top"
+            x="76"
+            y="105"
+            width="168"
+            height="235"
+            rx="2"
+            strokeWidth="1.4"
+          />
+
+          {/* High-Resolution Artwork Image */}
+          <g clipPath="url(#ground-canvas-clip)">
+            <image
+              href={currentPainting.url}
               x="76"
               y="105"
               width="168"
               height="235"
-              rx="2"
-              fill="#14141a"
-              stroke="#3a3c4c"
-              strokeWidth="1.4"
+              preserveAspectRatio="xMidYMid slice"
+              style={{ filter: "contrast(1.05) brightness(1.02)" }}
             />
 
-            {/* High-Resolution Artwork Image */}
-            <g clipPath="url(#ground-canvas-clip)">
-              <image
-                href={currentPainting.url}
-                x="76"
-                y="105"
-                width="168"
-                height="235"
-                preserveAspectRatio="xMidYMid slice"
-                style={{ filter: "contrast(1.05) brightness(1.02)" }}
-              />
+            {/* Fine Linen Texture Overlay */}
+            <line x1="76" y1="160" x2="244" y2="160" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
+            <line x1="76" y1="220" x2="244" y2="220" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
+            <line x1="76" y1="280" x2="244" y2="280" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
 
-              {/* Museum Canvas Texture Overlay */}
-              <line x1="76" y1="160" x2="244" y2="160" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
-              <line x1="76" y1="220" x2="244" y2="220" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
-              <line x1="76" y1="280" x2="244" y2="280" stroke="#ffffff" strokeWidth="0.5" strokeOpacity="0.04" strokeDasharray="3 3" />
-
-              {/* Bottom Matte Placard on Canvas */}
-              <rect x="76" y="312" width="168" height="28" fill="#0c0d12" opacity="0.92" />
-              <text x="86" y="328" fill="#ededed" fontSize="7.5" fontFamily="var(--font-geist-mono)" letterSpacing="0.04em">
-                {currentPainting.title.toUpperCase().slice(0, 22)}
-              </text>
-            </g>
-
-            {/* Metallic Corner Protection Brackets */}
-            <path d="M78 117 L78 107 L88 107" fill="none" stroke="#ededed" strokeWidth="1.5" opacity="0.8" />
-            <path d="M242 117 L242 107 L232 107" fill="none" stroke="#ededed" strokeWidth="1.5" opacity="0.8" />
-            <path d="M78 328 L78 338 L88 338" fill="none" stroke="#ededed" strokeWidth="1.5" opacity="0.8" />
-            <path d="M242 328 L242 338 L232 338" fill="none" stroke="#ededed" strokeWidth="1.5" opacity="0.8" />
-
-            {/* Wooden Floor Chocks / Studio Wedges */}
-            <polygon points="100,342 114,342 114,348 100,348" fill="#3a271d" stroke="#251912" strokeWidth="0.8" />
-            <polygon points="206,342 220,342 220,348 206,348" fill="#3a271d" stroke="#251912" strokeWidth="0.8" />
-          </g>
-
-          {/* ========================================================== */}
-          {/* 4. GROUND GALLERY PLACARD & METADATA CHIP                  */}
-          {/* ========================================================== */}
-          <g transform="translate(254, 298)">
-            <rect x="0" y="0" width="205" height="52" rx="4" fill="#0f1015" stroke="#252632" strokeWidth="1" />
-            <circle cx="12" cy="14" r="2.5" fill="#4ade80" />
-            <text x="20" y="17" fill="#ededed" fontSize="8" fontFamily="var(--font-geist-mono)" letterSpacing="0.5">
-              DISPLAYED: {currentPainting.title.slice(0, 20)}
-            </text>
-            <text x="12" y="32" fill="#8e8e98" fontSize="7.5" fontFamily="var(--font-geist-sans)">
-              {currentPainting.artist} &middot; {currentPainting.year}
-            </text>
-            <text
-              x="12"
-              y="44"
-              fill="#4ade80"
-              fontSize="7"
-              fontFamily="var(--font-geist-mono)"
-              className="hover:underline cursor-pointer"
-              onClick={() => {
-                if (onOpenViewer) onOpenViewer(activeIdx);
-              }}
-            >
-              &rarr; CLICK CANVAS TO EXPAND FULLSCREEN
+            {/* Bottom Matte Studio Placard */}
+            <rect x="76" y="312" width="168" height="28" fill="#0c0d12" opacity="0.92" />
+            <text x="86" y="328" className="ink" fontSize="7.5" letterSpacing="0.04em">
+              {currentPainting.title.toUpperCase().slice(0, 22)}
             </text>
           </g>
 
-          {/* ========================================================== */}
-          {/* 5. TACTILE CONTROL STEPPERS (PREV / NEXT)                  */}
-          {/* ========================================================== */}
-          <g transform="translate(565, 302)">
-            <rect x="0" y="0" width="130" height="46" rx="4" fill="#13141a" stroke="#2c2d3a" strokeWidth="1" />
-            
-            {/* PREV BUTTON */}
-            <g className="cursor-pointer group" onClick={handlePrev}>
-              <rect x="8" y="8" width="52" height="30" rx="3" fill="#1a1b24" stroke="#333544" strokeWidth="0.8" className="group-hover:fill-[#252734] transition-colors" />
-              <path d="M37 19 L31 23 L37 27" fill="none" stroke="#ededed" strokeWidth="1.5" />
-              <text x="22" y="36" fill="#7a7c8e" fontSize="5.5" fontFamily="var(--font-geist-mono)">PREV</text>
-            </g>
+          {/* Metallic Corner Protection Brackets */}
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.5" d="M78 117 L78 107 L88 107" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.5" d="M242 117 L242 107 L232 107" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.5" d="M78 328 L78 338 L88 338" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.5" d="M242 328 L242 338 L232 338" />
 
-            {/* NEXT BUTTON */}
-            <g className="cursor-pointer group" onClick={handleNext}>
-              <rect x="70" y="8" width="52" height="30" rx="3" fill="#1a1b24" stroke="#333544" strokeWidth="0.8" className="group-hover:fill-[#252734] transition-colors" />
-              <path d="M93 19 L99 23 L93 27" fill="none" stroke="#ededed" strokeWidth="1.5" />
-              <text x="84" y="36" fill="#7a7c8e" fontSize="5.5" fontFamily="var(--font-geist-mono)">NEXT</text>
-            </g>
+          {/* Wooden Floor Chocks / Studio Wedges */}
+          <polygon points="100,342 114,342 114,348 100,348" className="face recess" />
+          <polygon points="206,342 220,342 220,348 206,348" className="face recess" />
+        </g>
+
+        {/* ========================================================== */}
+        {/* 4. GROUND GALLERY PLACARD & METADATA CHIP                  */}
+        {/* ========================================================== */}
+        <g transform="translate(254, 298)">
+          <rect className="face recess" x="0" y="0" width="205" height="52" rx="4" />
+          <circle className="led hot" cx="12" cy="14" r="2.5" />
+          <text className="ink" x="20" y="17" fontSize="8" letterSpacing="0.5">
+            DISPLAYED: {currentPainting.title.slice(0, 20)}
+          </text>
+          <text className="label" x="12" y="32" fontSize="7.5">
+            {currentPainting.artist} &middot; {currentPainting.year}
+          </text>
+          <text
+            className="accent cursor-pointer hover:underline"
+            x="12"
+            y="44"
+            fontSize="7"
+            onClick={() => {
+              if (onOpenViewer) onOpenViewer(activeIdx);
+            }}
+          >
+            &rarr; CLICK CANVAS TO EXPAND FULLSCREEN
+          </text>
+        </g>
+
+        {/* ========================================================== */}
+        {/* 5. TACTILE CONTROL STEPPERS (PREV / NEXT)                  */}
+        {/* ========================================================== */}
+        <g transform="translate(565, 302)">
+          <rect className="face recess" x="0" y="0" width="130" height="46" rx="4" />
+          
+          {/* PREV BUTTON */}
+          <g className="press" role="button" tabIndex={0} onClick={handlePrev}>
+            <rect className="face" x="8" y="8" width="52" height="30" rx="3" />
+            <path className="k-glyph" d="M37 19 L31 23 L37 27" fill="none" strokeWidth="1.5" />
+            <text className="label" x="22" y="36" fontSize="5.5">PREV</text>
           </g>
 
-          {/* ========================================================== */}
-          {/* 6. TECHNICAL ANNOTATION MARKS                             */}
-          {/* ========================================================== */}
+          {/* NEXT BUTTON */}
+          <g className="press" role="button" tabIndex={0} onClick={handleNext}>
+            <rect className="face" x="70" y="8" width="52" height="30" rx="3" />
+            <path className="k-glyph" d="M93 19 L99 23 L93 27" fill="none" strokeWidth="1.5" />
+            <text className="label" x="84" y="36" fontSize="5.5">NEXT</text>
+          </g>
+        </g>
+
+        {/* ========================================================== */}
+        {/* 6. TECHNICAL ANATOMY COACH MARKS                          */}
+        {/* ========================================================== */}
+        <g aria-hidden="true" className="k-coach is-live">
+          {/* Guide to Box Canvases */}
           <g>
-            {/* Guide to Box Canvases */}
-            <line x1="480" y1="120" x2="520" y2="48" stroke="#4a4c5d" strokeWidth="1" strokeDasharray="3 3" />
-            <circle cx="480" cy="120" r="2" fill="#ededed" />
-            <text x="525" y="50" fill="#8e8e98" fontSize="7" fontFamily="var(--font-geist-mono)">
+            <circle className="k-coach__dot is-end" cx="480" cy="120" r="2.2" />
+            <line className="k-coach__wire" x1="480" y1="120" x2="520" y2="48" strokeDasharray="3 3" />
+            <text className="k-coach__label" x="525" y="50" fontSize="7">
               BOX: VERTICAL CANVASES (SELECTABLE)
             </text>
+          </g>
 
-            {/* Guide to Ground Canvas */}
-            <line x1="160" y1="210" x2="195" y2="60" stroke="#4ade80" strokeWidth="1" strokeDasharray="3 3" />
-            <circle cx="160" cy="210" r="2" fill="#4ade80" />
-            <text x="200" y="62" fill="#4ade80" fontSize="7" fontFamily="var(--font-geist-mono)">
+          {/* Guide to Ground Canvas */}
+          <g>
+            <circle className="k-coach__dot is-end" cx="160" cy="210" r="2.2" />
+            <line className="k-coach__wire" x1="160" y1="210" x2="195" y2="60" strokeDasharray="3 3" />
+            <text className="k-coach__label" x="200" y="62" fontSize="7">
               EXTRACTED: DISPLAYED ON GROUND
             </text>
           </g>
-        </svg>
-      </div>
-
-      {/* Caption Bar with Pause/Play Motion Toggle */}
-      <figcaption className="mt-3">
-        <div className="flex items-center justify-between gap-4 font-mono text-[9px] uppercase tracking-wider text-[#767676]">
-          <span>
-            Fig. 04 — Archival Storage Box: Vertical Canvases with Animated Ground Display
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsPaused(!isPaused)}
-            className="text-[#8e8e8e] hover:text-[#ededed] transition-colors cursor-pointer py-1"
-          >
-            {isPaused ? "Play motion" : "Pause motion"}
-          </button>
-        </div>
-      </figcaption>
-    </figure>
+        </g>
+      </IsoFigureContainer>
+    </div>
   );
 }
