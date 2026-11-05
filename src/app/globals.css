@@ -125,43 +125,63 @@
   font-family: var(--font-geist-serif-heart), "Geist Serif Heart", "Geist Serif", Georgia, Cambria, "Times New Roman", Times, serif !important;
 }
 
-/* Typography Hierarchy with Inter: Bold/bolder headings and titles, clean normal paragraphs */
-h1, .k-h1 {
-  font-family: "Inter", var(--font-geist-sans), sans-serif;
-  font-weight: 700;
+/* Typography Hierarchy with Archivo: Bolder headings and titles, clean normal paragraphs */
+h1, .k-h1, h1.font-serif {
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 750;
   letter-spacing: -0.03em;
+  font-variation-settings: "wdth" 100;
 }
 
-h2:not(.k-label), .k-h2 {
-  font-family: "Inter", var(--font-geist-sans), sans-serif;
-  font-weight: 650;
+h2:not(.k-label), .k-h2, h2.font-serif {
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
   letter-spacing: -0.025em;
+  font-variation-settings: "wdth" 100;
 }
 
-h3, .k-h3 {
-  font-family: "Inter", var(--font-geist-sans), sans-serif;
-  font-weight: 600;
+h3, .k-h3, h3.font-serif, h3.font-serif-regular, h3.font-serif-square {
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 650;
   letter-spacing: -0.02em;
+  font-variation-settings: "wdth" 100;
 }
 
 h4, h5, h6 {
-  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
   font-weight: 600;
+  font-variation-settings: "wdth" 100;
+}
+
+/* Titles, list headers, and featured links */
+.font-serif-regular, .k-title {
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-variation-settings: "wdth" 100;
 }
 
 p, .k-body {
-  font-family: "Inter", var(--font-geist-sans), sans-serif;
-  font-weight: 400;
+  font-family: "Archivo", var(--font-geist-sans), sans-serif;
   font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
   line-height: 1.65;
 }
 
 body {
   background: var(--k-bg);
   color: var(--k-text);
-  font-family: "Inter", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 400;
+  font-family: "Archivo", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
@@ -461,16 +481,16 @@ body {
 @keyframes pc-blink { 50% { opacity: 0; } }
 .k-iso {
   --iso-panel: var(--k-bg);
-  --iso-line: #424242;
-  --iso-detail: #303030;
-  --iso-body: #1c1c1c;
-  --iso-deck: #262626;
-  --iso-recess: #0a0a0a;
-  --iso-ink: #9a9a9a;
+  --iso-line: #4a4a56;
+  --iso-detail: #3a3a46;
+  --iso-body: #232328;
+  --iso-deck: #2d2d34;
+  --iso-recess: #1c1c20;
+  --iso-ink: #a5a5ad;
   --iso-ink-hi: #ededed;
   --iso-accent: #ededed;
   --iso-accent-hi: #ffffff;
-  --iso-accent-dim: rgba(255, 255, 255, 0.12);
+  --iso-accent-dim: rgba(255, 255, 255, 0.15);
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -495,22 +515,22 @@ body {
 .k-paper { fill: var(--iso-deck); stroke: var(--iso-line); stroke-width: 1px; vector-effect: non-scaling-stroke; }
 .k-tape-label { fill: #cfcfcf; stroke: none; }
 .k-hand { fill: #161616; font-family: Bradley Hand, Segoe Print, Comic Sans MS, cursive; font-style: italic; }
-.k-spool { fill: #0a0a0a; stroke: var(--iso-detail); stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.k-spoke { stroke: var(--iso-ink); stroke-width: 1px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.k-tape-run { stroke: #ffffff38; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.k-seg { fill: var(--iso-detail); transition: fill 90ms; }
-.k-seg.on { fill: var(--iso-accent) !important; }
-.k-seg.on.peak { fill: var(--iso-accent-hi) !important; }
+.k-spool { fill: #232329; stroke: #484854; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.k-spoke { stroke: #8a8a96; stroke-width: 1.2px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.k-tape-run { stroke: #ffffff44; stroke-width: 1.2px; vector-effect: non-scaling-stroke; }
+.k-seg { fill: #2c2c34; transition: fill 70ms; }
+.k-seg.on { fill: #e5e5ea !important; }
+.k-seg.on.peak { fill: #ffffff !important; filter: drop-shadow(0 0 2px rgba(255,255,255,0.7)); }
 .k-counter { fill: var(--iso-accent-hi); font-variant-numeric: tabular-nums; }
 .k-glyph { fill: var(--iso-ink); transition: fill .6s ease-out; }
 :is(.press.lit, .press.latched) .k-glyph { fill: var(--iso-panel); transition: none; }
-.k-glass { fill: #070707; stroke: var(--iso-line); stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.k-glass { fill: #18191d; stroke: var(--iso-line); stroke-width: 1px; vector-effect: non-scaling-stroke; }
 .k-glint { fill: none; stroke: #ffffff59; stroke-width: 1.4px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.k-flash { fill: #101010; transition: fill .5s ease-out; }
+.k-flash { fill: #18191d; transition: fill .5s ease-out; }
 .k-flash.is-on { fill: var(--iso-accent-hi) !important; filter: url(#k-glow); transition: none; }
 .k-print .face { fill: #e4e4e4; stroke: #bdbdbd; }
 .k-print-paper { fill: #ececec; stroke: none; }
-.k-print-blank { fill: #1a1a1a; stroke: none; }
+.k-print-blank { fill: #242429; stroke: none; }
 .k-print-image { filter: grayscale() contrast(1.08); }
 .k-print-hand { fill: #161616; font-family: Bradley Hand, Segoe Print, Comic Sans MS, cursive; font-style: italic; }
 .k-carriage { transition: transform 70ms ease-out; }
@@ -523,16 +543,16 @@ body {
 .k-stack__book.out .face { stroke: var(--iso-accent-hi) !important; }
 .k-stack__book.out .k-stack__title { fill: var(--iso-accent-hi) !important; }
 .k-stack__title { fill: var(--iso-ink); letter-spacing: .04em; transition: fill .2s; }
-.k-iris { fill: #0c0d0f; stroke: #ffffff14; stroke-width: 1px; vector-effect: non-scaling-stroke; }
-.k-pupil { fill: #000; }
-.k-glint-dot { fill: #ffffff47; }
-.k-shade { fill: #000; opacity: .55; stroke: none; }
+.k-iris { fill: #1c1d22; stroke: #ffffff22; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.k-pupil { fill: #121316; }
+.k-glint-dot { fill: #ffffff66; }
+.k-shade { fill: #101014; opacity: .45; stroke: none; }
 .k-wash { fill: #fff; pointer-events: none; mix-blend-mode: screen; }
-.face.tone-0:not(.top) { fill: #141414; }
-.face.tone-1:not(.top) { fill: #191919; }
-.face.tone-2:not(.top) { fill: #1e1e1e; }
-.face.tone-3:not(.top) { fill: #232323; }
-.face.pages.top { fill: #242424; }
+.face.tone-0:not(.top) { fill: #1a1a20; }
+.face.tone-1:not(.top) { fill: #202026; }
+.face.tone-2:not(.top) { fill: #272730; }
+.face.tone-3:not(.top) { fill: #2e2e38; }
+.face.pages.top { fill: #2e2e38; }
 
 @keyframes k-spool-spin {
   from { transform: rotate(0deg); }
@@ -992,23 +1012,23 @@ body {
 }
 
 .k-iso .face.tone-0:not(.top) {
-  fill:#141414
+  fill:#1a1a20
 }
 
 .k-iso .face.tone-1:not(.top) {
-  fill:#191919
+  fill:#202026
 }
 
 .k-iso .face.tone-2:not(.top) {
-  fill:#1e1e1e
+  fill:#272730
 }
 
 .k-iso .face.tone-3:not(.top) {
-  fill:#232323
+  fill:#2e2e38
 }
 
 .k-iso .face.pages.top {
-  fill:#242424
+  fill:#2e2e38
 }
 
 .k-stack__book {

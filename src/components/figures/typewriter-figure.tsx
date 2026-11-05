@@ -351,7 +351,7 @@ export function TypewriterFigure() {
         ))}
       </IsoPlane>
 
-      {/* Front Slanted Keyboard Well */}
+      {/* Front Slanted Keyboard Chassis & Board */}
       <IsoBox
         k={BOUNDS}
         at={[KEYBOARD_SLOPE.x, KEYBOARD_SLOPE.y, 7]}
@@ -359,13 +359,36 @@ export function TypewriterFigure() {
         r={8}
       />
       <IsoPlane t={BOUNDS.TOP(KEYBOARD_SLOPE.x, KEYBOARD_SLOPE.y, KEY_Z)}>
+        {/* Outer keyboard bed rim */}
         <rect
-          className="face recess"
-          x={6}
-          y={6}
-          width={KEYBOARD_SLOPE.w - 12}
-          height={KEYBOARD_SLOPE.d - 12}
+          x={4}
+          y={4}
+          width={KEYBOARD_SLOPE.w - 8}
+          height={KEYBOARD_SLOPE.d - 8}
+          rx={6}
+          fill="#2a2a32"
+          stroke="#484854"
+          strokeWidth={1}
+        />
+        {/* Slanted mechanical keyboard board holding the keys */}
+        <rect
+          x={7}
+          y={7}
+          width={KEYBOARD_SLOPE.w - 14}
+          height={KEYBOARD_SLOPE.d - 14}
           rx={4}
+          fill="#212127"
+          stroke="#3a3a46"
+          strokeWidth={1}
+        />
+        {/* Subtle decorative guide rule in Anatomy craft style */}
+        <line
+          x1={12}
+          y1={KEYBOARD_SLOPE.d - 14}
+          x2={KEYBOARD_SLOPE.w - 12}
+          y2={KEYBOARD_SLOPE.d - 14}
+          stroke="#32323c"
+          strokeWidth={1}
         />
       </IsoPlane>
 
