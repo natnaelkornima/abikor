@@ -8,7 +8,7 @@ import { CassetteFigure } from "@/components/figures/cassette-figure";
 export default function PlaylistsPage() {
   const { playlists } = portfolio;
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const currentTrack = playlists[currentIdx];
 

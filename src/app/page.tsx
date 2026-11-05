@@ -10,6 +10,9 @@ import {
   ArrowUpRight,
   Github,
   Linkedin,
+  GitBranch,
+  Layers,
+  Gauge,
 } from "lucide-react";
 
 export default function Home() {
@@ -69,21 +72,47 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Metric Highlight Bar (3 Columns with soft dashed division) */}
-        <div className="k-rule-b k-rule-t mt-8 grid grid-cols-1 divide-y divide-dashed divide-[#353535] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {profile.stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex flex-col py-3.5 sm:px-4 first:sm:pl-0 select-none"
-            >
-              <span className="text-xl font-medium tracking-tight text-[#ededed]">
-                {stat.value}
-              </span>
-              <span className="mt-1 font-mono text-[10px] uppercase tracking-wider text-[#6e6e6e]">
-                {stat.label}
-              </span>
-            </div>
-          ))}
+        {/* Metric Highlight Bar (3 Columns with dashed division matching original) */}
+        <div className="mt-8 border-y border-dashed border-[#333333] grid grid-cols-1 divide-y divide-dashed divide-[#333333] sm:grid-cols-3 sm:divide-y-0 sm:divide-x select-none">
+          {profile.stats.map((stat, idx) => {
+            const icons = [
+              <GitBranch key="repos" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
+              <Layers key="stack" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
+              <Gauge key="latency" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
+            ];
+            return (
+              <div
+                key={stat.label}
+                className="flex flex-col justify-between py-4 sm:py-5 px-3 sm:px-6 first:sm:pl-1 last:sm:pr-1"
+              >
+                {/* Icon & Label with identical matching color */}
+                <div className="flex items-center gap-1.5 text-[#8a8a92]">
+                  {icons[idx]}
+                  <span className="font-mono text-[10.5px] uppercase tracking-[0.08em] font-medium text-[#8a8a92]">
+                    {stat.label}
+                  </span>
+                </div>
+
+                {/* Big Stat Value */}
+                <div className="mt-2.5 mb-1">
+                  <span
+                    className={`font-bold tracking-tight text-[#ededed] ${
+                      stat.value.length > 10
+                        ? "text-lg sm:text-[20px]"
+                        : "text-2xl sm:text-[28px]"
+                    }`}
+                  >
+                    {stat.value}
+                  </span>
+                </div>
+
+                {/* Description Subtitle */}
+                <span className="font-sans text-[12px] sm:text-[12.5px] text-[#6e6e6e] leading-snug">
+                  {stat.detail}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </section>
 
