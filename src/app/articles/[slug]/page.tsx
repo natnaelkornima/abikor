@@ -8,6 +8,24 @@ import { ARTICLES_MAP } from "@/data/articles-content";
 import { Article2DFigure } from "@/components/figures/article-2d-figure";
 import { CodeBlock } from "@/components/code-block";
 
+function formatProse(text: string): React.ReactNode {
+  if (!text.includes("`")) return text;
+  const parts = text.split(/`([^`]+)`/g);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) {
+      return (
+        <code
+          key={i}
+          className="rounded border border-[#2a2a2a] bg-[#181818] px-1.5 py-0.5 font-mono text-[12px] text-[#ededed]"
+        >
+          {part}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
 }
@@ -117,7 +135,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <div className="mt-10 space-y-10 text-[15.5px] leading-[1.8] text-[#c9c9cf] font-sans" data-article-body="true">
         {/* Intro */}
         <p className="text-[17px] leading-relaxed text-[#e0e0e0] font-normal">
-          {article.content.intro}
+          {formatProse(article.content.intro)}
         </p>
 
         {/* Sections with Middle Diagram */}
@@ -132,12 +150,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </h2>
 
               {section.paragraphs.map((p, pIdx) => (
-                <p key={pIdx}>{p}</p>
+                <p key={pIdx}>{formatProse(p)}</p>
               ))}
 
               {section.callout && (
-                <div className="my-6 border-l-2 border-[#e56b40] bg-[#1a1a20]/60 px-5 py-4 text-[#dedede] text-[14.5px] leading-relaxed rounded-r">
-                  <p className="italic">{section.callout}</p>
+                <div className="my-6 border-l-2 border-[#e56b40] border-y border-r border-[#262626] bg-[#1a1a1a]/80 px-5 py-4 text-[#dedede] text-[14.5px] leading-relaxed rounded-r-lg">
+                  <p className="italic">{formatProse(section.callout)}</p>
                 </div>
               )}
 
@@ -161,7 +179,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         {/* Key Takeaways */}
         {article.content.takeaways && article.content.takeaways.length > 0 && (
-          <div className="mt-12 rounded-lg border border-[#2d2d34] bg-[#16161c] p-6 space-y-4">
+          <div className="mt-12 rounded-xl border border-[#262626] bg-[#1a1a1a]/70 p-6 space-y-4">
             <h3 className="text-[15px] font-mono uppercase tracking-wider text-[#ededed] flex items-center gap-2">
               <CheckCircle2 className="size-4 text-[#e56b40]" />
               Architectural Takeaways
@@ -172,7 +190,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <span className="font-mono text-[11px] text-[#e56b40] mt-1 shrink-0">
                     0{tIdx + 1} /
                   </span>
-                  <span>{takeaway}</span>
+                  <span>{formatProse(takeaway)}</span>
                 </li>
               ))}
             </ul>
@@ -180,9 +198,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         )}
 
         {/* Conclusion */}
-        <section className="space-y-4 pt-4 border-t border-[#24242c]">
+        <section className="space-y-4 pt-4 border-t border-[#262626]">
           <h2 className="text-[17px] font-medium text-[#ededed]">Conclusion</h2>
-          <p>{article.content.conclusion}</p>
+          <p>{formatProse(article.content.conclusion)}</p>
         </section>
       </div>
 
