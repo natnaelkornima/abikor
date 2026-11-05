@@ -11,6 +11,8 @@ import {
   Github,
   Linkedin,
   GitBranch,
+  Star,
+  GitFork,
   Layers,
   Gauge,
 } from "lucide-react";
@@ -73,33 +75,33 @@ export default function Home() {
         </div>
 
         {/* Metric Highlight Bar (3 Columns with dashed division matching original) */}
-        <div className="mt-8 border-y border-dashed border-[#333333] grid grid-cols-1 divide-y divide-dashed divide-[#333333] sm:grid-cols-3 sm:divide-y-0 sm:divide-x select-none">
+        <div className="mt-8 border-y border-dashed border-[#2d2d33] grid grid-cols-1 divide-y divide-dashed divide-[#2d2d33] sm:grid-cols-3 sm:divide-y-0 sm:divide-x select-none">
           {profile.stats.map((stat, idx) => {
             const icons = [
-              <GitBranch key="repos" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
-              <Layers key="stack" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
-              <Gauge key="latency" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.8} />,
+              <Github key="repos" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.75} />,
+              <Star key="stack" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.75} />,
+              <GitFork key="latency" className="size-3.5 text-[#8a8a92] shrink-0" strokeWidth={1.75} />,
             ];
             return (
               <div
                 key={stat.label}
-                className="flex flex-col justify-between py-4 sm:py-5 px-3 sm:px-6 first:sm:pl-1 last:sm:pr-1"
+                className="flex flex-col justify-between py-4 sm:py-5 px-4 sm:px-6"
               >
                 {/* Icon & Label with identical matching color */}
-                <div className="flex items-center gap-1.5 text-[#8a8a92]">
+                <div className="flex items-center gap-2 text-[#8a8a92]">
                   {icons[idx]}
-                  <span className="font-mono text-[10.5px] uppercase tracking-[0.08em] font-medium text-[#8a8a92]">
+                  <span className="font-sans text-[11px] uppercase tracking-[0.08em] font-medium text-[#8a8a92]">
                     {stat.label}
                   </span>
                 </div>
 
                 {/* Big Stat Value */}
-                <div className="mt-2.5 mb-1">
+                <div className="mt-3 mb-1.5">
                   <span
                     className={`font-bold tracking-tight text-[#ededed] ${
                       stat.value.length > 10
                         ? "text-lg sm:text-[20px]"
-                        : "text-2xl sm:text-[28px]"
+                        : "text-2xl sm:text-[30px] leading-tight"
                     }`}
                   >
                     {stat.value}
@@ -107,7 +109,7 @@ export default function Home() {
                 </div>
 
                 {/* Description Subtitle */}
-                <span className="font-sans text-[12px] sm:text-[12.5px] text-[#6e6e6e] leading-snug">
+                <span className="font-sans text-[12.5px] sm:text-[13px] text-[#6e6e76] leading-snug">
                   {stat.detail}
                 </span>
               </div>
@@ -185,39 +187,30 @@ export default function Home() {
           <span className="k-label text-[#6e6e6e]">4 Domain Stacks</span>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mt-4">
+        <ul className="k-rows">
           {sets.map((set) => (
-            <div
-              key={set.index}
-              className="rounded-[6px] border border-[#2a2a2a] bg-[#1a1a1a] p-4 transition-[border-color,background-color] duration-150 ease-out hover:border-white/15 hover:bg-[#202020]"
+            <li
+              key={set.title}
+              className="py-4 transition-colors duration-150 ease-out hover:bg-white/[0.015]"
             >
-              <div className="flex items-center justify-between">
-                <span className="k-label">
-                  <span className="text-[#6e6e6e]">{set.index}</span>
-                  <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
-                  <span>SET</span>
-                </span>
-                <span className="k-chip">{set.count}</span>
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1.5">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-[11px] text-[#6e6e6e]">{set.index}</span>
+                  <span aria-hidden="true" className="text-[#4a4a4a] text-[11px]">/</span>
+                  <h3 className="font-sans text-[14.5px] font-semibold text-[#ededed]">
+                    {set.title}
+                  </h3>
+                </div>
+                <div className="font-mono text-[11.5px] text-[#8e8e96] sm:text-right">
+                  {set.skills.join(" · ")}
+                </div>
               </div>
-              <h3 className="mt-2 font-serif-square text-[14px] font-medium text-[#ededed]">
-                {set.title}
-              </h3>
-              <p className="mt-1 font-sans text-[12.5px] leading-relaxed text-[#929292]">
+              <p className="mt-1.5 font-sans text-[13px] leading-relaxed text-[#7c7c85] max-w-[65ch] pl-0 sm:pl-[26px]">
                 {set.description}
               </p>
-              <div className="mt-3.5 flex flex-wrap gap-1.5">
-                {set.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-[3px] border border-white/5 bg-[#242424] px-2 py-0.5 font-mono text-[10.5px] text-[#b7b7b7] select-none"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       {/* Section 04: Systems Architecture Flow */}
@@ -247,21 +240,22 @@ export default function Home() {
           <span className="k-label text-[#6e6e6e]">Core Principles</span>
         </div>
 
-        <div className="mt-4 space-y-3">
-          {principles.map((principle) => (
-            <div
-              key={principle.title}
-              className="rounded-[6px] border border-[#2a2a2a] bg-[#1a1a1a] p-4 transition-colors duration-150 ease-out hover:border-white/15"
-            >
-              <h3 className="font-serif-regular text-[14px] font-medium text-[#ededed]">
-                {principle.title}
-              </h3>
-              <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#929292]">
+        <ul className="k-rows">
+          {principles.map((principle, idx) => (
+            <li key={principle.title} className="py-3.5">
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono text-[11px] text-[#6e6e6e]">0{idx + 1}</span>
+                <span aria-hidden="true" className="text-[#4a4a4a] text-[11px]">/</span>
+                <h3 className="font-sans text-[14px] font-medium text-[#ededed]">
+                  {principle.title}
+                </h3>
+              </div>
+              <p className="mt-1 font-sans text-[13px] leading-relaxed text-[#7c7c85] pl-[26px]">
                 {principle.description}
               </p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       {/* Connect / Social Row matching kinfish.dev */}
