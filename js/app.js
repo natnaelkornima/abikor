@@ -206,32 +206,74 @@ function initArchitectureStage() {
   const stage = document.getElementById('arch-stage');
   const specText = document.getElementById('arch-spec');
   const tabs = document.querySelectorAll('.k-iso__tab');
-  if (!stage || !specText) return;
+  if (!stage) return;
 
   let currentKey = 'web';
 
-  function renderStage(key) {
-    const arch = portfolio.architectures[key];
-    if (!arch) return;
+  const webNodes = [
+    { num: "01", tag: "INGESTION", title: "Edge Gateway", tech: "Fastify + Proxy", dot: "#4ade80", metric1: "P99 < 1.2ms", metric2: "40k req/s", badge: "CACHE: 98%", color: "#4ade80" },
+    { num: "02", tag: "EVENT BUS", title: "Redis Ring", tech: "FIFO Streams", dot: "#38bdf8", metric1: "Zero drops", metric2: "BullMQ queue", badge: "RING: ACTIVE", color: "#38bdf8" },
+    { num: "03", tag: "COMPUTE", title: "Worker Core", tech: "Async Workers", dot: "#e56b40", metric1: "Concurrency: 64", metric2: "Retry & Backoff", badge: "JOB: PASS", color: "#e56b40" },
+    { num: "04", tag: "STORAGE", title: "PostgreSQL", tech: "ACID Cluster", dot: "#a855f7", metric1: "WAL replication", metric2: "Pool: 120 binds", badge: "ACID: OK", color: "#a855f7" }
+  ];
 
-    specText.textContent = arch.spec;
+  const aiNodes = [
+    { num: "01", tag: "GATEWAY", title: "FastAPI Core", tech: "Token Firewall", dot: "#4ade80", metric1: "Sanitizer pass", metric2: "Injection block", badge: "RATE: 120/s", color: "#4ade80" },
+    { num: "02", tag: "RETRIEVAL", title: "Hybrid RAG", tech: "Qdrant + BM25", dot: "#38bdf8", metric1: "RRF score fusion", metric2: "Top-k: 8 chunks", badge: "RECALL: 94%", color: "#38bdf8" },
+    { num: "03", tag: "REASONING", title: "LLM Runner", tech: "Structured Mode", dot: "#e56b40", metric1: "JSON grammar", metric2: "Deterministic", badge: "P99: 240ms", color: "#e56b40" },
+    { num: "04", tag: "VALIDATION", title: "Guardrails", tech: "Pydantic DTO", dot: "#a855f7", metric1: "Type assertion", metric2: "Schema check", badge: "VALID: 100%", color: "#a855f7" }
+  ];
+
+  function renderStage(key) {
+    const nodes = key === 'web' ? webNodes : aiNodes;
+    if (specText) {
+      specText.textContent = key === 'web'
+        ? "FLOW: HIGH-CONCURRENCY WEB // P99 < 35MS"
+        : "FLOW: DETERMINISTIC AI & HYBRID RAG // ZERO HALLUCINATION";
+    }
+
     stage.innerHTML = `
-      <div class="k-flow-grid">
-        ${arch.layers.map((layer, i) => `
-          <div class="k-flow-card" data-label="LAYER ${i + 1} // ${layer.layer}">
-            <div class="k-flow-step">${layer.step}</div>
-            <div class="k-flow-name">${escapeHtml(layer.layer)}</div>
-            <div class="k-flow-tech">${escapeHtml(layer.tech)}</div>
-            <span class="k-flow-metric">${escapeHtml(layer.metric)}</span>
-            <div class="k-flow-detail">${escapeHtml(layer.detail)}</div>
-          </div>
-        `).join('')}
+      <div class="arch-stage" style="width: 100%; border-radius: 8px; border: 1px solid #24242c; background: #0c0c0f; padding: 16px;">
+        <svg viewBox="0 0 680 230" role="img" aria-label="Systems Architecture Flow Engine" style="display:block; width:100%; height:auto;">
+          <defs>
+            <pattern id="arch-dots-static" width="14" height="14" patternUnits="userSpaceOnUse">
+              <circle cx="7" cy="7" r="0.75" fill="#22222c"></circle>
+            </pattern>
+          </defs>
+          <rect width="680" height="230" fill="url(#arch-dots-static)"></rect>
+
+          <g>
+            <text x="21" y="20" fill="#767676" font-size="8.5" font-family="monospace">04 // SYSTEMS BLUEPRINT</text>
+            <text x="659" y="20" text-anchor="end" fill="#ededed" font-size="9" font-family="monospace">PIPELINE: 4 CONNECTED NODES</text>
+          </g>
+
+          <g transform="translate(0 34)">
+            ${nodes.map((node, i) => {
+              const x = 21 + i * 171;
+              return `
+                <g>
+                  <rect x="${x}" y="12" width="125" height="150" rx="8" fill="#111114" stroke="#26262e" stroke-width="1.2"></rect>
+                  <text x="${x + 12}" y="34" fill="#767676" font-size="8" font-family="monospace">${node.num} // ${node.tag}</text>
+                  <text x="${x + 12}" y="54" fill="#ededed" font-size="12" font-weight="500" font-family="sans-serif">${node.title}</text>
+                  <text x="${x + 12}" y="70" fill="#a3a3a3" font-size="9" font-family="monospace">${node.tech}</text>
+                  <rect x="${x + 8}" y="82" width="109" height="66" rx="4" fill="#141418" stroke="#252530" stroke-width="1"></rect>
+                  <circle cx="${x + 20}" cy="99" r="2.5" fill="${node.dot}"></circle>
+                  <text x="${x + 28}" y="102" fill="#767676" font-size="9.5" font-family="sans-serif">${node.metric1}</text>
+                  <text x="${x + 20}" y="122" fill="#a3a3a3" font-size="9" font-family="monospace">${node.metric2}</text>
+                  <text x="${x + 20}" y="138" fill="${node.color}" font-size="9" font-family="monospace">${node.badge}</text>
+                </g>
+                ${i < 3 ? `
+                  <g>
+                    <path d="M${x + 125} 87 H${x + 171}" fill="none" stroke="#3a3a46" stroke-width="1.2"></path>
+                    <path d="M${x + 167} 83.5 L${x + 171} 87 L${x + 167} 90.5" fill="none" stroke="#8e8e98" stroke-width="1.2"></path>
+                  </g>
+                ` : ''}
+              `;
+            }).join('')}
+          </g>
+        </svg>
       </div>
     `;
-
-    if (window.refreshLiveWire) {
-      window.refreshLiveWire();
-    }
   }
 
   tabs.forEach(tab => {
