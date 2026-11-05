@@ -23,7 +23,7 @@ export default function ArticlesPage() {
             <span aria-hidden="true" className="mx-1.5 text-[#4a4a4a]">/</span>
             <span>Writing</span>
           </p>
-          <h1 className="mt-3 text-[26px] sm:text-[30px] font-extrabold tracking-[-0.035em] text-[#ededed]">
+          <h1 className="mt-3 text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] text-[#ededed]">
             Blog
           </h1>
           <div className="mt-4 max-w-[60ch] font-sans space-y-4 leading-7 text-[#b7b7b7]">
@@ -63,7 +63,7 @@ export default function ArticlesPage() {
                 className="group block"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-4">
-                  <span className="font-serif-regular text-[15.5px] font-medium text-[#ededed] inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline">
+                  <span className="text-[15px] font-medium text-[#ededed] inline-flex items-center gap-1 decoration-[#525252] underline-offset-4 group-hover:underline">
                     {article.title}
                     <ArrowUpRight className="size-3.5 text-[#6e6e6e] group-hover:text-[#ededed] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                   </span>

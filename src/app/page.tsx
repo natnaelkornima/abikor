@@ -31,7 +31,7 @@ export default function Home() {
           <span>{profile.roleTitle}</span>
         </p>
 
-        <h1 className="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-[-0.035em] text-[#ededed]">
+        <h1 className="mt-3 text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] text-[#ededed]">
           {profile.name}
         </h1>
 
@@ -142,7 +142,7 @@ export default function Home() {
                 href={`/articles/${article.slug}`}
                 className="group flex items-baseline justify-between gap-6 py-3.5"
               >
-                <span className="font-serif-regular text-[15px] text-[#ededed] decoration-[#525252] underline-offset-4 group-hover:underline">
+                <span className="text-[15px] font-medium text-[#ededed] decoration-[#525252] underline-offset-4 group-hover:underline">
                   {article.title}
                 </span>
                 <time className="shrink-0 font-mono text-[11px] text-[#6e6e6e]">

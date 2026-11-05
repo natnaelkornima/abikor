@@ -42,7 +42,7 @@ export default function AboutPage() {
             <span>About</span>
           </p>
 
-          <h1 className="mt-3 text-[28px] sm:text-[34px] font-extrabold tracking-[-0.035em] text-[#ededed]">
+          <h1 className="mt-3 text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] text-[#ededed]">
             {profile.name}
           </h1>
 

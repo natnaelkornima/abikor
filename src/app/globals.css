@@ -104,7 +104,7 @@
 }
 
 .font-sans {
-  font-family: "Archivo", var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: var(--font-geist-sans), "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 .font-mono {
   font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
@@ -112,70 +112,55 @@
 .font-serif,
 .font-serif-regular,
 .font-serif-square,
-.font-serif-triangle {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
+.font-serif-triangle,
 .font-serif-heart {
-  font-family: var(--font-geist-serif-heart), "Geist Serif Heart", Georgia, serif !important;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* Typography Hierarchy with Archivo: Extra bold headings and titles, clean normal paragraphs */
-h1, .k-h1, h1.font-serif {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 850 !important;
-  letter-spacing: -0.035em;
-  font-variation-settings: "wdth" 100;
-}
-
-h2:not(.k-label), .k-h2, h2.font-serif {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 800 !important;
+/* Typography Hierarchy matching kinfish.dev: Moderate, clean, refined, font-medium */
+h1, .k-h1 {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 500;
   letter-spacing: -0.025em;
-  font-variation-settings: "wdth" 100;
+  color: var(--k-text);
 }
 
-h3, .k-h3, h3.font-serif, h3.font-serif-regular, h3.font-serif-square {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 750 !important;
-  letter-spacing: -0.02em;
-  font-variation-settings: "wdth" 100;
+h2:not(.k-label), .k-h2 {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--k-text);
+}
+
+h3, .k-h3 {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--k-text);
 }
 
 h4, h5, h6 {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 700 !important;
-  font-variation-settings: "wdth" 100;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 500;
+  color: var(--k-text);
 }
 
-/* Titles, list headers, and featured links */
-.font-serif-regular, .k-title {
-  font-family: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-optical-sizing: auto;
-  font-weight: 650 !important;
-  font-variation-settings: "wdth" 100;
+.k-title {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 500;
 }
 
 p, .k-body {
-  font-family: "Archivo", var(--font-geist-sans), sans-serif;
-  font-optical-sizing: auto;
+  font-family: var(--font-geist-sans), sans-serif;
   font-weight: 400;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
   line-height: 1.65;
 }
 
 body {
   background: var(--k-bg);
   color: var(--k-text);
-  font-family: "Archivo", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-optical-sizing: auto;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;

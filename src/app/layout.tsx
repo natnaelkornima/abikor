@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import {
-  GeistSerif,
-  GeistSerifRegular,
-  GeistSerifSquare,
-  GeistSerifTriangle,
-  GeistSerifHeart,
-} from "geist/font/serif";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -39,16 +32,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${GeistSans.variable} ${GeistMono.variable} ${GeistSerif.variable} ${GeistSerifRegular.variable} ${GeistSerifSquare.variable} ${GeistSerifTriangle.variable} ${GeistSerifHeart.variable}`}
+      className={`dark ${GeistSans.variable} ${GeistMono.variable} font-sans text-[15px]`}
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+      <head />
       <body className="min-h-screen bg-[#151515] text-[#ededed] font-sans antialiased">
         <a
           href="#content"
