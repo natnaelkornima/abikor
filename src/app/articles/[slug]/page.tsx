@@ -84,8 +84,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               />
             </div>
             <div>
-              <div className="text-[13.5px] font-medium text-[#ededed] leading-tight">
-                Natnael Kornima
+              <div className="flex items-center gap-1.5 text-[13.5px] font-medium text-[#ededed] leading-tight">
+                <span>Natnael Kornima</span>
+                <Image
+                  src="/verified-badge.png"
+                  alt="Verified"
+                  width={14}
+                  height={14}
+                  className="size-[13px] shrink-0 select-none"
+                />
               </div>
               <div className="text-[11px] font-mono text-[#8a8a92]">
                 Software Engineer

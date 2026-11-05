@@ -10,8 +10,8 @@ export function ArchitectureStage() {
 
   return (
     <div className="w-full select-none">
-      {/* Architecture Type Selector Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+      {/* Architecture Type Selector Tabs & Description Paragraph */}
+      <div className="flex flex-col gap-2.5 mb-4">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -22,7 +22,7 @@ export function ArchitectureStage() {
                 : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
             }`}
           >
-            01 // Deterministic AI &amp; RAG
+            Deterministic AI &amp; RAG
           </button>
           <button
             type="button"
@@ -33,13 +33,15 @@ export function ArchitectureStage() {
                 : "border-[#303030] bg-[#1c1c1c] text-[#8e8e8e] hover:border-white/20 hover:text-[#ededed]"
             }`}
           >
-            02 // High-Throughput Web
+            High-Throughput Web
           </button>
         </div>
 
-        <div className="font-mono text-[11px] text-[#6e6e6e] hidden sm:block">
-          {architectures[selectedArch]?.spec || "FORK-JOIN RETRIEVAL & CONCURRENCY MATRIX"}
-        </div>
+        <p className="font-sans text-[13px] leading-relaxed text-[#8a8a92] max-w-[65ch]">
+          {selectedArch === "ai"
+            ? "Deterministic RAG pipeline designed for zero hallucination. Incoming queries evaluate against a sub-15ms semantic cache, then fork across sparse lexical (BM25) and dense vector (HNSW) indices, unified via Reciprocal Rank Fusion."
+            : "High-throughput asynchronous web architecture built for 40k req/s at sub-millisecond p99. Decouples edge HTTP/3 ingestion into in-memory fast caching and Redis FIFO buffer streams before persisting to PostgreSQL."}
+        </p>
       </div>
 
       {/* High-Quality Animated 2D Blueprint Diagram (Exact Match to Blog Figure) */}

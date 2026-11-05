@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { portfolio } from "@/data/portfolio";
 import { ProjectSection } from "@/components/project-modal";
 import { ArchitectureStage } from "@/components/architecture-stage";
@@ -31,8 +32,16 @@ export default function Home() {
           <span>{profile.roleTitle}</span>
         </p>
 
-        <h1 className="mt-3 text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] text-[#ededed]">
-          {profile.name}
+        <h1 className="mt-3 inline-flex items-center gap-2 text-[26px] sm:text-[28px] font-semibold tracking-[-0.025em] text-[#ededed]">
+          <span>{profile.name}</span>
+          <Image
+            src="/verified-badge.png"
+            alt="Verified"
+            width={22}
+            height={22}
+            className="size-[19px] sm:size-[21px] shrink-0 select-none drop-shadow-[0_1px_4px_rgba(41,169,254,0.35)]"
+            priority
+          />
         </h1>
 
         <ul className="k-badges mt-3" aria-label="At a glance">
@@ -95,15 +104,9 @@ export default function Home() {
                   </span>
                 </div>
 
-                {/* Big Stat Value */}
+                {/* Metric Stat Value (Equalized font size across all stats) */}
                 <div className="mt-3 mb-1.5">
-                  <span
-                    className={`font-bold tracking-tight text-[#ededed] ${
-                      stat.value.length > 10
-                        ? "text-lg sm:text-[20px]"
-                        : "text-2xl sm:text-[30px] leading-tight"
-                    }`}
-                  >
+                  <span className="font-semibold text-[18px] sm:text-[20px] tracking-tight text-[#ededed] leading-tight">
                     {stat.value}
                   </span>
                 </div>

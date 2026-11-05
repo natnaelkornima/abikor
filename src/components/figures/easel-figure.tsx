@@ -24,19 +24,19 @@ export function EaselFigure({
   const isHoveredRef = useRef(false);
 
   // 11 Stretched Canvases stored vertically inside the carton
-  // Deep 3D gallery-wrap profiles with substantial physical depth
+  // Slim, realistic stretcher thicknesses (10-14px) with authentic depth
   const CANVAS_SPECS = [
-    { w: 14, h: 96, tag: "01" },
-    { w: 12, h: 104, tag: "02" },
-    { w: 15, h: 92, tag: "03" },
-    { w: 11, h: 108, tag: "04" },
-    { w: 16, h: 112, tag: "05" },
-    { w: 12, h: 90, tag: "06" },
-    { w: 15, h: 102, tag: "07" },
-    { w: 11, h: 94, tag: "08" },
-    { w: 16, h: 106, tag: "09" },
-    { w: 11, h: 88, tag: "10" },
-    { w: 14, h: 98, tag: "11" },
+    { w: 11, h: 96, tag: "01" },
+    { w: 10, h: 104, tag: "02" },
+    { w: 12, h: 92, tag: "03" },
+    { w: 9, h: 108, tag: "04" },
+    { w: 13, h: 112, tag: "05" },
+    { w: 10, h: 90, tag: "06" },
+    { w: 12, h: 102, tag: "07" },
+    { w: 9, h: 94, tag: "08" },
+    { w: 13, h: 106, tag: "09" },
+    { w: 9, h: 88, tag: "10" },
+    { w: 11, h: 98, tag: "11" },
   ];
 
   const handleSelect = (idx: number) => {
@@ -77,55 +77,55 @@ export function EaselFigure({
       }}
     >
       <style>{`
-        /* Physical 4-stage extraction: Lift straight up out of carton -> arc across studio -> tilt back into 3D perspective -> settle firmly on easel */
+        /* Physically accurate extraction: Lift straight up out of carton -> arc across -> settle flush on easel */
         @keyframes canvas-lift-and-settle {
           0% {
-            transform: translate3d(265px, 35px, 0) scale(0.62) rotate(0deg);
+            transform: translate3d(260px, 30px, 0) scale(0.68) rotate(0deg);
             opacity: 0.15;
           }
-          24% {
-            /* Lifted vertically straight UP out of the carton box rim */
-            transform: translate3d(255px, -75px, 0) scale(0.76) rotate(-2.5deg);
+          22% {
+            /* Lifted vertically straight UP out of the box rim */
+            transform: translate3d(250px, -70px, 0) scale(0.78) rotate(-2deg);
             opacity: 0.95;
           }
-          60% {
-            /* Arcing across the studio air towards the ground easel */
-            transform: translate3d(85px, -32px, 0) scale(0.92) rotate(1.2deg);
+          58% {
+            /* Arcing across studio air towards easel ledge */
+            transform: translate3d(80px, -28px, 0) scale(0.94) rotate(1deg);
             opacity: 1;
           }
-          84% {
-            /* Touches down on the floor, tilting back into 3D perspective */
-            transform: translate3d(0px, 3.5px, 0) scale(1.008) rotate(-0.25deg);
+          85% {
+            /* Contacts easel ledge, cushioning softly */
+            transform: translate3d(0px, 2px, 0) scale(1.004) rotate(-0.15deg);
             opacity: 1;
           }
           100% {
-            /* Settled firmly in 3D perspective leaning back against easel */
+            /* Settled perfectly flush and balanced against easel */
             transform: translate3d(0px, 0px, 0) scale(1) rotate(0deg);
             opacity: 1;
           }
         }
         .anim-canvas-extract {
-          animation: canvas-lift-and-settle 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          transform-origin: 140px 285px;
+          animation: canvas-lift-and-settle 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: 140px 282px;
         }
 
-        /* Ground Contact Shadow tracking the landing */
+        /* Ground Contact Shadow tracking landing */
         @keyframes shadow-settle-ground {
           0% {
             opacity: 0;
-            transform: scale(0.25) translate(140px, 0);
+            transform: scale(0.3) translate(140px, 0);
           }
           28% {
-            opacity: 0.12;
-            transform: scale(0.4) translate(90px, 0);
+            opacity: 0.15;
+            transform: scale(0.45) translate(90px, 0);
           }
           62% {
             opacity: 0.55;
             transform: scale(0.85) translate(20px, 0);
           }
-          86% {
+          85% {
             opacity: 0.95;
-            transform: scale(1.03) translate(0, 0);
+            transform: scale(1.02) translate(0, 0);
           }
           100% {
             opacity: 0.85;
@@ -133,11 +133,11 @@ export function EaselFigure({
           }
         }
         .anim-shadow-ground {
-          animation: shadow-settle-ground 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          transform-origin: 132px 287px;
+          animation: shadow-settle-ground 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: 140px 284px;
         }
 
-        /* 3D Canvas spine & deep side hover inside carton */
+        /* 3D Canvas hover inside carton */
         .carton-3d-canvas {
           cursor: pointer;
           transition: transform 0.15s ease, filter 0.15s ease;
@@ -154,17 +154,17 @@ export function EaselFigure({
 
       {/* Official Isometric Anatomy Figure Container (.k-iso) */}
       <IsoFigureContainer
-        name="Fig 04. / Archival 3D Carton: Deep Canvases & Studio Easel Display"
+        name="Fig 04. / Studio Easel & 3D Archival Carton: Stretched Canvases"
         hint="Click canvas in carton to extract · Click ground canvas to expand"
         readout={`${String(activeIdx + 1).padStart(2, "0")}/${paintings.length} · ${currentPainting.title.toUpperCase().slice(0, 24)}`}
         power={true}
         viewBox="0 0 680 330"
-        label="Isometric anatomy figure showing an open 3D cardboard carton box with deep stretched canvases, with one portrait canvas lifted out and settled in 3D perspective against an easel."
+        label="Isometric anatomy figure showing an open 3D cardboard carton box with vertical canvases, and one slender portrait canvas resting in physical perspective against a studio easel."
       >
         <defs>
-          {/* Clipping path for the slender portrait canvas face in 3D perspective tilt */}
-          <clipPath id="ground-canvas-tall-clip">
-            <polygon points="84,60 224,60 212,285 72,285" />
+          {/* Slender Portrait Canvas Face (130px width × 217px height, physically accurate lean) */}
+          <clipPath id="ground-canvas-slender-clip">
+            <polygon points="82,65 212,65 205,282 75,282" />
           </clipPath>
 
           {/* Barcode pattern for shipping carton label */}
@@ -176,54 +176,58 @@ export function EaselFigure({
         </defs>
 
         {/* Studio Floor Horizon Line */}
-        <line className="detail" x1="15" y1="285" x2="665" y2="285" opacity="0.4" />
+        <line className="detail" x1="15" y1="282" x2="665" y2="282" opacity="0.4" />
 
         {/* ========================================================== */}
-        {/* 1. 3D STUDIO EASEL / BACK SUPPORT STAND (IN BACKGROUND)    */}
+        {/* 1. 3D STUDIO EASEL IN BACKGROUND (PHYSICALLY ACCURATE LEAN)*/}
         {/* ========================================================== */}
         {/*
-          This easel stands on the floor in the background. The extracted
-          canvas rests on its shelf, leaning back against the central mast.
+          The easel mast tilts back at the EXACT same angle as the canvas (1.85 deg).
+          The canvas lies perfectly flush against this support.
         */}
-        <g transform="translate(0, 0)">
-          {/* Rear Diagonal Tripod Leg extending into 3D background */}
+        <g>
+          {/* Rear Tripod Leg extending into 3D background */}
           <polygon
-            points="150,52 156,52 188,262 182,262"
+            points="146,54 152,54 176,238 170,238"
             className="face recess"
             strokeWidth="0.8"
             opacity="0.85"
           />
-          {/* Rear Leg Floor Contact Foot */}
-          <polygon points="179,262 191,262 195,266 175,266" className="face" opacity="0.9" />
+          {/* Rear Leg Foot on Floor */}
+          <polygon points="167,238 179,238 182,242 164,242" className="face" opacity="0.9" />
 
-          {/* Central Vertical Easel Mast rising behind the canvas */}
+          {/* Easel Central Mast (Tilts back with exact slope matching canvas) */}
           <polygon
-            points="148,36 158,36 158,285 148,285"
+            points="143,38 153,38 145,282 135,282"
             className="face"
             strokeWidth="1"
           />
-          {/* Mast center adjustment track groove */}
-          <line className="detail" x1="153" y1="40" x2="153" y2="283" strokeWidth="1" opacity="0.6" />
+          {/* Mast center height-adjustment track */}
+          <line className="detail" x1="148" y1="42" x2="140" y2="280" strokeWidth="0.9" opacity="0.6" />
 
           {/* Top Mast Wooden Clamp Block with Brass Adjustment Knob */}
-          <rect className="face top" x="144" y="34" width="18" height="16" rx="2" strokeWidth="1" />
-          <circle className="detail" cx="153" cy="42" r="2.8" fill="var(--iso-accent-hi)" opacity="0.75" />
-          <line className="detail" x1="150" y1="42" x2="156" y2="42" strokeWidth="1" />
-
-          {/* Easel Base Floor Shelf (holding bottom of canvas) */}
           <polygon
-            points="62,284 222,284 218,289 58,289"
+            points="140,34 156,34 155,50 139,50"
+            className="face top"
+            strokeWidth="1"
+          />
+          <circle className="detail" cx="147.5" cy="42" r="2.5" fill="var(--iso-accent-hi)" opacity="0.8" />
+          <line className="detail" x1="145" y1="42" x2="150" y2="42" strokeWidth="1" />
+
+          {/* Easel Bottom Support Ledge (holding canvas base at y = 282) */}
+          <polygon
+            points="68,281 216,281 213,286 65,286"
             className="face top"
             strokeWidth="1"
           />
           <polygon
-            points="58,289 218,289 218,294 58,294"
+            points="65,286 213,286 213,290 65,290"
             className="face"
             strokeWidth="1"
           />
-          {/* Brass retention pegs on the shelf */}
-          <rect className="face recess" x="80" y="281" width="8" height="6" rx="1" />
-          <rect className="face recess" x="194" y="281" width="8" height="6" rx="1" />
+          {/* Wooden lip pegs holding stretcher frame */}
+          <rect className="face recess" x="85" y="278" width="6" height="5" rx="1" />
+          <rect className="face recess" x="195" y="278" width="6" height="5" rx="1" />
         </g>
 
         {/* ========================================================== */}
@@ -232,7 +236,7 @@ export function EaselFigure({
         <g transform="translate(290, 42)">
           {/* Carton Base Contact Ground Shadow */}
           <polygon
-            points="145,242 285,196 145,150 5,196"
+            points="145,240 285,194 145,148 5,194"
             fill="#050508"
             opacity="0.85"
             filter="url(#k-soft)"
@@ -263,30 +267,28 @@ export function EaselFigure({
           <line className="detail" x1="145" y1="52" x2="145" y2="155" opacity="0.4" />
 
           {/* ======================================================== */}
-          {/* 3D STRETCHED CANVASES WITH REAL DEPTH INSIDE CARTON      */}
+          {/* 3D STRETCHED CANVASES INSIDE CARTON                      */}
           {/* ======================================================== */}
           {/*
             Each canvas has:
             - Front spine face (w x h)
-            - Significant 3D depth face (receding 62px back into the carton)
-            - Top canvas face with realistic corner tuck lines
-            - Ambient occlusion shadow between adjacent canvases
+            - Realistic 3D depth face (receding 42px into the box)
+            - Top canvas wrap with corner tuck lines
+            - Slim profile matching real art canvases
           */}
           {(() => {
-            // Significant 3D depth receding into the interior of the box
-            const depthX = 62;
-            const depthY = -21;
+            const depthX = 42;
+            const depthY = -14;
 
             return CANVAS_SPECS.map((spec, i) => {
               const isSelected = i === activeIdx;
-              // Placement along interior diagonal of the carton
               const progress = i / (CANVAS_SPECS.length - 1);
-              const bx = 26 + progress * 180;
-              const by = 132 + (progress - 0.5) * 12;
+              const bx = 28 + progress * 190;
+              const by = 130 + (progress - 0.5) * 12;
               const topY = by - spec.h;
 
               if (isSelected) {
-                // Empty extracted slot inside carton: Bold 3D dashed outline
+                // Empty extracted slot inside carton: Clean 3D dashed outline
                 return (
                   <g key={i}>
                     {/* Top slot opening */}
@@ -299,24 +301,10 @@ export function EaselFigure({
                       `}
                       fill="none"
                       stroke="var(--iso-accent-hi)"
-                      strokeWidth="1.2"
+                      strokeWidth="1.1"
                       strokeDasharray="3 3"
                     />
-                    {/* Side depth slot opening */}
-                    <polygon
-                      points={`
-                        ${bx + spec.w},${topY + 22 + spec.w * 0.35}
-                        ${bx + spec.w + depthX},${topY + 22 + depthY + spec.w * 0.35}
-                        ${bx + spec.w + depthX},${by + 20 + depthY + spec.w * 0.35}
-                        ${bx + spec.w},${by + 20 + spec.w * 0.35}
-                      `}
-                      fill="none"
-                      stroke="var(--iso-accent-hi)"
-                      strokeWidth="1.2"
-                      strokeDasharray="3 3"
-                      opacity="0.6"
-                    />
-                    {/* Front vertical slot opening */}
+                    {/* Front slot opening */}
                     <polygon
                       points={`
                         ${bx},${topY + 22}
@@ -326,7 +314,7 @@ export function EaselFigure({
                       `}
                       fill="none"
                       stroke="var(--iso-accent-hi)"
-                      strokeWidth="1.2"
+                      strokeWidth="1.1"
                       strokeDasharray="3 3"
                     />
                     <text
@@ -343,7 +331,7 @@ export function EaselFigure({
                 );
               }
 
-              // Standing 3D Stretched Canvas with deep 3D volume, corner folds, and linen texture
+              // Standing 3D Canvas
               return (
                 <g
                   key={i}
@@ -356,15 +344,15 @@ export function EaselFigure({
                   <polygon
                     points={`
                       ${bx - 1},${topY}
-                      ${bx + spec.w + depthX + 2},${topY + depthY}
-                      ${bx + spec.w + depthX + 2},${by + depthY + 25}
+                      ${bx + spec.w + depthX + 1},${topY + depthY}
+                      ${bx + spec.w + depthX + 1},${by + depthY + 25}
                       ${bx - 1},${by + 25}
                     `}
                     fill="#07070b"
-                    opacity="0.6"
+                    opacity="0.55"
                   />
 
-                  {/* 1. Deep Side Face (3D depth receding 62px into box) */}
+                  {/* 1. Side Depth Face (receding 42px into carton) */}
                   <polygon
                     className="face"
                     points={`
@@ -376,36 +364,27 @@ export function EaselFigure({
                     fill="#181922"
                     strokeWidth="1"
                   />
-                  {/* Stretched canvas texture lines along the deep side face */}
+                  {/* Subtle canvas weave horizontal lines */}
                   <line
                     className="detail"
-                    x1={bx + spec.w + 6}
-                    y1={topY + spec.w * 0.35 + 18}
-                    x2={bx + spec.w + depthX - 6}
-                    y2={topY + depthY + spec.w * 0.35 + 18}
-                    opacity="0.35"
-                    strokeDasharray="3 4"
+                    x1={bx + spec.w + 4}
+                    y1={topY + spec.w * 0.35 + 20}
+                    x2={bx + spec.w + depthX - 4}
+                    y2={topY + depthY + spec.w * 0.35 + 20}
+                    opacity="0.3"
+                    strokeDasharray="2 3"
                   />
                   <line
                     className="detail"
-                    x1={bx + spec.w + 6}
-                    y1={topY + spec.w * 0.35 + 42}
-                    x2={bx + spec.w + depthX - 6}
-                    y2={topY + depthY + spec.w * 0.35 + 42}
-                    opacity="0.35"
-                    strokeDasharray="3 4"
-                  />
-                  <line
-                    className="detail"
-                    x1={bx + spec.w + 6}
-                    y1={topY + spec.w * 0.35 + 68}
-                    x2={bx + spec.w + depthX - 6}
-                    y2={topY + depthY + spec.w * 0.35 + 68}
-                    opacity="0.35"
-                    strokeDasharray="3 4"
+                    x1={bx + spec.w + 4}
+                    y1={topY + spec.w * 0.35 + 50}
+                    x2={bx + spec.w + depthX - 4}
+                    y2={topY + depthY + spec.w * 0.35 + 50}
+                    opacity="0.3"
+                    strokeDasharray="2 3"
                   />
 
-                  {/* 2. Top Face of Stretched Canvas (catching light, showing corner folds) */}
+                  {/* 2. Top Face of Stretched Canvas (catching light) */}
                   <polygon
                     className="face top"
                     points={`
@@ -416,13 +395,13 @@ export function EaselFigure({
                     `}
                     strokeWidth="1"
                   />
-                  {/* Canvas Corner Tuck lines on the top fold */}
+                  {/* Canvas Corner Tuck lines */}
                   <line
                     className="detail"
                     x1={bx}
                     y1={topY}
-                    x2={bx + 8}
-                    y2={topY + 3}
+                    x2={bx + 6}
+                    y2={topY + 2}
                     strokeWidth="0.8"
                     opacity="0.6"
                   />
@@ -430,19 +409,10 @@ export function EaselFigure({
                     className="detail"
                     x1={bx + spec.w}
                     y1={topY + spec.w * 0.35}
-                    x2={bx + spec.w - 5}
-                    y2={topY + spec.w * 0.35 - 4}
+                    x2={bx + spec.w - 4}
+                    y2={topY + spec.w * 0.35 - 3}
                     strokeWidth="0.8"
                     opacity="0.6"
-                  />
-                  <line
-                    className="detail"
-                    x1={bx + depthX}
-                    y1={topY + depthY}
-                    x2={bx + depthX + 5}
-                    y2={topY + depthY + 2}
-                    strokeWidth="0.8"
-                    opacity="0.5"
                   />
 
                   {/* 3. Front Spine Face (facing forward) */}
@@ -488,24 +458,24 @@ export function EaselFigure({
           {/* ======================================================== */}
           {/* Left-Front 3D Cardboard Wall */}
           <polygon
-            points="5,98 145,144 145,242 5,196"
+            points="5,98 145,144 145,240 5,194"
             className="face"
             strokeWidth="1.2"
           />
 
           {/* Right-Front 3D Cardboard Wall */}
           <polygon
-            points="145,144 285,98 285,196 145,242"
+            points="145,144 285,98 285,194 145,240"
             className="face"
             strokeWidth="1.2"
           />
 
           {/* Central Corrugated Seam Line between front walls */}
-          <line className="detail" x1="145" y1="144" x2="145" y2="242" strokeWidth="1.3" opacity="0.8" />
+          <line className="detail" x1="145" y1="144" x2="145" y2="240" strokeWidth="1.3" opacity="0.8" />
 
           {/* Cardboard Packaging Tape strip along vertical center */}
           <polygon
-            points="141,143 149,141 149,242 141,242"
+            points="141,143 149,141 149,240 141,240"
             fill="#2c2c36"
             opacity="0.45"
           />
@@ -578,11 +548,11 @@ export function EaselFigure({
         </g>
 
         {/* ========================================================== */}
-        {/* 3. EXTRACTED CANVAS SETTLING IN 3D LEANING ON THE EASEL    */}
+        {/* 3. SLENDER PORTRAIT CANVAS LEANING FLUSH ON THE EASEL      */}
         {/* ========================================================== */}
         {/*
-          Lifts vertically up from the carton box, arcs across the studio,
-          and settles leaning back in 3D perspective against the easel mast.
+          Physically accurate lean (1.85 deg back), slim 12px stretcher frame,
+          resting solidly on easel ledge at y = 282.
         */}
         <g
           key={activeIdx}
@@ -593,114 +563,104 @@ export function EaselFigure({
         >
           {/* Studio Floor Soft Ambient Contact Shadow */}
           <ellipse
-            cx="132"
-            cy="287"
-            rx="92"
-            ry="8.5"
+            cx="138"
+            cy="284"
+            rx="82"
+            ry="7.5"
             fill="#000000"
             opacity="0.85"
             filter="url(#k-soft)"
             className="anim-shadow-ground"
           />
 
-          {/* Crisp Ground Contact Line where the canvas touches down on the easel shelf */}
+          {/* Crisp Contact Shadow Line where stretcher frame meets easel ledge */}
           <line
-            x1="48"
-            y1="285.5"
-            x2="216"
-            y2="285.5"
+            x1="63"
+            y1="282.5"
+            x2="208"
+            y2="282.5"
             stroke="#000000"
-            strokeWidth="2.8"
+            strokeWidth="2.4"
             strokeLinecap="round"
           />
 
-          {/* 1. Deep 3D Stretcher Bar Depth (32px Bold Gallery-Wrap Left Edge) */}
+          {/* 1. Slim Stretcher Bar Depth (Realistic 12px Gallery-Wrap Profile) */}
           <polygon
             className="face"
-            points="52,48 84,60 72,285 40,275"
-            strokeWidth="1.2"
+            points="70,60 82,65 75,282 63,277"
+            strokeWidth="1.1"
             fill="#1a1b24"
           />
-          {/* Stretched canvas edge staple pins along the wooden stretcher frame */}
-          {[82, 116, 150, 184, 218, 252].map((sy) => (
+          {/* Subtle canvas edge staples along rear stretcher corner */}
+          {[95, 130, 165, 200, 235, 270].map((sy) => (
             <line
               key={sy}
               className="detail"
-              x1="45"
+              x1="66"
               y1={sy}
-              x2="50"
-              y2={sy + 2}
-              strokeWidth="1.4"
+              x2="70"
+              y2={sy + 1.2}
+              strokeWidth="1.2"
               opacity="0.85"
             />
           ))}
 
-          {/* Horizontal canvas weave texture lines along the deep edge */}
-          <line x1="50" y1="95" x2="82" y2="107" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.05" strokeDasharray="3 3" />
-          <line x1="47" y1="140" x2="79" y2="152" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.05" strokeDasharray="3 3" />
-          <line x1="44" y1="185" x2="76" y2="197" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.05" strokeDasharray="3 3" />
-          <line x1="42" y1="230" x2="74" y2="242" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.05" strokeDasharray="3 3" />
-
-          {/* 2. Top Edge Wrap of Canvas (12px bold depth facet catching light) */}
+          {/* 2. Top Edge Wrap of Canvas (Slim 8px depth facet catching light) */}
           <polygon
             className="face top"
-            points="52,48 192,48 224,60 84,60"
+            points="70,60 200,60 212,65 82,65"
+            strokeWidth="1.1"
+          />
+
+          {/* 3. Front Canvas Face (Slender Portrait Rectangle, 130px wide × 217px high) */}
+          <polygon
+            className="face top"
+            points="82,65 212,65 205,282 75,282"
             strokeWidth="1.2"
           />
 
-          {/* 3. Front Canvas Face (Slender Portrait Rectangle, tilted back in 3D perspective) */}
-          <polygon
-            className="face top"
-            points="84,60 224,60 212,285 72,285"
-            strokeWidth="1.3"
-          />
-
           {/* High-Resolution Framed Painting Artwork */}
-          <g clipPath="url(#ground-canvas-tall-clip)">
+          <g clipPath="url(#ground-canvas-slender-clip)">
             <image
               href={currentPainting.url}
               x="68"
-              y="56"
-              width="160"
-              height="234"
+              y="60"
+              width="150"
+              height="226"
               preserveAspectRatio="xMidYMid slice"
               style={{ filter: "contrast(1.05) brightness(1.02)" }}
             />
 
-            {/* Subtle linen weave texture overlays */}
-            <line x1="72" y1="108" x2="222" y2="108" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
-            <line x1="72" y1="158" x2="222" y2="158" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
-            <line x1="72" y1="208" x2="222" y2="208" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
-            <line x1="72" y1="258" x2="222" y2="258" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
+            {/* Fine linen weave texture overlays */}
+            <line x1="75" y1="110" x2="212" y2="110" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
+            <line x1="75" y1="160" x2="212" y2="160" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
+            <line x1="75" y1="210" x2="212" y2="210" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
+            <line x1="75" y1="260" x2="212" y2="260" stroke="#ffffff" strokeWidth="0.4" strokeOpacity="0.04" strokeDasharray="3 3" />
 
-            {/* Minimal Title Placard at Bottom of the Canvas */}
-            <polygon points="72,260 214,260 212,285 72,285" fill="#0b0c10" opacity="0.94" />
-            <text x="80" y="275" className="ink" fontSize="6.8" letterSpacing="0.04em">
+            {/* Minimal Matte Placard along bottom of canvas */}
+            <polygon points="75,260 207,260 205,282 75,282" fill="#0b0c10" opacity="0.94" />
+            <text x="83" y="274" className="ink" fontSize="6.8" letterSpacing="0.04em">
               {currentPainting.title.toUpperCase().slice(0, 18)}
             </text>
           </g>
 
-          {/* Realistic Canvas Corner Tuck Folds (where fabric is folded over the frame) */}
+          {/* Realistic Canvas Corner Tuck Folds */}
           <g opacity="0.75">
             {/* Top-Left Corner Fold */}
-            <line className="detail" x1="84" y1="72" x2="96" y2="60" strokeWidth="1" />
+            <line className="detail" x1="82" y1="74" x2="91" y2="65" strokeWidth="0.9" />
             {/* Top-Right Corner Fold */}
-            <line className="detail" x1="224" y1="72" x2="212" y2="60" strokeWidth="1" />
+            <line className="detail" x1="212" y1="74" x2="203" y2="65" strokeWidth="0.9" />
             {/* Bottom-Left Corner Fold */}
-            <line className="detail" x1="72" y1="273" x2="84" y2="285" strokeWidth="1" />
+            <line className="detail" x1="75" y1="273" x2="84" y2="282" strokeWidth="0.9" />
             {/* Bottom-Right Corner Fold */}
-            <line className="detail" x1="212" y1="273" x2="200" y2="285" strokeWidth="1" />
+            <line className="detail" x1="205" y1="273" x2="196" y2="282" strokeWidth="0.9" />
           </g>
 
-          {/* Precision Brass Protective Corner Guards */}
-          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M86 68 L86 62 L94 62" />
-          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M222 68 L222 62 L214 62" />
-          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M74 277 L74 283 L82 283" />
-          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M210 277 L210 283 L202 283" />
-
-          {/* Floor Alignment Markers at base of canvas */}
-          <line className="detail" x1="50" y1="289" x2="64" y2="289" opacity="0.4" />
-          <line className="detail" x1="204" y1="289" x2="218" y2="289" opacity="0.4" />
+          {/* Precision Protective Corner Guards */}
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M84 72 L84 67 L91 67" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M210 72 L210 67 L203 67" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M77 275 L77 280 L84 280" />
+          <path className="detail" stroke="var(--iso-accent-hi)" strokeWidth="1.2" d="M203 275 L203 280 L196 280" />
         </g>
 
         {/* ========================================================== */}
