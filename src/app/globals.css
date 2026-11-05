@@ -125,29 +125,43 @@
   font-family: var(--font-geist-serif-heart), "Geist Serif Heart", "Geist Serif", Georgia, Cambria, "Times New Roman", Times, serif !important;
 }
 
-/* Typography Hierarchy matching Geist Sans, Mono, and Serif designations */
+/* Typography Hierarchy with Inter: Bold/bolder headings and titles, clean normal paragraphs */
 h1, .k-h1 {
-  font-family: var(--font-geist-serif), "Geist Serif", Georgia, Cambria, "Times New Roman", Times, serif;
-  letter-spacing: -0.025em;
+  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 h2:not(.k-label), .k-h2 {
-  font-family: var(--font-geist-serif), "Geist Serif", Georgia, Cambria, "Times New Roman", Times, serif;
-  letter-spacing: -0.02em;
+  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-weight: 650;
+  letter-spacing: -0.025em;
 }
 
 h3, .k-h3 {
-  font-family: var(--font-geist-serif-regular), "Geist Serif Regular", "Geist Serif", Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h4, h5, h6 {
+  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-weight: 600;
 }
 
 p, .k-body {
-  font-family: var(--font-geist-sans), "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", var(--font-geist-sans), sans-serif;
+  font-weight: 400;
+  font-optical-sizing: auto;
+  line-height: 1.65;
 }
 
 body {
   background: var(--k-bg);
   color: var(--k-text);
-  font-family: var(--font-geist-sans), "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Inter", var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
