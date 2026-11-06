@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "anatomy-figures": "file:../../../../tmp/anatomy.tgz",
     "clsx": "^2.1.1",
     "geist": "^1.9.0",
     "lucide-react": "^0.546.0",

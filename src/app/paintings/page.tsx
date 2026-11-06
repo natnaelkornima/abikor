@@ -88,8 +88,8 @@ export default function PaintingsPage() {
         </div>
       </header>
 
-      {/* Crafted Isometric Studio Canvas Crate Figure */}
-      <div className="mt-10">
+      {/* Anatomy One Stage Figure (Chest of Seven Drawers) */}
+      <div className="mt-4 sm:mt-6">
         <EaselFigure
           paintings={filteredPaintings}
           totalPaintings={filteredPaintings.length}
@@ -118,45 +118,59 @@ export default function PaintingsPage() {
         ))}
       </div>
 
-      {/* Kinfish-Style Photo/Painting Tile Grid */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Pinterest-Style Masonry Columns Gallery (Natural Uncropped Heights) */}
+      <div className="mt-8 columns-1 gap-4 sm:columns-2 lg:columns-3 [column-fill:_balance]">
         {filteredPaintings.map((painting, idx) => {
-          // Parse aspect ratio string like "3/4" or "4/3"
-          const [w, h] = painting.aspect ? painting.aspect.split("/").map(Number) : [4, 5];
-          const aspectRatioStyle = {
-            aspectRatio: `${w || 4} / ${h || 5}`,
-            "--tone": painting.tone || "#1a1a1a",
-          } as React.CSSProperties;
-
           return (
             <figure
               key={painting.id}
-              className="k-tile"
-              style={aspectRatioStyle}
+              className="group mb-4 break-inside-avoid overflow-hidden rounded-[5px] border border-[#262626] bg-[#161616] transition-all duration-300 hover:border-[#404040] hover:shadow-[0_12px_32px_rgba(0,0,0,0.7)]"
             >
               <button
                 type="button"
-                className="k-tile__button"
+                className="relative block w-full text-left cursor-zoom-in"
                 onClick={() => openViewer(idx)}
                 aria-label={`Open painting ${idx + 1}: ${painting.title}`}
               >
-                <div className="relative w-full h-full overflow-hidden">
-                  <Image
+                {/* Natural-Height Canvas Container (No cropping, full height) */}
+                <div
+                  className="relative w-full overflow-hidden"
+                  style={{ backgroundColor: painting.tone || "#181818" }}
+                >
+                  <img
                     src={painting.url}
                     alt={painting.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="k-tile__img"
-                    priority={idx < 3}
+                    className="w-full h-auto block filter grayscale contrast-[1.06] brightness-[0.88] transition-all duration-700 ease-out group-hover:scale-[1.025] group-hover:grayscale-0 group-hover:contrast-[1.02] group-hover:brightness-[1]"
+                    loading="lazy"
                   />
+
+                  {/* Corner registration marks */}
+                  <span aria-hidden="true" className="k-tile__corners" />
+
+                  {/* Top-left number badge */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-2.5 left-2.5 rounded-[3px] bg-black/70 px-1.5 py-0.5 font-mono text-[10px] text-[#ededed] backdrop-blur-sm border border-white/10"
+                  >
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* Top-right tag badge */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-2.5 right-2.5 rounded-[3px] bg-black/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-[#a0a0a0] backdrop-blur-sm border border-white/10"
+                  >
+                    {painting.tag}
+                  </span>
+
+                  {/* Minimal Title overlay badge revealed strictly on hover */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-2.5 left-2.5 right-2.5 rounded-[3px] bg-black/80 px-2 py-1 font-mono text-[10px] text-[#ededed] backdrop-blur-sm border border-white/10 opacity-0 transition-all duration-300 transform translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 truncate pointer-events-none"
+                  >
+                    {painting.title}
+                  </span>
                 </div>
-                <span aria-hidden="true" className="k-tile__corners" />
-                <span aria-hidden="true" className="k-tile__number">
-                  {String(idx + 1).padStart(2, "0")}
-                </span>
-                <span aria-hidden="true" className="k-tile__cap">
-                  {painting.title}
-                </span>
               </button>
             </figure>
           );
