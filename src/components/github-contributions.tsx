@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import staticContributions from "@/data/github-contributions.json";
 import { ArrowUpRight } from "lucide-react";
 
@@ -21,16 +21,17 @@ const MONTH_NAMES = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-const DAY_LABELS = [
-  { day: 1, label: "Mon" },
-  { day: 3, label: "Wed" },
-  { day: 5, label: "Fri" },
-];
-
 export function GitHubContributions() {
   const [selectedPeriod, setSelectedPeriod] = useState<"last-year" | "2026" | "2025">("last-year");
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+
+  // Drag-to-scroll refs & state
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragStartScrollLeft = useRef(0);
+  const hasMoved = useRef(false);
 
   const allContributions: ContributionDay[] = useMemo(() => {
     return [...(staticContributions.contributions as ContributionDay[])].sort((a, b) =>
@@ -105,19 +106,60 @@ export function GitHubContributions() {
     return { weeks: columns, monthHeaders: monthStarts };
   }, [filteredDays]);
 
-  // Restrained monochrome palette matching page background with subtle luminance steps
+  // Default view: automatically scroll to the closest (most recent) contributions on the right
+  const scrollToClosest = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollLeft = el.scrollWidth - el.clientWidth;
+  }, []);
+
+  useEffect(() => {
+    // Run scroll on mount and whenever period / data updates
+    const timer = setTimeout(scrollToClosest, 50);
+    return () => clearTimeout(timer);
+  }, [scrollToClosest, selectedPeriod, weeks.length]);
+
+  // Drag-to-scroll event handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    setIsDragging(true);
+    hasMoved.current = false;
+    dragStartX.current = e.pageX - el.offsetLeft;
+    dragStartScrollLeft.current = el.scrollLeft;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    const walk = (x - dragStartX.current) * 1.25;
+    if (Math.abs(walk) > 3) {
+      hasMoved.current = true;
+      setHoveredDay(null); // dismiss tooltip while dragging
+    }
+    el.scrollLeft = dragStartScrollLeft.current - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Authentic GitHub Green Palette with subtle emerald luminescence
   const getLevelClasses = (level: number) => {
     switch (level) {
       case 1:
-        return "bg-[#222226] border-white/[0.06] hover:border-white/20";
+        return "bg-[#0e4429] border-[#006d32]/40 hover:border-[#26a641]";
       case 2:
-        return "bg-[#333339] border-white/[0.09] hover:border-white/30";
+        return "bg-[#006d32] border-[#26a641]/50 hover:border-[#39d353]";
       case 3:
-        return "bg-[#55555f] border-white/[0.14] hover:border-white/40";
+        return "bg-[#26a641] border-[#39d353]/70 hover:ring-1 hover:ring-[#39d353]";
       case 4:
-        return "bg-[#9a9aa5] border-white/[0.22] hover:border-white/60";
+        return "bg-[#39d353] border-[#39d353] shadow-[0_0_8px_rgba(57,211,83,0.35)] hover:ring-1 hover:ring-white";
       default:
-        return "bg-[#151517] border-white/[0.03] hover:border-white/10";
+        return "bg-[#151517] border-white/[0.04] hover:border-white/15";
     }
   };
 
@@ -136,8 +178,14 @@ export function GitHubContributions() {
     }
   };
 
+  // Dimensions: 13px cell + 4px gap = 17px per column
+  const CELL_SIZE = 13;
+  const GAP_SIZE = 4;
+  const COL_PITCH = CELL_SIZE + GAP_SIZE; // 17px
+  const LEFT_OFFSET = 32;
+
   return (
-    <div className="relative w-full rounded-[6px] border border-white/[0.08] bg-[#121214]/60 p-4 sm:p-5">
+    <div className="relative w-full rounded-[8px] border border-dotted border-[#35353a] bg-[#121214]/60 p-4 sm:p-5 select-none transition-colors">
       {/* Clean, quiet header: Real GitHub mark, count, period switcher */}
       <div className="flex items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
@@ -177,17 +225,26 @@ export function GitHubContributions() {
         </div>
       </div>
 
-      {/* Heatmap Grid */}
-      <div className="mt-4 w-full overflow-x-auto pb-1 scrollbar-none">
-        <div className="min-w-[660px]">
-          {/* Month labels */}
-          <div className="relative mb-1 flex h-3.5 pl-6 font-mono text-[9.5px] text-[#5e5e5e]">
+      {/* Heatmap Grid with Drag-to-Scroll support (Defaulted to closest/recent on right) */}
+      <div
+        ref={scrollContainerRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        className={`mt-5 w-full overflow-x-auto pb-2 scrollbar-none ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+      >
+        <div style={{ minWidth: `${LEFT_OFFSET + weeks.length * COL_PITCH + 10}px` }}>
+          {/* Month labels header */}
+          <div className="relative mb-2 flex h-3.5 font-mono text-[10px] text-[#666]">
             {monthHeaders.map((m, i) => (
               <span
                 key={`${m.month}-${i}`}
                 style={{
                   position: "absolute",
-                  left: `${24 + m.colIndex * 12.5}px`,
+                  left: `${LEFT_OFFSET + m.colIndex * COL_PITCH}px`,
                 }}
               >
                 {m.month}
@@ -196,33 +253,32 @@ export function GitHubContributions() {
           </div>
 
           {/* Grid rows */}
-          <div className="flex gap-1.5">
-            {/* Weekday indicators */}
-            <div className="flex flex-col justify-between py-0.5 font-mono text-[8.5px] text-[#555]">
-              {DAY_LABELS.map((d) => (
-                <span
-                  key={d.label}
-                  style={{
-                    height: "10px",
-                    lineHeight: "10px",
-                    marginTop: d.day === 1 ? "11px" : d.day === 3 ? "12px" : "12px",
-                  }}
-                >
-                  {d.label}
-                </span>
-              ))}
+          <div className="flex gap-2">
+            {/* Weekday indicators precisely matched to 7-row heights */}
+            <div
+              className="flex flex-col font-mono text-[9px] text-[#555] select-none"
+              style={{ gap: `${GAP_SIZE}px` }}
+            >
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }} className="opacity-0">Sun</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }}>Mon</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }} className="opacity-0">Tue</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }}>Wed</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }} className="opacity-0">Thu</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }}>Fri</span>
+              <span style={{ height: `${CELL_SIZE}px`, lineHeight: `${CELL_SIZE}px` }} className="opacity-0">Sat</span>
             </div>
 
-            {/* Weeks Columns */}
-            <div className="flex gap-[2.5px]">
+            {/* Weeks Columns: each cell is 13px x 13px with 3.5px border radius and 4px breathing gap */}
+            <div className="flex" style={{ gap: `${GAP_SIZE}px` }}>
               {weeks.map((week, wIdx) => (
-                <div key={`w-${wIdx}`} className="flex flex-col gap-[2.5px]">
+                <div key={`w-${wIdx}`} className="flex flex-col" style={{ gap: `${GAP_SIZE}px` }}>
                   {week.map((day, dIdx) => {
                     if (!day) {
                       return (
                         <div
                           key={`empty-${wIdx}-${dIdx}`}
-                          className="h-[10px] w-[10px] opacity-0"
+                          style={{ width: `${CELL_SIZE}px`, height: `${CELL_SIZE}px` }}
+                          className="opacity-0"
                         />
                       );
                     }
@@ -230,7 +286,9 @@ export function GitHubContributions() {
                     return (
                       <div
                         key={day.date}
+                        style={{ width: `${CELL_SIZE}px`, height: `${CELL_SIZE}px` }}
                         onMouseEnter={(e) => {
+                          if (isDragging || hasMoved.current) return;
                           const rect = e.currentTarget.getBoundingClientRect();
                           setHoveredDay(day);
                           setTooltipPos({
@@ -242,7 +300,7 @@ export function GitHubContributions() {
                           setHoveredDay(null);
                           setTooltipPos(null);
                         }}
-                        className={`h-[10px] w-[10px] cursor-pointer rounded-[2px] border transition-colors ${getLevelClasses(
+                        className={`rounded-[3.5px] border transition-transform duration-75 hover:scale-115 hover:z-20 ${getLevelClasses(
                           day.level
                         )}`}
                       />
@@ -256,17 +314,17 @@ export function GitHubContributions() {
       </div>
 
       {/* Floating Minimal Tooltip */}
-      {hoveredDay && tooltipPos && (
+      {hoveredDay && tooltipPos && !isDragging && (
         <div
           style={{
             position: "fixed",
             left: `${tooltipPos.x}px`,
-            top: `${tooltipPos.y - 6}px`,
+            top: `${tooltipPos.y - 7}px`,
             transform: "translate(-50%, -100%)",
             pointerEvents: "none",
             zIndex: 9999,
           }}
-          className="rounded-[4px] border border-white/10 bg-[#161618] px-2 py-1 font-mono text-[10.5px] shadow-lg"
+          className="rounded-[4px] border border-white/10 bg-[#161618] px-2.5 py-1 font-mono text-[10.5px] shadow-lg"
         >
           <span className="text-[#ededed]">
             {hoveredDay.count === 0 ? "No commits" : `${hoveredDay.count} commit${hoveredDay.count === 1 ? "" : "s"}`}
@@ -275,8 +333,8 @@ export function GitHubContributions() {
         </div>
       )}
 
-      {/* Quiet Footer: Handle link + Minimal scale */}
-      <div className="mt-3 flex items-center justify-between border-t border-white/[0.05] pt-2.5 font-mono text-[10.5px] text-[#6e6e6e]">
+      {/* Quiet Footer: Handle link + Green intensity scale */}
+      <div className="mt-4 flex items-center justify-between border-t border-dotted border-[#35353a] pt-3 font-mono text-[10.5px] text-[#6e6e6e]">
         <a
           href="https://github.com/natnaelkornima"
           target="_blank"
@@ -287,14 +345,14 @@ export function GitHubContributions() {
           <ArrowUpRight className="size-3 text-[#555] transition-colors group-hover:text-[#ededed]" />
         </a>
 
-        {/* Quiet monochrome ramp */}
-        <div className="flex items-center gap-1">
+        {/* Green scale with matching rounded radius */}
+        <div className="flex items-center gap-1.5">
           <span>Less</span>
-          <span className="h-[9px] w-[9px] rounded-[1.5px] border border-white/[0.03] bg-[#151517]" />
-          <span className="h-[9px] w-[9px] rounded-[1.5px] border border-white/[0.06] bg-[#222226]" />
-          <span className="h-[9px] w-[9px] rounded-[1.5px] border border-white/[0.09] bg-[#333339]" />
-          <span className="h-[9px] w-[9px] rounded-[1.5px] border border-white/[0.14] bg-[#55555f]" />
-          <span className="h-[9px] w-[9px] rounded-[1.5px] border border-white/[0.22] bg-[#9a9aa5]" />
+          <span className="h-[11px] w-[11px] rounded-[3px] border border-white/[0.04] bg-[#151517]" />
+          <span className="h-[11px] w-[11px] rounded-[3px] border border-[#006d32]/40 bg-[#0e4429]" />
+          <span className="h-[11px] w-[11px] rounded-[3px] border border-[#26a641]/50 bg-[#006d32]" />
+          <span className="h-[11px] w-[11px] rounded-[3px] border border-[#39d353]/70 bg-[#26a641]" />
+          <span className="h-[11px] w-[11px] rounded-[3px] border border-[#39d353] bg-[#39d353] shadow-[0_0_6px_rgba(57,211,83,0.3)]" />
           <span>More</span>
         </div>
       </div>

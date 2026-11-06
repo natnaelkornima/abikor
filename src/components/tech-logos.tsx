@@ -110,6 +110,156 @@ export function CloudflareLogo({ className = "size-4 text-[#8a8a92]" }: TechLogo
   return <BaseSvg title="Cloudflare" d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727" className={className} />;
 }
 
+export function FastifyLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Fastify"
+      d="M11.95 0a12 12 0 0 0-3.86.64L6.96 1.76a11.97 11.97 0 0 0-4.6 4.6L1.24 7.5A12 12 0 0 0 0 12a12 12 0 0 0 1.25 5.36l1.12 1.14a11.98 11.98 0 0 0 4.6 4.6l1.13 1.12A12 12 0 0 0 12 24a12 12 0 0 0 5.36-1.24l1.14-1.12a11.98 11.98 0 0 0 4.6-4.6l1.12-1.14A12 12 0 0 0 24 12a12 12 0 0 0-1.24-5.36l-1.12-1.14a11.98 11.98 0 0 0-4.6-4.6L15.9 1.24A12 12 0 0 0 12 0zm-1.8 4.88h7.22l-4.6 6.84h4.15l-8.6 7.4 2.37-6.93H7.07l3.08-7.31z"
+      className={className}
+    />
+  );
+}
+
+export function BullMQLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`shrink-0 transition-colors duration-150 hover:text-[#ededed] ${className}`}
+      aria-label="BullMQ"
+    >
+      <title>BullMQ</title>
+      <path d="M4 6h16M4 12h16M4 18h16" />
+      <path d="M17 3l4 3-4 3M7 9l-4 3 4 3M17 15l4 3-4 3" />
+    </svg>
+  );
+}
+
+export function WebAudioLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Web Audio API"
+      d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zM3 13h2v6H3zm4-4h2v10H7zm12-2h2v14h-2z"
+      className={className}
+    />
+  );
+}
+
+export function LangChainLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="LangChain"
+      d="M13.25 2.25a2.25 2.25 0 00-2.25 2.25v2.5a2.25 2.25 0 002.25 2.25h2.5a2.25 2.25 0 002.25-2.25v-2.5a2.25 2.25 0 00-2.25-2.25h-2.5zm-5 7.5a2.25 2.25 0 00-2.25 2.25v2.5a2.25 2.25 0 002.25 2.25h2.5a2.25 2.25 0 002.25-2.25v-2.5A2.25 2.25 0 0010.75 9.75h-2.5zm10 0a2.25 2.25 0 00-2.25 2.25v2.5a2.25 2.25 0 002.25 2.25h2.5a2.25 2.25 0 002.25-2.25v-2.5a2.25 2.25 0 00-2.25-2.25h-2.5z"
+      className={className}
+    />
+  );
+}
+
+export function NumPyLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="NumPy"
+      d="M12 0L1.6 6v12L12 24l10.4-6V6L12 0zm0 2.31l8.4 4.85v9.68L12 21.69l-8.4-4.85V7.16L12 2.31zM6.5 8.2v7.6h1.8v-4.5l3.2 4.5h1.5V8.2h-1.8v4.4L8 8.2H6.5zm8.5 0v7.6h1.8v-3.2h2.2c1.4 0 2.5-1 2.5-2.2s-1.1-2.2-2.5-2.2H15zm1.8 1.6h1.9c.5 0 .9.3.9.7s-.4.7-.9.7h-1.9v-1.4z"
+      className={className}
+    />
+  );
+}
+
+export function QdrantLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Qdrant"
+      d="M12 1.5L2.5 7v10L12 22.5 21.5 17V7L12 1.5zm0 2.4l7 4.1-7 4.1-7-4.1 7-4.1zM4.5 9.1l6.5 3.8v7.5l-6.5-3.8V9.1zm15 7.5l-6.5 3.8v-7.5l6.5-3.8v7.5z"
+      className={className}
+    />
+  );
+}
+
+export function PydanticLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Pydantic"
+      d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v6h-2V7zm0 8h2v2h-2v-2z"
+      className={className}
+    />
+  );
+}
+
+export function ExpressLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Express"
+      d="M24 18.579h-2.528l-3.238-4.945-3.238 4.945H12.47l4.502-6.873-4.502-6.873h2.526l3.238 4.945 3.238-4.945H24l-4.502 6.873L24 18.579zM5.532 18.579c-3.056 0-5.532-2.476-5.532-5.532s2.476-5.532 5.532-5.532c2.614 0 4.792 1.815 5.372 4.256h-2.148c-.464-1.282-1.688-2.193-3.224-2.193-1.914 0-3.469 1.555-3.469 3.469s1.555 3.469 3.469 3.469c1.536 0 2.76-.911 3.224-2.193h2.148c-.58 2.441-2.758 4.256-5.372 4.256z"
+      className={className}
+    />
+  );
+}
+
+export function JestLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Jest"
+      d="M12 0a12 12 0 1012 12A12.014 12.014 0 0012 0zm1.75 4.5a2 2 0 11-2 2 2 2 0 012-2zm-5 0a2 2 0 11-2 2 2 2 0 012-2zm8.75 11.5a5.5 5.5 0 01-11 0h11z"
+      className={className}
+    />
+  );
+}
+
+export function Css3Logo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="CSS3"
+      d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm17.09 4.413H5.41l.23 2.622h11.23l-.33 3.425H6.08l.23 2.622h9.79l-.65 7.27-3.47.96-3.48-.96-.22-2.47H5.94l.43 4.88 5.61 1.55 5.61-1.55.99-11.16.2-2.22.02-.19z"
+      className={className}
+    />
+  );
+}
+
+export function ServiceWorkerLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="Service Workers"
+      d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V6.5h2v6z"
+      className={className}
+    />
+  );
+}
+
+export function IndexedDbLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <BaseSvg
+      title="IndexedDB"
+      d="M12 2C6.48 2 2 3.79 2 6v12c0 2.21 4.48 4 10 4s10-1.79 10-4V6c0-2.21-4.48-4-10-4zm0 2c4.42 0 8 1.34 8 2s-3.58 2-8 2-8-1.34-8-2 3.58-2 8-2zm8 14c0 .66-3.58 2-8 2s-8-1.34-8-2v-2.35c1.88 1.05 4.79 1.65 8 1.65s6.12-.6 8-1.65V18zm0-4c0 .66-3.58 2-8 2s-8-1.34-8-2v-2.35c1.88 1.05 4.79 1.65 8 1.65s6.12-.6 8-1.65V14z"
+      className={className}
+    />
+  );
+}
+
+export function GenericCodeLogo({ className = "size-4 text-[#8a8a92]" }: TechLogoProps) {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`shrink-0 transition-colors duration-150 hover:text-[#ededed] ${className}`}
+      aria-label="Code"
+    >
+      <title>Code</title>
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
 export const DOMAIN_LOGOS: Record<string, React.ComponentType<{ className?: string }>> = {
   // Domain 01
   "TypeScript": TypeScriptLogo,
@@ -118,19 +268,30 @@ export const DOMAIN_LOGOS: Record<string, React.ComponentType<{ className?: stri
   "Next.js": NextJsLogo,
   "Tailwind CSS": TailwindLogo,
   "HTML5 & CSS3": Html5Logo,
+  "HTML5": Html5Logo,
+  "CSS3": Css3Logo,
 
   // Domain 02
   "Node.js": NodeJsLogo,
   "Python": PythonLogo,
   "FastAPI": FastApiLogo,
+  "Fastify": FastifyLogo,
   "PostgreSQL": PostgreSqlLogo,
   "Redis": RedisLogo,
+  "BullMQ": BullMQLogo,
   "RabbitMQ": RabbitMqLogo,
+  "Express": ExpressLogo,
 
   // Domain 03
   "PyTorch": PyTorchLogo,
   "Hugging Face": HuggingFaceLogo,
   "OpenAI": OpenAiLogo,
+  "OpenAI / LLMs": OpenAiLogo,
+  "LangChain": LangChainLogo,
+  "LangChain / LLM APIs": LangChainLogo,
+  "Qdrant": QdrantLogo,
+  "Pydantic": PydanticLogo,
+  "NumPy": NumPyLogo,
 
   // Domain 04
   "Linux": LinuxLogo,
@@ -138,7 +299,24 @@ export const DOMAIN_LOGOS: Record<string, React.ComponentType<{ className?: stri
   "Git": GitLogo,
   "GitHub Actions": GitHubActionsLogo,
   "Cloudflare": CloudflareLogo,
+  "Jest": JestLogo,
+  "Web Audio API": WebAudioLogo,
+  "Service Workers": ServiceWorkerLogo,
+  "IndexedDB": IndexedDbLogo,
 };
+
+export function getTechLogoComponent(name: string): React.ComponentType<{ className?: string }> {
+  if (DOMAIN_LOGOS[name]) {
+    return DOMAIN_LOGOS[name];
+  }
+  const clean = name.trim().toLowerCase();
+  for (const [key, comp] of Object.entries(DOMAIN_LOGOS)) {
+    if (key.toLowerCase() === clean || clean.includes(key.toLowerCase()) || key.toLowerCase().includes(clean)) {
+      return comp;
+    }
+  }
+  return GenericCodeLogo;
+}
 
 export const DOMAIN_STACK_LOGOS: Record<string, { name: string; component: React.ComponentType<{ className?: string }> }[]> = {
   "01": [

@@ -88,7 +88,7 @@ export function DialogContent({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-150"
       onClick={() => ctx.setOpen(false)}
       role="presentation"
     >
@@ -97,7 +97,7 @@ export function DialogContent({
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full max-w-[640px] max-h-[85vh] overflow-y-auto overscroll-contain border border-[#333333] forced-colors:border-[CanvasText] bg-[#181818] p-6 shadow-2xl rounded-[6px] transition-[opacity,transform] duration-200 ease-out motion-safe:scale-100 motion-reduce:scale-100",
+          "relative w-full max-w-[680px] max-h-[88vh] overflow-y-auto overscroll-contain border border-[#27272a] bg-[#09090b] p-6 shadow-2xl rounded-md transition-all duration-150 ease-out",
           className
         )}
         {...props}
@@ -106,7 +106,7 @@ export function DialogContent({
         <button
           type="button"
           onClick={() => ctx.setOpen(false)}
-          className="absolute right-4 top-4 rounded-[4px] bg-[#242424] border border-[#333] p-1.5 text-[#929292] select-none transition-[background-color,color,transform] duration-150 ease-out hover:bg-[#303030] hover:text-[#ededed] motion-safe:enabled:active:scale-[0.96] focus:outline-none focus:ring-1 focus:ring-[#ededed] [&>svg]:stroke-[1.5]"
+          className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 text-[#a1a1aa] hover:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#ededed]"
           aria-label="Close dialog"
         >
           <X className="h-4 w-4" />

@@ -5,12 +5,8 @@ import { Project } from "@/data/portfolio";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { getTechLogoComponent } from "@/components/tech-logos";
 import { ArrowUpRight, Github } from "lucide-react";
 
 interface ProjectSectionProps {
@@ -59,95 +55,145 @@ export function ProjectSection({ projects }: ProjectSectionProps) {
         ))}
       </ul>
 
-      {/* Deep-Dive Inspection Dialog */}
+      {/* Deep-Dive Inspection Dialog - Clean shadcn style */}
       <Dialog
         open={!!selectedProject}
         onOpenChange={(open) => {
           if (!open) setSelectedProject(null);
         }}
       >
-        <DialogContent>
-          {selectedProject && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedProject.title}</DialogTitle>
-                <DialogDescription>{selectedProject.tagline}</DialogDescription>
-              </DialogHeader>
+        <DialogContent className="max-w-[680px] p-6 space-y-5 rounded-md border border-[#27272a] bg-[#09090b]">
+          {selectedProject && (() => {
+            const metricsList = selectedProject.metrics.split("·").map((m) => m.trim());
 
-              <div className="border-t border-[#282828] pt-3.5 mt-2">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-1.5">
-                  Challenge &amp; Engineering Problem
+            return (
+              <div className="space-y-5">
+                {/* Header */}
+                <div className="space-y-1.5 pr-6">
+                  <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    <span>{selectedProject.role}</span>
+                    <span>·</span>
+                    <span>Project Architecture</span>
+                  </div>
+                  <h2 className="text-lg font-semibold tracking-tight text-[#ededed]">
+                    {selectedProject.title}
+                  </h2>
+                  <p className="text-xs text-[#a1a1aa] leading-relaxed">
+                    {selectedProject.tagline}
+                  </p>
                 </div>
-                <p className="text-[13.5px] leading-relaxed text-[#b7b7b7]">
-                  {selectedProject.problem}
-                </p>
-              </div>
 
-              <div className="border-t border-[#282828] pt-3.5 mt-2">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-1.5">
-                  Architectural Solution
-                </div>
-                <p className="text-[13.5px] leading-relaxed text-[#b7b7b7]">
-                  {selectedProject.solution}
-                </p>
-              </div>
+                <div className="border-b border-[#27272a]" />
 
-              <div className="border-t border-[#282828] pt-3.5 mt-2">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-2">
-                  Schematic Data Flow
+                {/* Challenge & Problem */}
+                <div className="space-y-1.5">
+                  <div className="font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    Challenge &amp; Engineering Problem
+                  </div>
+                  <p className="text-[13px] leading-relaxed text-[#d4d4d8]">
+                    {selectedProject.problem}
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  {selectedProject.flow.map((f, i) => (
-                    <div
-                      key={f}
-                      className="flex items-center gap-2 rounded-[4px] border border-[#2d2d2d] bg-[#202020] px-2.5 py-1.5 font-mono text-[11px] text-[#ededed]"
+
+                {/* Architectural Solution */}
+                <div className="space-y-1.5">
+                  <div className="font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    Architectural Solution
+                  </div>
+                  <p className="text-[13px] leading-relaxed text-[#d4d4d8]">
+                    {selectedProject.solution}
+                  </p>
+                </div>
+
+                {/* Schematic Data Flow */}
+                <div className="space-y-2">
+                  <div className="font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    Schematic Data Flow
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                    {selectedProject.flow.map((f, i) => (
+                      <div
+                        key={f}
+                        className="rounded-md border border-[#27272a] bg-[#121214] p-2.5 flex flex-col justify-between"
+                      >
+                        <span className="font-mono text-[10px] text-[#71717a]">0{i + 1}</span>
+                        <div className="font-mono text-xs text-[#ededed] mt-1 leading-snug">
+                          {f}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Verified Performance */}
+                <div className="space-y-2">
+                  <div className="font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    Verified Performance
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {metricsList.map((m) => (
+                      <div
+                        key={m}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[#27272a] bg-[#121214] px-2.5 py-1 text-xs font-mono text-[#ededed]"
+                      >
+                        <span className="size-1 rounded-sm bg-[#71717a]" />
+                        <span>{m}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Production Tech Stack with Icons */}
+                <div className="space-y-2">
+                  <div className="font-mono text-[11px] uppercase tracking-wider text-[#71717a]">
+                    Production Tech Stack
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedProject.techStack.map((tech) => {
+                      const Logo = getTechLogoComponent(tech);
+                      return (
+                        <div
+                          key={tech}
+                          className="inline-flex items-center gap-1.5 rounded-md border border-[#27272a] bg-[#121214] px-2.5 py-1 text-xs font-mono text-[#ededed] hover:border-[#3f3f46] transition-colors select-none"
+                        >
+                          <Logo className="size-3.5 text-[#71717a]" />
+                          <span>{tech}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Footer Action Bar */}
+                <div className="border-t border-[#27272a] pt-4 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-[#71717a]">
+                    Press ESC to close
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(null)}
+                      className="h-8 rounded-md border border-[#27272a] px-3 text-xs font-medium text-[#ededed] hover:bg-[#18181b] transition-colors"
                     >
-                      <span className="text-[#6e6e6e]">0{i + 1}</span>
-                      <span>{f}</span>
-                    </div>
-                  ))}
+                      Close
+                    </button>
+                    {selectedProject.github && (
+                      <a
+                        href={selectedProject.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[#ededed] px-3 text-xs font-medium text-[#09090b] hover:bg-white transition-colors"
+                      >
+                        <Github className="size-3.5" />
+                        <span>View Source</span>
+                        <ArrowUpRight className="size-3 text-[#71717a]" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-
-              <div className="border-t border-[#282828] pt-3.5 mt-2">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-1.5">
-                  Verified Performance
-                </div>
-                <div className="font-mono text-xs text-[#ededed]">
-                  {selectedProject.metrics}
-                </div>
-              </div>
-
-              <div className="border-t border-[#282828] pt-3.5 mt-2">
-                <div className="font-mono text-[11px] uppercase tracking-wider text-[#6e6e6e] mb-2">
-                  Production Tech Stack
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedProject.techStack.map((tech) => (
-                    <Badge key={tech} variant="default">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {selectedProject.github && (
-                <div className="mt-4 flex justify-end">
-                  <Button variant="primary" asChild>
-                    <a
-                      href={selectedProject.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2"
-                    >
-                      <Github className="w-3.5 h-3.5" />
-                      View Source Repository
-                    </a>
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </>
