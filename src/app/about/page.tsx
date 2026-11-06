@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { portfolio } from "@/data/portfolio";
 import { ScatterPortrait } from "@/components/scatter-portrait";
+import { GitHubContributions } from "@/components/github-contributions";
 import { ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -143,6 +144,21 @@ export default function AboutPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* Section 05.2: GitHub Activity */}
+      <section className="mt-16">
+        <div className="k-rule-b flex min-h-10 items-center justify-between gap-4">
+          <h2 className="k-label flex gap-1.5">
+            <span className="text-[#6e6e6e]">05.2</span>
+            <span aria-hidden="true" className="text-[#4a4a4a]">/</span>
+            <span className="text-[#ededed]">Contributions</span>
+          </h2>
+        </div>
+
+        <div className="mt-6">
+          <GitHubContributions />
+        </div>
       </section>
     </div>
   );
